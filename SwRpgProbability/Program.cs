@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using DiceCalculator.Dice;
-using System.Web.Mvc;
 
 namespace DiceCalculator
 {

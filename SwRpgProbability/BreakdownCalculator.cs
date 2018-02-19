@@ -90,7 +90,11 @@ namespace DiceCalculator
 			return bulkPool;
 		}
 
-
+		/// <summary>
+		/// Builds
+		/// </summary>
+		/// <param name="partialDicePool"></param>
+		/// <returns></returns>
 		protected Dictionary<Face, long> ProcessPartialDicePool(List<Die> partialDicePool)
 		{
 			//this array tracks which face is for selection

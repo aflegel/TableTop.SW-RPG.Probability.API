@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace DiceCalculator.DataContext
 {
-	class FaceSymbol
+	public class PoolResult
 	{
-		public FaceSymbol()
+		public PoolResult()
 		{
-
+			//something like 8 million records
 		}
 
 		public int FaceId { get; set; }
 
-		public int SymbolId { get; set; }
+		public int PoolId { get; set; }
 
-		public virtual Symbol Symbol { get; set; }
+		public virtual Pool Pool { get; set; }
 		public virtual Face Face { get; set; }
 	}
 }

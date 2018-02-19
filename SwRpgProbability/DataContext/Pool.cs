@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiceCalculator.DataContext
 {
-	class Pool
+	public class Pool
 	{
 		public Pool()
 		{
@@ -20,5 +20,7 @@ namespace DiceCalculator.DataContext
 		//todo summary information ~600 entries
 
 		public virtual ICollection<Die> Dice { get; set; }
+		public virtual ICollection<PoolResult> PoolResults { get; set; }
+
 	}
 }

@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace DiceCalculator.DataContext
 {
-	class Face
+	public class Die
 	{
-		public Face()
+		public Die()
 		{
-			FaceSymbols = new HashSet<FaceSymbol>();
+			Faces = new HashSet<Face>();
 		}
 
-		public int FaceId { get; set; }
-
 		public int DieId { get; set; }
+		public string Name { get; set; }
 
-		public virtual ICollection<FaceSymbol> FaceSymbols { get; set; }
+		public virtual ICollection<Face> Faces { get; set; }
 	}
 }

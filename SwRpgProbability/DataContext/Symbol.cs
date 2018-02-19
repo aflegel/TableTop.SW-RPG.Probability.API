@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiceCalculator.DataContext
 {
-	class Symbol
+	public class Symbol
 	{
 		public Symbol()
 		{
@@ -14,5 +14,7 @@ namespace DiceCalculator.DataContext
 
 		public int SymbolId { get; set; }
 		public string Name { get; set; }
+
+		public virtual ICollection<FaceSymbol> FaceSymbols { get; set; }
 	}
 }
