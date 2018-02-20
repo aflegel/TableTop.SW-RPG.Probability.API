@@ -4,9 +4,11 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using DiceCalculator.Dice;
+using SwRpgProbability.Dice;
+using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
-namespace DiceCalculator
+namespace SwRpgProbability
 {
 	class Program
 	{
@@ -19,8 +21,6 @@ namespace DiceCalculator
 
 		static void Main(string[] args)
 		{
-			//LargeTest();
-			//MatchTest();
 			SkillBreakdown();
 		}
 
@@ -31,44 +31,29 @@ namespace DiceCalculator
 		{
 			StreamWriter writer = new StreamWriter("DiceResults.csv");
 
-			List<DieResult> resultList = new List<DieResult>();
+			var resultList = new List<DieResult>();
 
-			List<Die> pool = GetPool(1, 1, 1, 1, 0, 0);
-			BreakdownCalculator calculator = new BreakdownCalculator(pool);
-			resultList.Add(calculator.Run());
+			InitializeDatabase();
 
-			//each ability level
-			for (int i = 1; i <= ABILITY_LIMIT; i++)
-			{
-				//each skill level
-				//ensure the proficiency dice don't outweigh the ability dice
-				for (int j = 0; (j <= UPGRADE_LIMIT) && (j <= i); j++)
-				{
-					//each difficulty
-					for (int k = 1; k <= DIFFICULTY_LIMIT; k++)
-					{
-						//ensure the proficiency dice don't outweigh the ability dice
-						for (int l = 0; (l <= CHALLENGE_LIMIT) && (l <= k); l++)
-						{
-							for (int m = 0; m < BOOST_LIMIT; m++)
-							{
-								for(int n = 0; n < SETBACK_LIMIT; n++)
-								{
-									//List<Die> pool = GetPool(i - j, j, k - l, l, m, n);
-									//BreakdownCalculator calculator = new BreakdownCalculator(pool);
-									//resultList.Add(calculator.Run());
-								}
-							}
-						}
-					}
-				}
-			}
+//			resultList.AddRange(Sample());
+			resultList.AddRange(ProcessProgram());
 
 			writer.WriteLine("pool,total,unique,successes,%,failures,%,advantages,%,threats,%,stalemate,%,triumphs,%,despairs,%");
 			writer.WriteLine(string.Format("{0}", string.Join("\n", resultList)));
 			writer.WriteLine();
 
 			writer.Close();
+		}
+
+		private static void InitializeDatabase()
+		{
+			using (var db = new DataContext.ProbabilityContext())
+			{
+				db.Database.ExecuteSqlCommand("DELETE FROM PoolResultSymbol");
+				db.Database.ExecuteSqlCommand("DELETE FROM PoolResult");
+				db.Database.ExecuteSqlCommand("DELETE FROM PoolDie");
+				db.Database.ExecuteSqlCommand("DELETE FROM Pool");
+			}
 		}
 
 		protected static List<Die> GetPool(int ability, int proficiency, int difficulty, int challenge, int boost, int setback)
@@ -99,25 +84,52 @@ namespace DiceCalculator
 			return testPool;
 		}
 
-		public static void MatchTest()
+		private static List<DieResult> ProcessProgram()
 		{
-			BreakdownCalculator diceCalculator = new BreakdownCalculator(new List<Die>()
+			var resultList = new List<DieResult>();
+
+			//each ability level
+			for (int i = 1; i <= ABILITY_LIMIT; i++)
 			{
-				//new Boost(),
-				new Ability(),
-				new Ability(),
-				new Ability(),
-				new Ability(),
-				//new Proficiency(),
-				//new Ability(),
-				//new Ability(),
-				//new Difficulty(),
-				//new Difficulty(),
-				new Difficulty(),
-				new Difficulty(),
-				new Difficulty(),
-				new Difficulty()
-			});
+				//each skill level
+				//ensure the proficiency dice don't outweigh the ability dice
+				for (int j = 0; (j <= UPGRADE_LIMIT) && (j <= i); j++)
+				{
+					//each difficulty
+					for (int k = 1; k <= DIFFICULTY_LIMIT; k++)
+					{
+						//ensure the proficiency dice don't outweigh the ability dice
+						for (int l = 0; (l <= CHALLENGE_LIMIT) && (l <= k); l++)
+						{
+							for (int m = 0; m <= BOOST_LIMIT; m++)
+							{
+								for (int n = 0; n <= SETBACK_LIMIT; n++)
+								{
+									var pool = GetPool(i - j, j, k - l, l, m, n);
+									var calculator = new PoolCalculator(pool);
+
+									Thread thread = new Thread(calculator.Run);
+									thread.Start();
+
+									//resultList.Add();
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return resultList;
+		}
+
+		public static List<DieResult> Sample()
+		{
+			var resultList = new List<DieResult>();
+			var pool = GetPool(1, 1, 1, 1, 0, 0);
+			var calculator = new PoolCalculator(pool);
+			//resultList.Add(calculator.Run());
+
+			return resultList;
 		}
 	}
 }

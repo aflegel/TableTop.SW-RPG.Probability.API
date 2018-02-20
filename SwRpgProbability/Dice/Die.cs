@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiceCalculator.Dice
+namespace SwRpgProbability.Dice
 {
 
 	/// <summary>
@@ -63,6 +63,7 @@ namespace DiceCalculator.Dice
 
 			return nextPool;
 		}
+
 
 
 		public override string ToString()

@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DiceCalculator.Dice;
+using SwRpgProbability.Dice;
 using System.IO;
 
-namespace DiceCalculator
+namespace SwRpgProbability
 {
-	class BreakdownCalculator
+	class PoolCalculator
 	{
 		//this is a decimal to do math
 		decimal totalCount;
 		List<Die> dicePool;
 		DieResult results;
 
-		public BreakdownCalculator(List<Die> testingDice)
+		public PoolCalculator(List<Die> testingDice)
 		{
 			dicePool = testingDice;
 
 			//todo: create PoolMaster and PoolPart records
 		}
 
-		public DieResult Run()
+		public void Run()
 		{
 			results = new DieResult();
 
@@ -36,7 +36,59 @@ namespace DiceCalculator
 
 			SummarizePool(outcomePool);
 
-			return results;
+			ProcessDatabaseRecords(outcomePool);
+
+		}
+
+		private void ProcessDatabaseRecords(Dictionary<Face, long> outcomePool)
+		{
+			using (var db = new DataContext.ProbabilityContext())
+			{
+				var pool = new DataContext.Pool()
+				{
+					Name = results.Dice,
+					TotalOutcomes = results.Count,
+					UniqueOutcomes = results.Unique,
+					SuccessOutcomes = results.Success,
+					FailureOutcomes = results.Failure,
+					AdvantageOutcomes = results.Advantage,
+					ThreatOutcomes = results.Threat,
+					DespairOutcomes = results.Despair,
+					TriumphOutcomes = results.Triumph,
+					StalemateOutcomes = results.Stalemate
+				};
+				db.Pools.Add(pool);
+
+				//create the record of which dice are used
+				foreach (var die in dicePool.GroupBy(info => info.ToString()).Select(group => new { group.Key, Count = group.Count() }).ToList())
+				{
+					var dbDie = db.Dice.FirstOrDefault(w => w.Name == die.Key);
+					pool.PoolDice.Add(new DataContext.PoolDie() { Die = dbDie, Quantity = die.Count });
+				}
+
+				/*
+				//create the record of the outcomes
+				foreach (var outcome in outcomePool)
+				{
+					//each KVP represents a unique roll
+					var poolResult = new DataContext.PoolResult();
+					pool.PoolResults.Add(poolResult);
+
+					foreach (var symbol in outcome.Key.Symbols)
+					{
+						//each symbol and count
+						var resultSymbol = new DataContext.PoolResultSymbol()
+						{
+							Symbol = symbol.Key,
+							Quantity = symbol.Value
+						};
+
+						poolResult.PoolResultSymbols.Add(resultSymbol);
+					}
+				}
+				*/
+				db.SaveChanges();
+			}
 		}
 
 		/// <summary>
@@ -46,7 +98,7 @@ namespace DiceCalculator
 		protected void ProcessPreOutput()
 		{
 			var rollEstimation = dicePool.Aggregate((long)1, (x, y) => x * y.Faces.Count);
-			var poolText = dicePool.GroupBy(info => info.ToString()).Select(group => string.Format("{0} {1}", group.Key, group.Count()) ).ToList();
+			var poolText = dicePool.GroupBy(info => info.ToString()).Select(group => string.Format("{0} {1}", group.Key, group.Count())).ToList();
 
 			//update the user
 			Console.WriteLine(string.Format("Pool: {0} | Outcomes: {1:n0} ", string.Join(", ", poolText), rollEstimation));
@@ -113,7 +165,7 @@ namespace DiceCalculator
 					//add the a face from the first die
 					Face roll = partialDicePool[0].Faces[i];
 
-					//take one face from each remaining die
+					//take one face from each remaining die, j = 1 to skip the first die
 					for (int j = 1; j < partialDicePool.Count; j++)
 					{
 						roll = roll.Merge(partialDicePool[j].Faces[indexTracker[j]]);
@@ -203,10 +255,10 @@ namespace DiceCalculator
 			//hijacking this function to gather initial results
 			var poolText = dicePool.GroupBy(info => info.ToString()).Select(group => string.Format("{0} {1}", group.Key, group.Count())).ToList();
 
-			results.dice = string.Join(", ", poolText);
-			results.count = outcomePool.Sum(s => s.Value);
-			results.unique = outcomePool.Count;
-			totalCount = results.count;
+			results.Dice = string.Join(", ", poolText);
+			results.Count = outcomePool.Sum(s => s.Value);
+			results.Unique = outcomePool.Count;
+			totalCount = results.Count;
 		}
 
 
@@ -302,6 +354,7 @@ namespace DiceCalculator
 
 			Console.WriteLine(string.Format("Total {0:n0} ({1}) ", frequency, (frequency / totalCount).ToString("#0.000%")));
 
+
 			return frequency;
 		}
 
@@ -311,10 +364,11 @@ namespace DiceCalculator
 		/// <param name="outcomePool"></param>
 		protected void SummarizePool(Dictionary<Face, long> outcomePool)
 		{
-			//todo: create PoolMaster record
+
 
 			List<Symbol> successKeys = new List<Symbol>() { Symbol.Success, Symbol.Triumph };
 			List<Symbol> failureKeys = new List<Symbol>() { Symbol.Failure, Symbol.Despair };
+
 
 			long successFrequency = 0;
 
@@ -383,15 +437,15 @@ namespace DiceCalculator
 
 			//todo: Update PoolMaster record
 
-			results.success = successFrequency;
-			results.failure = results.count - successFrequency;
+			results.Success = successFrequency;
+			results.Failure = results.Count - successFrequency;
 
-			results.advantage = advantageFrequency;
-			results.threat = threatFrequency;
-			results.stalemate = results.count - (advantageFrequency + threatFrequency);
+			results.Advantage = advantageFrequency;
+			results.Threat = threatFrequency;
+			results.Stalemate = results.Count - (advantageFrequency + threatFrequency);
 
-			results.triumph = triumphFrequency;
-			results.despair = despairFrequency;
+			results.Triumph = triumphFrequency;
+			results.Despair = despairFrequency;
 		}
 	}
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DiceCalculator.Models
+namespace SwRpgProbability.Models
 {
 	[Table("RollPart")]
 	class RollPart

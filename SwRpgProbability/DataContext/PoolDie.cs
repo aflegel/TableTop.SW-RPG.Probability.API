@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace SwRpgProbability.DataContext
 {
-	public class Die
+	public class PoolDie
 	{
-		public Die()
+		public PoolDie()
 		{
 		}
 
 		public int DieId { get; set; }
-		public string Name { get; set; }
+		public long PoolId { get; set; }
 
-		public virtual ICollection<PoolDie> PoolDice { get; set; }
+		public int Quantity { get; set; }
+
+		public virtual Pool Pool { get; set; }
+		public virtual Die Die { get; set; }
 	}
 }

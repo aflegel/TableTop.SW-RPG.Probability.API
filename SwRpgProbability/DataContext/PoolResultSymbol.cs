@@ -6,21 +6,19 @@ using System.Threading.Tasks;
 
 namespace SwRpgProbability.DataContext
 {
-	public class PoolResult
+	public class PoolResultSymbol
 	{
-		public PoolResult()
+		public PoolResultSymbol()
 		{
 			//something like 8 million records
-			PoolResultSymbols = new HashSet<PoolResultSymbol>();
 		}
 
 		public long PoolResultId { get; set; }
 
-		public long PoolId { get; set; }
+		public Dice.Symbol Symbol { get; set; }
 
-		public virtual Pool Pool { get; set; }
+		public int Quantity { get; set; }
 
-		public virtual ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
-
+		public virtual PoolResult PoolResult { get; set; }
 	}
 }
