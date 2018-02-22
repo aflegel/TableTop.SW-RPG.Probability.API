@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwRpgProbability.DataContext
+namespace SwRpgProbability.Models.DataContext
 {
 	public class PoolDie
 	{

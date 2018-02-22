@@ -1,4 +1,4 @@
-namespace SwRpgProbability.DataContext
+namespace SwRpgProbability.Models.DataContext
 {
 	using System;
 	using System.Linq;

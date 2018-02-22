@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwRpgProbability.Dice
+namespace SwRpgProbability.Models.Dice
 {
 	class Force : Die
 	{

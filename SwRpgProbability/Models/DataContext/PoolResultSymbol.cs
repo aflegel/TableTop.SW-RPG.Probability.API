@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwRpgProbability.DataContext
+namespace SwRpgProbability.Models.DataContext
 {
 	public class PoolResultSymbol
 	{
@@ -15,7 +15,7 @@ namespace SwRpgProbability.DataContext
 
 		public long PoolResultId { get; set; }
 
-		public Dice.Symbol Symbol { get; set; }
+		public Symbol Symbol { get; set; }
 
 		public int Quantity { get; set; }
 

@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using SwRpgProbability.DataContext;
-using SwRpgProbability.Dice;
+using SwRpgProbability.Models.DataContext;
+using SwRpgProbability.Models.Dice;
 using System;
 
 namespace SwRpgProbability.Migrations
@@ -46,7 +46,7 @@ namespace SwRpgProbability.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long>("StalemateOutcomes");
+                    b.Property<long>("NeutralOutcomes");
 
                     b.Property<long>("SuccessOutcomes");
 

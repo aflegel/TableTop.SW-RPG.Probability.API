@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwRpgProbability.Dice
+namespace SwRpgProbability.Models
 {
 
 	/// <summary>
 	/// A Base class for the child dice with some static counting functions
 	/// </summary>
-	class Die
+	public class Die
 	{
 
 		public List<Face> Faces { get; set; }

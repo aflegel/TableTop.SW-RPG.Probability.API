@@ -12,8 +12,8 @@ using System;
 namespace SwRpgProbability.Migrations
 {
     [DbContext(typeof(ProbabilityContext))]
-    [Migration("20180219070126_DbRework2")]
-    partial class DbRework2
+    [Migration("20180221063832_StalemateDistinction")]
+    partial class StalemateDistinction
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,7 +47,7 @@ namespace SwRpgProbability.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long>("StalemateOutcomes");
+                    b.Property<long>("NeutralOutcomes");
 
                     b.Property<long>("SuccessOutcomes");
 

@@ -4,9 +4,10 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using SwRpgProbability.Dice;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using SwRpgProbability.Models;
+using SwRpgProbability.Models.Dice;
 
 namespace SwRpgProbability
 {
@@ -21,33 +22,17 @@ namespace SwRpgProbability
 
 		static void Main(string[] args)
 		{
-			SkillBreakdown();
-		}
-
-		/// <summary>
-		/// Runs a series of tests to calculate the total output
-		/// </summary>
-		public static void SkillBreakdown()
-		{
-			StreamWriter writer = new StreamWriter("DiceResults.csv");
-
-			var resultList = new List<DieResult>();
-
 			InitializeDatabase();
 
-//			resultList.AddRange(Sample());
-			resultList.AddRange(ProcessProgram());
+			ProcessProgram();
 
-			writer.WriteLine("pool,total,unique,successes,%,failures,%,advantages,%,threats,%,stalemate,%,triumphs,%,despairs,%");
-			writer.WriteLine(string.Format("{0}", string.Join("\n", resultList)));
-			writer.WriteLine();
-
-			writer.Close();
+			//prevent auto close
+			Console.ReadKey();
 		}
 
 		private static void InitializeDatabase()
 		{
-			using (var db = new DataContext.ProbabilityContext())
+			using (var db = new Models.DataContext.ProbabilityContext())
 			{
 				db.Database.ExecuteSqlCommand("DELETE FROM PoolResultSymbol");
 				db.Database.ExecuteSqlCommand("DELETE FROM PoolResult");
@@ -55,6 +40,85 @@ namespace SwRpgProbability
 				db.Database.ExecuteSqlCommand("DELETE FROM Pool");
 			}
 		}
+
+		/// <summary>
+		/// Test Function
+		/// </summary>
+		/// <returns></returns>
+		public static List<RollResult> Sample()
+		{
+			var resultList = new List<RollResult>();
+			var pool = GetPool(1, 1, 1, 1, 0, 0);
+			var outputContainer = new RollContainer(pool);
+			var calculator = new PoolCalculator(outputContainer);
+			//resultList.Add(calculator.Run());
+
+			return resultList;
+		}
+
+
+		private static void ProcessProgram()
+		{
+			var positiveDicePools = BuildPositivePool();
+			var negativeDicePools = BuildNegativePool();
+
+			foreach (var positivePool in positiveDicePools)
+			{
+				foreach (var negativePool in negativeDicePools)
+				{
+					var summary = new PoolSummary(positivePool, negativePool);
+				}
+			}
+		}
+
+		private static List<RollContainer> BuildPositivePool()
+		{
+			var positiveDicePools = new List<RollContainer>();
+			//each ability level
+			for (int i = 1; i <= ABILITY_LIMIT; i++)
+			{
+				//each skill level
+				//ensure the proficiency dice don't outweigh the ability dice
+				for (int j = 0; (j <= UPGRADE_LIMIT) && (j <= i); j++)
+				{
+					for (int k = 0; k <= BOOST_LIMIT; k++)
+					{
+						var pool = GetPool(i - j, j, 0, 0, k, 0);
+						var outputContainer = new RollContainer(pool);
+						var calculator = new PoolCalculator(outputContainer);
+
+						positiveDicePools.Add(outputContainer);
+					}
+				}
+			}
+
+			return positiveDicePools;
+		}
+
+		private static List<RollContainer> BuildNegativePool()
+		{
+			var negativeDicePools = new List<RollContainer>();
+			//each difficulty
+			for (int i = 1; i <= DIFFICULTY_LIMIT; i++)
+			{
+				//ensure the proficiency dice don't outweigh the ability dice
+				for (int j = 0; (j <= CHALLENGE_LIMIT) && (j <= i); j++)
+				{
+					for (int k = 0; k <= SETBACK_LIMIT; k++)
+					{
+						var pool = GetPool(0, 0, i - j, j, 0, k);
+						var outputContainer = new RollContainer(pool);
+						var calculator = new PoolCalculator(outputContainer);
+
+						negativeDicePools.Add(outputContainer);
+					}
+				}
+			}
+
+			return negativeDicePools;
+		}
+
+
 
 		protected static List<Die> GetPool(int ability, int proficiency, int difficulty, int challenge, int boost, int setback)
 		{
@@ -78,58 +142,7 @@ namespace SwRpgProbability
 			for (int i = 0; i < setback; i++)
 				testPool.Add(new SetBack());
 
-			//var poolText = testPool.GroupBy(info => info.ToString()).Select(group => string.Format("{0} {1}", group.Key, group.Count())).ToList();
-			//Console.WriteLine(string.Format("Pool: {0}", string.Join(", ", poolText)));
-
 			return testPool;
-		}
-
-		private static List<DieResult> ProcessProgram()
-		{
-			var resultList = new List<DieResult>();
-
-			//each ability level
-			for (int i = 1; i <= ABILITY_LIMIT; i++)
-			{
-				//each skill level
-				//ensure the proficiency dice don't outweigh the ability dice
-				for (int j = 0; (j <= UPGRADE_LIMIT) && (j <= i); j++)
-				{
-					//each difficulty
-					for (int k = 1; k <= DIFFICULTY_LIMIT; k++)
-					{
-						//ensure the proficiency dice don't outweigh the ability dice
-						for (int l = 0; (l <= CHALLENGE_LIMIT) && (l <= k); l++)
-						{
-							for (int m = 0; m <= BOOST_LIMIT; m++)
-							{
-								for (int n = 0; n <= SETBACK_LIMIT; n++)
-								{
-									var pool = GetPool(i - j, j, k - l, l, m, n);
-									var calculator = new PoolCalculator(pool);
-
-									Thread thread = new Thread(calculator.Run);
-									thread.Start();
-
-									//resultList.Add();
-								}
-							}
-						}
-					}
-				}
-			}
-
-			return resultList;
-		}
-
-		public static List<DieResult> Sample()
-		{
-			var resultList = new List<DieResult>();
-			var pool = GetPool(1, 1, 1, 1, 0, 0);
-			var calculator = new PoolCalculator(pool);
-			//resultList.Add(calculator.Run());
-
-			return resultList;
 		}
 	}
 }

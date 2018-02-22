@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwRpgProbability.DataContext
+namespace SwRpgProbability.Models.DataContext
 {
 	public class Pool
 	{
@@ -26,7 +26,7 @@ namespace SwRpgProbability.DataContext
 		public long FailureOutcomes { get; set; }
 		public long AdvantageOutcomes { get; set; }
 		public long ThreatOutcomes { get; set; }
-		public long StalemateOutcomes { get; set; }
+		public long NeutralOutcomes { get; set; }
 		public long TriumphOutcomes { get; set; }
 		public long DespairOutcomes { get; set; }
 
