@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using SwRpgProbability.Models.DataContext;
-using SwRpgProbability.Models.Dice;
 using System;
 
 namespace SwRpgProbability.Migrations

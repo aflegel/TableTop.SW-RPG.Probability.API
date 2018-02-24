@@ -4,20 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using SwRpgProbability.Models.DataContext;
+using static SwRpgProbability.Models.DataContext.Die;
 
 namespace SwRpgProbability.Models
 {
 	class PoolSummary
 	{
-		RollContainer PositiveContainer { get; set; }
-		RollContainer NegativeContainer { get; set; }
+		ProbabilityContext context = new ProbabilityContext();
+
+		Pool PositiveContainer { get; set; }
+		Pool NegativeContainer { get; set; }
 
 		/// <summary>
 		/// Create the container and run the simulation
 		/// </summary>
 		/// <param name="PositiveContainer"></param>
 		/// <param name="NegativeContainer"></param>
-		public PoolSummary(RollContainer PositiveContainer, RollContainer NegativeContainer)
+		public PoolSummary(Pool PositiveContainer, Pool NegativeContainer)
 		{
 			this.PositiveContainer = PositiveContainer;
 			this.NegativeContainer = NegativeContainer;
@@ -39,13 +43,13 @@ namespace SwRpgProbability.Models
 			long triumphFrequency = 0;
 			long despairFrequency = 0;
 
-			foreach (Face positiveMap in PositiveContainer.ResultList.Keys)
+			foreach (var positiveMap in PositiveContainer.PoolResults)
 			{
 
 				//loop through the simple pool to find matches
-				foreach (Face negitiveMap in NegativeContainer.ResultList.Keys)
+				foreach (var negitiveMap in NegativeContainer.PoolResults)
 				{
-					long frequency = PositiveContainer.ResultList[positiveMap] * NegativeContainer.ResultList[negitiveMap];
+					long frequency = positiveMap.Quantity * negitiveMap.Quantity;
 
 					//triumphs count as successes but advantages do not
 					int successThreshold = CountMatchingKeys(positiveMap, new List<Symbol>() { Symbol.Success, Symbol.Triumph });
@@ -66,7 +70,7 @@ namespace SwRpgProbability.Models
 
 						//it is only a triumph if it is a success
 						if (triumphThreshold > 0)
-							triumphFrequency = +frequency;
+							triumphFrequency += frequency;
 					}
 					else
 					{
@@ -84,20 +88,21 @@ namespace SwRpgProbability.Models
 				}
 			}
 
-			var results = new RollResult
+			var poolCombo = new PoolCombination()
 			{
-				Count = PositiveContainer.ResultList.Sum(s => s.Value) * NegativeContainer.ResultList.Sum(s => s.Value),
-				Unique = PositiveContainer.ResultList.Count * NegativeContainer.ResultList.Count,
-				Dice = RollContainer.GetPoolText(PositiveContainer.DicePool.Union(NegativeContainer.DicePool).ToList()),
-				Success = successFrequency,
+				//PositivePool = PositiveContainer,
+				//NegativePool = NegativeContainer,
+				SuccessOutcomes = successFrequency,
 
-				Triumph = triumphFrequency,
-				Despair = despairFrequency,
-				Advantage = advantageFrequency,
-				Threat = threatFrequency,
+				AdvantageOutcomes = advantageFrequency,
+				ThreatOutcomes = threatFrequency,
+
+				TriumphOutcomes = triumphFrequency,
+				DespairOutcomes = despairFrequency,
 			};
 
-			ProcessDatabaseRecords(results);
+			PositiveContainer.PositivePoolCombinations.Add(poolCombo);
+			NegativeContainer.NegativePoolCombinations.Add(poolCombo);
 		}
 
 		/// <summary>
@@ -106,83 +111,29 @@ namespace SwRpgProbability.Models
 		/// <param name="outcomePool"></param>
 		protected void PrintConsoleLog()
 		{
-			var largePool = PositiveContainer.DicePool.Union(NegativeContainer.DicePool).ToList();
-
-			PrintConsoleLog(RollContainer.GetPoolText(largePool), RollContainer.GetRollEstimation(largePool));
+			PrintStartLog(PositiveContainer.Name + NegativeContainer.Name, PositiveContainer.TotalOutcomes * NegativeContainer.TotalOutcomes);
+			PrintFinishLog(PositiveContainer.UniqueOutcomes * NegativeContainer.UniqueOutcomes);
 		}
 
-		public static void PrintConsoleLog(string poolText, long rollEstimation)
+		public static void PrintStartLog(string poolText, long rollEstimation)
 		{
-			Console.WriteLine(string.Format("Pool: {0,-80} | Outcomes: {1,30:n0}", poolText, rollEstimation));
+			Console.Write(string.Format("{0,-80}|{1,23:n0}", poolText, rollEstimation));
+		}
+
+		public static void PrintFinishLog(long rollEstimation)
+		{
+			Console.Write(string.Format("  |{0,15:n0}\n", rollEstimation));
 		}
 
 		/// <summary>
-		/// Adds a record of the specific combination to the database with a cache of the outcome results
+		/// Returns a sum of the Symbols in the map
 		/// </summary>
-		/// <param name="outcomePool"></param>
-
-		private void ProcessDatabaseRecords(RollResult result)
+		/// <param name="map"></param>
+		/// <param name="keys"></param>
+		/// <returns></returns>
+		private int CountMatchingKeys(PoolResult map, List<Symbol> keys)
 		{
-			using (var db = new DataContext.ProbabilityContext())
-			{
-				var pool = new DataContext.Pool()
-				{
-					Name = result.Dice,
-					TotalOutcomes = result.Count,
-					UniqueOutcomes = result.Unique,
-					SuccessOutcomes = result.Success,
-					FailureOutcomes = result.Failure,
-					AdvantageOutcomes = result.Advantage,
-					ThreatOutcomes = result.Threat,
-					DespairOutcomes = result.Despair,
-					TriumphOutcomes = result.Triumph,
-					NeutralOutcomes = result.Neutral
-				};
-				db.Pools.Add(pool);
-
-				//create the record of which dice are used
-				foreach (var die in PositiveContainer.DicePool.GroupBy(info => info.ToString()).Select(group => new { group.Key, Count = group.Count() }).ToList())
-				{
-					var dbDie = db.Dice.FirstOrDefault(w => w.Name == die.Key);
-					pool.PoolDice.Add(new DataContext.PoolDie() { Die = dbDie, Quantity = die.Count });
-				}
-
-				/*
-				//create the record of the outcomes
-				foreach (var outcome in outcomePool)
-				{
-					//each KVP represents a unique roll
-					var poolResult = new DataContext.PoolResult();
-					pool.PoolResults.Add(poolResult);
-
-					foreach (var symbol in outcome.Key.Symbols)
-					{
-						//each symbol and count
-						var resultSymbol = new DataContext.PoolResultSymbol()
-						{
-							Symbol = symbol.Key,
-							Quantity = symbol.Value
-						};
-
-						poolResult.PoolResultSymbols.Add(resultSymbol);
-					}
-				}
-				*/
-				db.SaveChanges();
-			}
-		}
-
-		private int CountMatchingKeys(Face map, List<Symbol> keys)
-		{
-			int sum = 0;
-			foreach (Symbol face in keys)
-			{
-				//if it finds a matching key increase the threshold
-				if (map.Symbols.ContainsKey(face))
-					sum += map.Symbols[face];
-			}
-
-			return sum;
+			return map.PoolResultSymbols.Where(a => keys.Contains(a.Symbol)).Sum(s => s.Quantity);
 		}
 	}
 }

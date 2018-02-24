@@ -12,26 +12,31 @@ namespace SwRpgProbability.Models.DataContext
 		{
 			PoolDice = new HashSet<PoolDie>();
 			PoolResults = new HashSet<PoolResult>();
+			PositivePoolCombinations = new HashSet<PoolCombination>();
+			NegativePoolCombinations = new HashSet<PoolCombination>();
+		}
 
+		public string GetPoolText()
+		{
+			return string.Join(", ", PoolDice.Select(group => string.Format("{0} {1}", group.Die.Name, group.Quantity)).ToList());
+		}
+
+		public long GetRollEstimation()
+		{
+			return PoolDice.Aggregate((long)1, (x, y) => x * Convert.ToInt64(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
 		}
 
 		public long PoolId { get; set; }
 		public string Name { get; set; }
 
-		//todo summary information ~600 entries
 		public long TotalOutcomes { get; set; }
 		public long UniqueOutcomes { get; set; }
 
-		public long SuccessOutcomes { get; set; }
-		public long FailureOutcomes { get; set; }
-		public long AdvantageOutcomes { get; set; }
-		public long ThreatOutcomes { get; set; }
-		public long NeutralOutcomes { get; set; }
-		public long TriumphOutcomes { get; set; }
-		public long DespairOutcomes { get; set; }
-
 		public virtual ICollection<PoolDie> PoolDice { get; set; }
 		public virtual ICollection<PoolResult> PoolResults { get; set; }
+
+		public virtual ICollection<PoolCombination> PositivePoolCombinations { get; set; }
+		public virtual ICollection<PoolCombination> NegativePoolCombinations { get; set; }
 
 	}
 }

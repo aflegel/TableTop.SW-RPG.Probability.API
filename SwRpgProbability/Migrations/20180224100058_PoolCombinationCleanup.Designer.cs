@@ -11,9 +11,10 @@ using System;
 namespace SwRpgProbability.Migrations
 {
     [DbContext(typeof(ProbabilityContext))]
-    partial class ProbabilityContextModelSnapshot : ModelSnapshot
+    [Migration("20180224100058_PoolCombinationCleanup")]
+    partial class PoolCombinationCleanup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

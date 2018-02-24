@@ -12,6 +12,12 @@ namespace SwRpgProbability.Models.DataContext
 		{
 		}
 
+		public PoolDie(Die Die, int Quantity)
+		{
+			this.Die = Die;
+			this.Quantity = Quantity;
+		}
+
 		public int DieId { get; set; }
 		public long PoolId { get; set; }
 

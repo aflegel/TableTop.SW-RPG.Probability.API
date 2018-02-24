@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using SwRpgProbability.Models;
-using SwRpgProbability.Models.Dice;
+using SwRpgProbability.Models.DataContext;
 
 namespace SwRpgProbability
 {
@@ -22,58 +22,60 @@ namespace SwRpgProbability
 
 		static void Main(string[] args)
 		{
-			InitializeDatabase();
+
+			Console.WriteLine(string.Format("{0:h:m.s} Startup", DateTime.Now));
 
 			ProcessProgram();
 
+			Console.WriteLine(string.Format("Completion time: {0:h:m.s}", DateTime.Now));
 			//prevent auto close
 			Console.ReadKey();
 		}
 
-		private static void InitializeDatabase()
+		private static void InitializeDatabase(ProbabilityContext context)
 		{
-			using (var db = new Models.DataContext.ProbabilityContext())
+			Console.WriteLine(string.Format("{0:h:m.s} Database Initialization", DateTime.Now));
+			context.Database.EnsureDeleted();
+			context.Database.EnsureCreated();
+			//context.Database.Migrate();
+
+			Console.WriteLine(string.Format("{0:h:m.s} Database Seeding", DateTime.Now));
+
+			ProbabilityContextSeed.SeedData(context);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		private static void ProcessProgram()
+		{
+			using (var context = new ProbabilityContext())
 			{
-				db.Database.ExecuteSqlCommand("DELETE FROM PoolResultSymbol");
-				db.Database.ExecuteSqlCommand("DELETE FROM PoolResult");
-				db.Database.ExecuteSqlCommand("DELETE FROM PoolDie");
-				db.Database.ExecuteSqlCommand("DELETE FROM Pool");
+				InitializeDatabase(context);
+
+				var positiveDicePools = BuildPositivePool(context);
+				var negativeDicePools = BuildNegativePool(context);
+
+				foreach (var positivePool in positiveDicePools)
+				{
+					foreach (var negativePool in negativeDicePools)
+					{
+						var summary = new PoolSummary(positivePool, negativePool);
+					}
+				}
+
+				context.SaveChanges();
 			}
 		}
 
 		/// <summary>
-		/// Test Function
+		///
 		/// </summary>
+		/// <param name="context"></param>
 		/// <returns></returns>
-		public static List<RollResult> Sample()
+		private static List<Pool> BuildPositivePool(ProbabilityContext context)
 		{
-			var resultList = new List<RollResult>();
-			var pool = GetPool(1, 1, 1, 1, 0, 0);
-			var outputContainer = new RollContainer(pool);
-			var calculator = new PoolCalculator(outputContainer);
-			//resultList.Add(calculator.Run());
-
-			return resultList;
-		}
-
-
-		private static void ProcessProgram()
-		{
-			var positiveDicePools = BuildPositivePool();
-			var negativeDicePools = BuildNegativePool();
-
-			foreach (var positivePool in positiveDicePools)
-			{
-				foreach (var negativePool in negativeDicePools)
-				{
-					var summary = new PoolSummary(positivePool, negativePool);
-				}
-			}
-		}
-
-		private static List<RollContainer> BuildPositivePool()
-		{
-			var positiveDicePools = new List<RollContainer>();
+			var positiveDicePools = new List<Pool>();
 			//each ability level
 			for (int i = 1; i <= ABILITY_LIMIT; i++)
 			{
@@ -83,11 +85,7 @@ namespace SwRpgProbability
 				{
 					for (int k = 0; k <= BOOST_LIMIT; k++)
 					{
-						var pool = GetPool(i - j, j, 0, 0, k, 0);
-						var outputContainer = new RollContainer(pool);
-						var calculator = new PoolCalculator(outputContainer);
-
-						positiveDicePools.Add(outputContainer);
+						positiveDicePools.Add(new PoolCalculator(context, BuildPoolDice(context, i - j, j, 0, 0, k, 0)).RollOutput);
 					}
 				}
 			}
@@ -95,22 +93,23 @@ namespace SwRpgProbability
 			return positiveDicePools;
 		}
 
-		private static List<RollContainer> BuildNegativePool()
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		private static List<Pool> BuildNegativePool(ProbabilityContext context)
 		{
-			var negativeDicePools = new List<RollContainer>();
+			var negativeDicePools = new List<Pool>();
 			//each difficulty
 			for (int i = 1; i <= DIFFICULTY_LIMIT; i++)
 			{
-				//ensure the proficiency dice don't outweigh the ability dice
+				//ensure the challende dice don't outweigh the difficulty dice
 				for (int j = 0; (j <= CHALLENGE_LIMIT) && (j <= i); j++)
 				{
 					for (int k = 0; k <= SETBACK_LIMIT; k++)
 					{
-						var pool = GetPool(0, 0, i - j, j, 0, k);
-						var outputContainer = new RollContainer(pool);
-						var calculator = new PoolCalculator(outputContainer);
-
-						negativeDicePools.Add(outputContainer);
+						negativeDicePools.Add(new PoolCalculator(context, BuildPoolDice(context, 0, 0, i - j, j, 0, k)).RollOutput);
 					}
 				}
 			}
@@ -118,31 +117,51 @@ namespace SwRpgProbability
 			return negativeDicePools;
 		}
 
-
-
-		protected static List<Die> GetPool(int ability, int proficiency, int difficulty, int challenge, int boost, int setback)
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="ability"></param>
+		/// <param name="proficiency"></param>
+		/// <param name="difficulty"></param>
+		/// <param name="challenge"></param>
+		/// <param name="boost"></param>
+		/// <param name="setback"></param>
+		/// <returns></returns>
+		protected static Pool BuildPoolDice(ProbabilityContext context, int ability, int proficiency, int difficulty, int challenge, int boost, int setback)
 		{
-			List<Die> testPool = new List<Die>();
+			var pool = new Pool();
 
-			for (int i = 0; i < ability; i++)
-				testPool.Add(new Ability());
+			if (ability > 0)
+				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Ability), ability));
+			if (boost > 0)
+				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Boost), boost));
+			if (challenge > 0)
+				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Challenge), challenge));
+			if (difficulty > 0)
+				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Difficulty), difficulty));
+			if (proficiency > 0)
+				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Proficiency), proficiency));
+			if (setback > 0)
+				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.SetBack), setback));
 
-			for (int i = 0; i < proficiency; i++)
-				testPool.Add(new Proficiency());
+			pool.Name = pool.GetPoolText();
+			pool.TotalOutcomes = pool.GetRollEstimation();
 
-			for (int i = 0; i < difficulty; i++)
-				testPool.Add(new Difficulty());
+			context.Pools.Add(pool);
 
-			for (int i = 0; i < challenge; i++)
-				testPool.Add(new Challenge());
+			return pool;
+		}
 
-			for (int i = 0; i < boost; i++)
-				testPool.Add(new Boost());
-
-			for (int i = 0; i < setback; i++)
-				testPool.Add(new SetBack());
-
-			return testPool;
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="die"></param>
+		/// <returns></returns>
+		protected static Die GetDie(ProbabilityContext context, Die.DieNames die)
+		{
+			return context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
 		}
 	}
 }

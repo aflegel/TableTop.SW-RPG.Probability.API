@@ -5,15 +5,17 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using SwRpgProbability.Models;
 using SwRpgProbability.Models.DataContext;
 using System;
 
 namespace SwRpgProbability.Migrations
 {
     [DbContext(typeof(ProbabilityContext))]
-    partial class ProbabilityContextModelSnapshot : ModelSnapshot
+    [Migration("20180223051742_SplitPool")]
+    partial class SplitPool
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,11 +87,19 @@ namespace SwRpgProbability.Migrations
 
                     b.Property<long>("DespairOutcomes");
 
+                    b.Property<long>("FailureOutcomes");
+
+                    b.Property<long>("NeutralOutcomes");
+
                     b.Property<long>("SuccessOutcomes");
 
                     b.Property<long>("ThreatOutcomes");
 
+                    b.Property<long>("TotalOutcomes");
+
                     b.Property<long>("TriumphOutcomes");
+
+                    b.Property<long>("UniqueOutcomes");
 
                     b.HasKey("PositivePoolId", "NegativePoolId");
 
@@ -119,8 +129,6 @@ namespace SwRpgProbability.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<long>("PoolId");
-
-                    b.Property<long>("Quantity");
 
                     b.HasKey("PoolResultId");
 

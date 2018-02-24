@@ -16,6 +16,7 @@ namespace SwRpgProbability.Models.DataContext
 
 		public virtual DbSet<Die> Dice { get; set; }
 		public virtual DbSet<Pool> Pools { get; set; }
+		public virtual DbSet<PoolCombination> PoolCombinations { get; set; }
 		public virtual DbSet<PoolDie> PoolDice { get; set; }
 		public virtual DbSet<PoolResult> PoolResults { get; set; }
 		public virtual DbSet<PoolResultSymbol> PoolResultSymbols { get; set; }
@@ -24,12 +25,28 @@ namespace SwRpgProbability.Models.DataContext
 		{
 			modelBuilder.Entity<Die>().ToTable(nameof(Die));
 			modelBuilder.Entity<Pool>().ToTable(nameof(Pool));
+			modelBuilder.Entity<PoolCombination>().ToTable(nameof(PoolCombination));
 			modelBuilder.Entity<PoolDie>().ToTable(nameof(PoolDie));
 			modelBuilder.Entity<PoolResult>().ToTable(nameof(PoolResult));
 			modelBuilder.Entity<PoolResultSymbol>().ToTable(nameof(PoolResultSymbol));
 
 			modelBuilder.Entity<PoolDie>().HasKey(composite => new { composite.PoolId, composite.DieId });
 			modelBuilder.Entity<PoolResultSymbol>().HasKey(composite => new { composite.PoolResultId, composite.Symbol });
+
+			modelBuilder.Entity<PoolCombination>().HasKey(composite => new { composite.PositivePoolId, composite.NegativePoolId });
+			modelBuilder.Entity<DieFaceSymbol>().HasKey(composite => new { composite.DieFaceId, composite.Symbol });
+
+			modelBuilder.Entity<PoolCombination>()
+				.HasOne(e => e.PositivePool)
+				.WithMany(c => c.PositivePoolCombinations)
+				.HasForeignKey(f =>f.PositivePoolId)
+				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			modelBuilder.Entity<PoolCombination>()
+				.HasOne(e => e.NegativePool)
+				.WithMany(c => c.NegativePoolCombinations)
+				.HasForeignKey(f => f.NegativePoolId)
+				.OnDelete(DeleteBehavior.ClientSetNull);
 
 			modelBuilder.Entity<PoolResult>()
 				.HasOne(e => e.Pool)
@@ -46,6 +63,14 @@ namespace SwRpgProbability.Models.DataContext
 			modelBuilder.Entity<PoolDie>()
 				.HasOne(e => e.Die)
 				.WithMany(c => c.PoolDice);
+
+			modelBuilder.Entity<DieFaceSymbol>()
+				.HasOne(e => e.DieFace)
+				.WithMany(c => c.DieFaceSymbols);
+
+			modelBuilder.Entity<DieFace>()
+				.HasOne(e => e.Die)
+				.WithMany(c => c.DieFaces);
 
 		}
 	}

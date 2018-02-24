@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SwRpgProbability.Models.DataContext.Die;
 
 namespace SwRpgProbability.Models.DataContext
 {
@@ -10,7 +11,23 @@ namespace SwRpgProbability.Models.DataContext
 	{
 		public PoolResultSymbol()
 		{
-			//something like 8 million records
+		}
+
+		public PoolResultSymbol(Symbol Symbol, int Quantity)
+		{
+			this.Symbol = Symbol;
+			this.Quantity = Quantity;
+		}
+
+		public override int GetHashCode()
+		{
+			//gets a unique has by summing the hash of the string and a hash of the value
+			return ToString().GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}{1}", Symbol.ToString(), Quantity);
 		}
 
 		public long PoolResultId { get; set; }

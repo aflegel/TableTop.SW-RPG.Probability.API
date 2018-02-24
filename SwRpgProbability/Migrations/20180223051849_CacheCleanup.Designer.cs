@@ -5,15 +5,17 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using SwRpgProbability.Models;
 using SwRpgProbability.Models.DataContext;
 using System;
 
 namespace SwRpgProbability.Migrations
 {
     [DbContext(typeof(ProbabilityContext))]
-    partial class ProbabilityContextModelSnapshot : ModelSnapshot
+    [Migration("20180223051849_CacheCleanup")]
+    partial class CacheCleanup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +91,11 @@ namespace SwRpgProbability.Migrations
 
                     b.Property<long>("ThreatOutcomes");
 
+                    b.Property<long>("TotalOutcomes");
+
                     b.Property<long>("TriumphOutcomes");
+
+                    b.Property<long>("UniqueOutcomes");
 
                     b.HasKey("PositivePoolId", "NegativePoolId");
 
@@ -119,8 +125,6 @@ namespace SwRpgProbability.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<long>("PoolId");
-
-                    b.Property<long>("Quantity");
 
                     b.HasKey("PoolResultId");
 
