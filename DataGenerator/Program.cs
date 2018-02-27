@@ -56,12 +56,14 @@ namespace DataGenerator
 
 				var positiveDicePools = BuildPositivePool(context);
 				var negativeDicePools = BuildNegativePool(context);
+				context.SaveChanges();
 
 				foreach (var positivePool in positiveDicePools)
 				{
 					foreach (var negativePool in negativeDicePools)
 					{
 						var summary = new PoolSummary(positivePool, negativePool);
+						context.SaveChanges();
 					}
 				}
 

@@ -39,72 +39,83 @@ namespace DataGenerator.Models
 		/// </summary>
 		private void ProcessRollComparison()
 		{
-			long successFrequency = 0;
-			long advantageFrequency = 0;
-			long threatFrequency = 0;
-			long triumphFrequency = 0;
-			long despairFrequency = 0;
+			var poolCombo = new PoolCombination();
+			PositiveContainer.PositivePoolCombinations.Add(poolCombo);
+			NegativeContainer.NegativePoolCombinations.Add(poolCombo);
 
-			foreach (var positiveMap in PositiveContainer.PoolResults)
+			foreach (var positivePoolResult in PositiveContainer.PoolResults)
 			{
 
 				//loop through the simple pool to find matches
-				foreach (var negitiveMap in NegativeContainer.PoolResults)
+				foreach (var negativePoolResult in NegativeContainer.PoolResults)
 				{
-					long frequency = positiveMap.Quantity * negitiveMap.Quantity;
-
-					//triumphs count as successes but advantages do not
-					int successThreshold = CountMatchingKeys(positiveMap, new List<Symbol>() { Symbol.Success, Symbol.Triumph });
-
-					//despairs count as failures but threats do not
-					int failureThreshold = CountMatchingKeys(negitiveMap, new List<Symbol>() { Symbol.Failure, Symbol.Despair });
-
-					int advantageThreshold = CountMatchingKeys(positiveMap, new List<Symbol>() { Symbol.Advantage });
-					int threatThreshold = CountMatchingKeys(negitiveMap, new List<Symbol>() { Symbol.Threat });
-
-					int triumphThreshold = CountMatchingKeys(positiveMap, new List<Symbol>() { Symbol.Triumph });
-					int despairThreshold = CountMatchingKeys(negitiveMap, new List<Symbol>() { Symbol.Despair });
+					var analysis = new PoolAnalysis(positivePoolResult, negativePoolResult);
 
 					//if the found threshold is the same as the required threshold add the frequency
-					if (successThreshold > failureThreshold)
+					if (analysis.IsSuccess)
 					{
-						successFrequency += frequency;
+						poolCombo.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+						{
+							Symbol = Symbol.Success,
+							Quantity = analysis.SuccessNetQuantity,
+							Frequency = analysis.Frequency
+						});
 
 						//it is only a triumph if it is a success
-						if (triumphThreshold > 0)
-							triumphFrequency += frequency;
+						if (analysis.IsTriumph)
+						{
+							//if there are more successes than failures the truimpn count is the max triumph, otherwise reduce by the difference
+							poolCombo.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+							{
+								Symbol = Symbol.Triumph,
+								Quantity = analysis.TriumphNetQuantity,
+								Frequency = analysis.Frequency
+							});
+						}
 					}
 					else
 					{
+						poolCombo.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+						{
+							Symbol = Symbol.Failure,
+							Quantity = analysis.FailureNetQuantity,
+							Frequency = analysis.Frequency
+						});
+
 						//if the found threshold is the same as the required threshold add the frequency
-						if (despairThreshold > 0)
-							despairFrequency += frequency;
+						if (analysis.IsDespair)
+						{
+							poolCombo.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+							{
+								Symbol = Symbol.Despair,
+								Quantity = analysis.DespairNetQuantity,
+								Frequency = analysis.Frequency
+							});
+						}
 					}
 
 
 					//if the found threshold is the same as the required threshold add the frequency
-					if (advantageThreshold > 0 && advantageThreshold > threatThreshold)
-						advantageFrequency += frequency;
-					else if (threatThreshold > advantageThreshold)
-						threatFrequency += frequency;
+					if (analysis.IsAdvantage)
+					{
+						poolCombo.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+						{
+							Symbol = Symbol.Advantage,
+							Quantity = analysis.AdvantageNetQuantity,
+							Frequency = analysis.Frequency
+						});
+					}
+					else if (analysis.IsThreat)
+					{
+						poolCombo.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+						{
+							Symbol = Symbol.Threat,
+							Quantity = analysis.ThreatNetQuantity,
+							Frequency = analysis.Frequency
+						});
+					}
 				}
 			}
-
-			var poolCombo = new PoolCombination()
-			{
-				//PositivePool = PositiveContainer,
-				//NegativePool = NegativeContainer,
-				SuccessOutcomes = successFrequency,
-
-				AdvantageOutcomes = advantageFrequency,
-				ThreatOutcomes = threatFrequency,
-
-				TriumphOutcomes = triumphFrequency,
-				DespairOutcomes = despairFrequency,
-			};
-
-			PositiveContainer.PositivePoolCombinations.Add(poolCombo);
-			NegativeContainer.NegativePoolCombinations.Add(poolCombo);
 		}
 
 		/// <summary>
@@ -113,7 +124,7 @@ namespace DataGenerator.Models
 		/// <param name="outcomePool"></param>
 		protected void PrintConsoleLog()
 		{
-			PrintStartLog(PositiveContainer.Name + NegativeContainer.Name, PositiveContainer.TotalOutcomes * NegativeContainer.TotalOutcomes);
+			PrintStartLog(PositiveContainer.Name + ", " + NegativeContainer.Name, PositiveContainer.TotalOutcomes * NegativeContainer.TotalOutcomes);
 			PrintFinishLog(PositiveContainer.UniqueOutcomes * NegativeContainer.UniqueOutcomes);
 		}
 
@@ -127,15 +138,6 @@ namespace DataGenerator.Models
 			Console.Write(string.Format("  |{0,15:n0}\n", rollEstimation));
 		}
 
-		/// <summary>
-		/// Returns a sum of the Symbols in the map
-		/// </summary>
-		/// <param name="map"></param>
-		/// <param name="keys"></param>
-		/// <returns></returns>
-		private int CountMatchingKeys(PoolResult map, List<Symbol> keys)
-		{
-			return map.PoolResultSymbols.Where(a => keys.Contains(a.Symbol)).Sum(s => s.Quantity);
-		}
+
 	}
 }

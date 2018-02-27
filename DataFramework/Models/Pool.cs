@@ -16,16 +16,6 @@ namespace DataFramework.Models
 			NegativePoolCombinations = new HashSet<PoolCombination>();
 		}
 
-		public string GetPoolText()
-		{
-			return string.Join(", ", PoolDice.Select(group => string.Format("{0} {1}", group.Die.Name, group.Quantity)).ToList());
-		}
-
-		public long GetRollEstimation()
-		{
-			return PoolDice.Aggregate((long)1, (x, y) => x * Convert.ToInt64(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
-		}
-
 		public long PoolId { get; set; }
 		public string Name { get; set; }
 
@@ -37,6 +27,21 @@ namespace DataFramework.Models
 
 		public virtual ICollection<PoolCombination> PositivePoolCombinations { get; set; }
 		public virtual ICollection<PoolCombination> NegativePoolCombinations { get; set; }
+
+		protected int GetPoolDiceCount()
+		{
+			return PoolDice.Sum(die => die.Quantity);
+		}
+
+		public string GetPoolText()
+		{
+			return string.Join(", ", PoolDice.Select(group => string.Format("{0} {1}", group.Die.Name, group.Quantity)).ToList());
+		}
+
+		public long GetRollEstimation()
+		{
+			return PoolDice.Aggregate((long)1, (x, y) => x * Convert.ToInt64(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
+		}
 
 	}
 }

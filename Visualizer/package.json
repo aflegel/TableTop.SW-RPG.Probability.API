@@ -40,5 +40,11 @@
     "webpack": "2.5.1",
     "webpack-hot-middleware": "2.18.2",
     "webpack-merge": "4.1.0"
+  },
+  "dependencies": {
+    "chart.js": "^2.7.1",
+    "mdi": "^2.1.19",
+    "react-chartjs-2": "^2.7.0",
+    "sw-rpg-icons": "^1.6.0"
   }
 }

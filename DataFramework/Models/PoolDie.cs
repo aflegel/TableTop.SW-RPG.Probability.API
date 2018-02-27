@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,9 @@ namespace DataFramework.Models
 
 		public int Quantity { get; set; }
 
+		[JsonIgnore]
 		public virtual Pool Pool { get; set; }
+		[JsonIgnore]
 		public virtual Die Die { get; set; }
 	}
 }

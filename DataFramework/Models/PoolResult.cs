@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
 {
@@ -19,10 +21,32 @@ namespace DataFramework.Models
 			//something like 8 million records
 			this.PoolResultSymbols = new HashSet<PoolResultSymbol>();
 
-			foreach(var resultSymbol in PoolResultSymbols)
+			foreach (var resultSymbol in PoolResultSymbols)
 			{
 				this.PoolResultSymbols.Add(resultSymbol);
 			}
+		}
+
+		public long PoolResultId { get; set; }
+
+		public long PoolId { get; set; }
+
+		public long Quantity { get; set; }
+
+		[JsonIgnore]
+		public virtual Pool Pool { get; set; }
+
+		public virtual ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
+
+		/// <summary>
+		/// Returns a sum of the Symbols in the map
+		/// </summary>
+		/// <param name="map"></param>
+		/// <param name="keys"></param>
+		/// <returns></returns>
+		public int CountMatchingKeys(Symbol key)
+		{
+			return PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
 		}
 
 		public override int GetHashCode()
@@ -36,17 +60,7 @@ namespace DataFramework.Models
 			var ordered = PoolResultSymbols.OrderBy(x => x.Symbol.ToString());
 
 			return string.Join("", ordered.Select(x => x.ToString()));
+
 		}
-
-		public long PoolResultId { get; set; }
-
-		public long PoolId { get; set; }
-
-		public long Quantity { get; set; }
-
-		public virtual Pool Pool { get; set; }
-
-		public virtual ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
-
 	}
 }

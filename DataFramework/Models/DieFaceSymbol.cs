@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace DataFramework.Models
 		public  Symbol Symbol { get; set; }
 		public int Quantity { get; set; }
 
+		[JsonIgnore]
 		public virtual DieFace DieFace { get; set; }
 	}
 }
