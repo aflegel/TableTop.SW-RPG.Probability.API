@@ -51,8 +51,10 @@ type KnownAction = RequestDiceStatisticsAction | ReceiveDiceStatisticsAction;
 
 export const actionCreators = {
 	requestDiceStatistics: (positivePoolId: number, negativePoolId: number): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+		var test = getState();
 		// Only load data if it's something we don't already have (and are not already loading)
-		if (positivePoolId !== getState().diceStatistics.positivePoolId) {
+		if (positivePoolId !== test.diceStatistics.positivePoolId) {
 			let fetchTask = fetch(`api/Search/GetStatistics?positivePoolId=${positivePoolId}&negativePoolId=${negativePoolId}`)
 				.then(response => response.json() as Promise<PoolCombination[]>)
 				.then(data => {

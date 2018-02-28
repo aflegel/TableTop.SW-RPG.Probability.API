@@ -1,6 +1,7 @@
 import * as WeatherForecasts from './WeatherForecasts';
 import * as DiceStatistics from './DiceStatistics';
 import * as Counter from './Counter';
+import { Line } from 'react-chartjs-2';
 
 // The top-level state object
 export interface ApplicationState {
@@ -14,6 +15,7 @@ export interface ApplicationState {
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
     counter: Counter.reducer,
+	diceStatistics: DiceStatistics.reducer,
     weatherForecasts: WeatherForecasts.reducer
 };
 

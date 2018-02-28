@@ -12,6 +12,7 @@ namespace Visualizer.Controllers
     public class SearchController : Controller
     {
 		ProbabilityContext context = new ProbabilityContext();
+        [HttpGet("[action]")]
 		public IEnumerable<PoolCombination> GetStatistics(/*List<PoolDie> dice*/)
 		{
 			//separate positive and negative dice
@@ -29,7 +30,7 @@ namespace Visualizer.Controllers
 
 			//context.PoolDice.Where(w => w.DieId == 0 && w.Quantity == 0);
 
-			var data = context.PoolCombinations.Where(w => w.PositivePoolId == 1 && w.NegativePoolId == 71).Include(i => i.PoolCombinationStatistics).ToList();
+			var data = GetStatistics();
 
 			return data;
 		}
