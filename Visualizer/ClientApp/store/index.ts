@@ -1,12 +1,8 @@
-import * as WeatherForecasts from './WeatherForecasts';
 import * as DiceStatistics from './DiceStatistics';
-import * as Counter from './Counter';
 import { Line } from 'react-chartjs-2';
 
 // The top-level state object
 export interface ApplicationState {
-    counter: Counter.CounterState;
-    weatherForecasts: WeatherForecasts.WeatherForecastsState;
 	diceStatistics: DiceStatistics.PoolCombinationState;
 }
 
@@ -14,9 +10,7 @@ export interface ApplicationState {
 // the reducer with the matching name. It's important that the names match exactly, and that the reducer
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
-    counter: Counter.reducer,
 	diceStatistics: DiceStatistics.reducer,
-    weatherForecasts: WeatherForecasts.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

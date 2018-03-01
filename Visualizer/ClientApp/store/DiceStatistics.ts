@@ -9,7 +9,15 @@ export interface PoolCombinationState {
 	isLoading: boolean;
 	positivePoolId?: number;
 	negativePoolId?: number;
-	poolCombinations: PoolCombination[];
+	poolCombinationContainer: PoolCombinationContainer;
+}
+
+export interface PoolCombinationContainer {
+	baseline?: PoolCombination;
+	boosted?: PoolCombination;
+	setback?: PoolCombination;
+	threatened?: PoolCombination;
+	upgraded?: PoolCombination;
 }
 
 export interface PoolCombination {
@@ -38,7 +46,7 @@ interface ReceiveDiceStatisticsAction {
 	type: 'RECEIVE_DICE_STATISTICS';
 	positivePoolId: number;
 	negativePoolId: number;
-	poolCombinations: PoolCombination[];
+	poolCombinationContainer: PoolCombinationContainer;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -56,9 +64,9 @@ export const actionCreators = {
 		// Only load data if it's something we don't already have (and are not already loading)
 		if (positivePoolId !== test.diceStatistics.positivePoolId) {
 			let fetchTask = fetch(`api/Search/GetStatistics?positivePoolId=${positivePoolId}&negativePoolId=${negativePoolId}`)
-				.then(response => response.json() as Promise<PoolCombination[]>)
+				.then(response => response.json() as Promise<PoolCombinationContainer>)
 				.then(data => {
-					dispatch({ type: 'RECEIVE_DICE_STATISTICS', positivePoolId: positivePoolId, negativePoolId: negativePoolId, poolCombinations: data });
+					dispatch({ type: 'RECEIVE_DICE_STATISTICS', positivePoolId: positivePoolId, negativePoolId: negativePoolId, poolCombinationContainer: data });
 				});
 
 			addTask(fetchTask); // Ensure server-side prerendering waits for this to complete
@@ -70,7 +78,8 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: PoolCombinationState = { poolCombinations: [], isLoading: false };
+const unloadedState: PoolCombinationState = {
+	poolCombinationContainer: {}, isLoading: false };
 
 export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationState, incomingAction: Action) => {
 	const action = incomingAction as KnownAction;
@@ -79,7 +88,7 @@ export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationSta
 			return {
 				positivePoolId: action.positivePoolId,
 				negativePoolId: action.negativePoolId,
-				poolCombinations: state.poolCombinations,
+				poolCombinationContainer: state.poolCombinationContainer,
 				isLoading: true
 			};
 		case 'RECEIVE_DICE_STATISTICS':
@@ -89,7 +98,7 @@ export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationSta
 				return {
 					positivePoolId: action.positivePoolId,
 					negativePoolId: action.negativePoolId,
-					poolCombinations: action.poolCombinations,
+					poolCombinationContainer: action.poolCombinationContainer,
 					isLoading: false
 				};
 			}

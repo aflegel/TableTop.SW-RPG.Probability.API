@@ -5,6 +5,7 @@ import { ApplicationState } from '../store';
 import * as DiceStatisticsState from '../store/DiceStatistics';
 
 import { Line } from 'react-chartjs-2';
+import { Chart } from 'chart.js';
 
 
 // At runtime, Redux will merge together...
@@ -28,88 +29,242 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 
 	public render() {
 		return <div>
-			<h1>Weather forecast</h1>
-			<p>This component demonstrates fetching data from the server and working with URL parameters.</p>
-			{this.renderResults()}
-			{this.renderTable()}
-			{this.renderTable2()}
-			{this.renderPagination()}
+			<h1>Probability Breakdown</h1>
+			<div className="row">{this.renderSummary()}</div>
+			<div className="row">
+				<div className="col-md-6">
+					{this.renderSuccessGraph()}
+				</div>
+				<div className="col-md-6">
+					{this.renderAdvantageGraph()}
+				</div>
+			</div>
+			<div className="row">
+				<div className="col-md-6">
+					{this.renderTriumphGraph()}
+				</div>
+				<div className="col-md-6">
+					{this.renderResults()}
+				</div>
+			</div>
 		</div>;
 	}
 
+	private renderSummary() {
+		if (this.props.poolCombinationContainer != null && this.props.poolCombinationContainer.baseline != null) {
+			var totalOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 1 || f.symbol == 2)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var successOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 1)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var advantageOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 3)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var threatOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 4)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var triumphOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 5)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var despairOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 6)).reduce((total, obj) => { return total + obj.frequency }, 0);
+
+			return <div>
+				<div className="col-md-3">
+					<dl>
+						<dt>Total Outcomes</dt>
+						<dd>{totalOutcomes}</dd>
+						<dt>Success Outcomes</dt>
+						<dd>{successOutcomes}</dd>
+						<dt>Success Rate</dt>
+						<dd>{successOutcomes / totalOutcomes * 100}% +/- sigma</dd>
+					</dl>
+				</div>
+				<div className="col-md-3">
+					<dl>
+						<dt>Advantage Outcomes</dt>
+						<dd>{advantageOutcomes}</dd>
+						<dt>Advantage Rate</dt>
+						<dd>{advantageOutcomes / totalOutcomes * 100}% +/- sigma</dd>
+						<dt>Threat Outcomes</dt>
+						<dd>{threatOutcomes}</dd>
+						<dt>Threat Rate</dt>
+						<dd>{threatOutcomes / totalOutcomes * 100}% +/- sigma</dd>
+					</dl>
+				</div>
+				<div className="col-md-3">
+					<dl>
+						<dt>Triumph Outcomes</dt>
+						<dd>{triumphOutcomes}</dd>
+						<dt>Triumph Rate</dt>
+						<dd>{triumphOutcomes / totalOutcomes * 100}% +/- sigma</dd>
+						<dt>Despair Outcomes</dt>
+						<dd>{despairOutcomes}</dd>
+						<dt>Despair Rate</dt>
+						<dd>{despairOutcomes / totalOutcomes * 100}% +/- sigma</dd>
+					</dl>
+				</div>
+			</div>
+				;
+		}
+		else
+			return <p></p>;
+	}
+
 	private renderResults() {
-		return <table className='table'>
-			<thead>
-				<tr>
-					<th>Symbol</th>
-					<th>Quantity</th>
-					<th>Frequency</th>
-				</tr>
-			</thead>
-			<tbody>
-				{this.props.poolCombinations.map(combination =>
+		if (this.props.poolCombinationContainer != null && this.props.poolCombinationContainer.baseline != null) {
+			var baseline = this.props.poolCombinationContainer.baseline;
 
-					combination.poolCombinationStatistics.map(stat =>
+			return <table className='table'>
+				<thead>
+					<tr>
+						<th>Key</th>
+						<th>Symbol</th>
+						<th>Quantity</th>
+						<th>Frequency</th>
+					</tr>
+				</thead>
+				<tbody>
+					{baseline.poolCombinationStatistics.map(combination =>
 						<tr>
-							<td>{stat.symbol}</td>
-							<td>{stat.quantity}</td>
-							<td>{stat.frequency}</td>
+							<td>{baseline.positivePoolId},{baseline.negativePoolId}</td>
+							<td>{combination.symbol}</td>
+							<td>{combination.quantity}</td>
+							<td>{combination.frequency}</td>
 						</tr>
-					)
-				)}
-			</tbody>
-		</table>;
+					)}
+				</tbody>
+			</table>;
+		}
+		else {
+
+		}
 	}
 
-	private renderTable() {
 
-		return <Line data={this.TransmuteData()} />;
-	}
 
-	private renderTable2() {
-
-		return <Line data={this.TransmuteData2()} />;
-	}
-
-	private TransmuteData() {
-		var datasets = {
-			labels: ['1', '2', '3', '4', '5', '6', '7', '8', 'Failures', 'Advantages'],
-			datasets: [{
-				label: 'Successes',
-				data: ['', 17, 5]
+	private renderSuccessGraph() {
+		const options = {
+			title: {
+				display: true,
+				text: "Distribution of Success",
 			},
-			{
-				label: 'Failures',
-				data: [27, 11, 4]
-			}]
-		};
+			scales: {
+				yAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: 'Probability (%)'
+					}
+				}],
+				xAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: 'Net Success'
+					}
+				}]
+			}
+		}
 
-		return datasets;
+		return <Line data={this.TransmuteSuccesses()} options={options} />;
 	}
 
-	private TransmuteData2() {
+	private renderAdvantageGraph() {
+		return <Line data={this.TransmuteAdvantages()} />;
+	}
+
+	private renderTriumphGraph() {
+		return <Line data={this.TransmuteTriunmphs()} />;
+	}
+
+	private GetProbability(top: number, bottom: number): number {
+		return top / bottom * 100;
+	}
+
+	private TransmuteSuccesses() {
+		if (this.props.poolCombinationContainer != null && this.props.poolCombinationContainer.baseline != null && this.props.poolCombinationContainer.boosted != null && this.props.poolCombinationContainer.upgraded != null) {
+			var totalOutcomes = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => (f.symbol == 1 || f.symbol == 2)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var totalBoostOutcomes = this.props.poolCombinationContainer.boosted.poolCombinationStatistics.filter(f => (f.symbol == 1 || f.symbol == 2)).reduce((total, obj) => { return total + obj.frequency }, 0);
+			var totalProficiencyOutcomes = this.props.poolCombinationContainer.upgraded.poolCombinationStatistics.filter(f => (f.symbol == 1 || f.symbol == 2)).reduce((total, obj) => { return total + obj.frequency }, 0);
+
+			var datasets = {
+				labels: ['-2', '-1', '0', '+1', '2', '3'],
+				datasets: [{
+					label: 'Success',
+					borderColor: 'rgba(99,200,132,1)',
+					backgroundColor: 'rgba(99,200,132,00)',
+					data: [this.GetProbability(4, totalOutcomes), this.GetProbability(11, totalOutcomes), this.GetProbability(27, totalOutcomes), this.GetProbability(17, totalOutcomes), this.GetProbability(5, totalOutcomes)],
+				},
+				{
+					label: "Success Upgraded",
+					borderColor: 'rgba(200,99,132,1)',
+					backgroundColor: 'rgba(99,200,132,00)',
+					data: [this.GetProbability(4, totalProficiencyOutcomes), this.GetProbability(14, totalProficiencyOutcomes), this.GetProbability(34, totalProficiencyOutcomes), this.GetProbability(34, totalProficiencyOutcomes), this.GetProbability(10, totalProficiencyOutcomes)],
+				},
+				{
+					label: "Success Boosted",
+					borderColor: 'rgba(99,132,200,1)',
+					backgroundColor: 'rgba(99,200,132,00)',
+					data: [this.GetProbability(16, totalBoostOutcomes), this.GetProbability(52, totalBoostOutcomes), this.GetProbability(130, totalBoostOutcomes), this.GetProbability(122, totalBoostOutcomes), this.GetProbability(54, totalBoostOutcomes), this.GetProbability(10, totalBoostOutcomes)],
+				}]
+			};
+
+			return datasets;
+		}
+		else {
+			var emptyset = {
+				labels: ['0'],
+				datasets: [{
+					label: '+/- Success',
+					data: []
+				},
+				{
+					label: "+/- Success Upgraded",
+					data: []
+				},
+				{
+					label: "+/- Success Boosted",
+					data: []
+				}]
+			};
+
+			return emptyset;
+		}
+	}
+
+	private TransmuteAdvantages() {
 		var datasets = {
 			labels: ['-2', '-1', '0', '+1', '2',],
 			datasets: [{
-				label: '+/- Successes',
-				data: [4, 11, 27, 17, 5],
-				color: 'ff0000'
+				label: '+/- Advantages',
+				data: [4, 19, 25, 13, 3],
+			},
+			{
+				label: "Threats",
+				borderColor: 'rgba(255,99,132,1)',
+				data: [4, 19, 0, 0, 0]
+			},
+			{
+				label: "Advantages",
+				borderColor: 'rgba(99,255,132,1)',
+				data: [0, 0, 0, 13, 3]
 			}]
 		};
 
 		return datasets;
 	}
 
-	private renderPagination() {
-		let prevStartDateIndex = (this.props.positivePoolId || 0) - 5;
-		let nextStartDateIndex = (this.props.negativePoolId || 0) + 5;
+	private TransmuteTriunmphs() {
+		var datasets = {
+			labels: ['0', '+1',],
+			datasets: [{
+				label: '+/- Triumph',
+				data: [0, 0],
+			},
+			{
+				label: "+/- Triumph Upgraded",
+				borderColor: 'rgba(255,99,132,1)',
+				data: [59, 5]
+			},
+			{
+				label: "+/- Triumph Boosted",
+				borderColor: 'rgba(99,255,132,1)',
+				data: [0, 0,]
+			}]
+		};
 
-		return <p className='clearfix text-center'>
-			<Link className='btn btn-default pull-left' to={`/fetchdata/${prevStartDateIndex}`}>Previous</Link>
-			<Link className='btn btn-default pull-right' to={`/fetchdata/${nextStartDateIndex}`}>Next</Link>
-			{this.props.isLoading ? <span>Loading...</span> : []}
-		</p>;
+		return datasets;
 	}
+
 }
 
 export default connect(
