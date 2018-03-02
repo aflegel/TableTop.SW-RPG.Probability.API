@@ -30,31 +30,39 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 	public render() {
 		return <div>
 			<h1>Probability Breakdown</h1>
-			{this.RenderGraphAndData(1)}
+			<div className="row">
+				<div className="col-md-6">
+					Search
+				</div>
+			</div>
+			<h2>Distribution of Success and Failure</h2>
+			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
 			<hr />
-			{this.RenderGraphAndData(3)}
+			<h2>Distribution of Advantage and Threat</h2>
+			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
 			<hr />
-			{this.RenderGraphAndData(5)}
+			<h2>Distribution of Triumph and Despair</h2>
+			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
 			<hr />
-			{this.renderResults()}
+			{this.RenderResults()}
 		</div>;
 	}
 
-	private RenderGraphAndData(mode: number) {
+	private RenderGraphAndData(mode: DiceStatistics.DieSymbol) {
 		if (this.props.poolCombinationContainer != null && this.props.poolCombinationContainer.baseline != null) {
 			var positiveLabeling = "";
 			var negativeLabeling = "";
 
 			switch (mode) {
-				case 1:
+				case DiceStatistics.DieSymbol.Success:
 					positiveLabeling = "Success";
 					negativeLabeling = "Failure";
 					break;
-				case 3:
+				case DiceStatistics.DieSymbol.Advantage:
 					positiveLabeling = "Advantage";
 					negativeLabeling = "Threat";
 					break;
-				case 5:
+				case DiceStatistics.DieSymbol.Triumph:
 					positiveLabeling = "Triumph";
 					negativeLabeling = "Despair";
 					break;
@@ -63,28 +71,19 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 			//get short list of combinations ordered lowest to highest
 			var baseSet = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => f.symbol == mode).sort((n1, n2) => n1.quantity - n2.quantity);
 
-			var positiveSet = baseSet.filter(f => f.quantity > 0);
-			//success mode requires 0 quantity outcomes as well
-			var negativeSet = baseSet.filter(f => (f.quantity < (mode == 1 ? 1 : 0)));
-
-			//statistics data
-			var totalFrequency = baseSet.reduce((total, obj) => { return total + obj.frequency }, 0);
-
 			//from short list get quantities
 			var xAxis = baseSet.map(map => map.quantity.toString());
-			var percentageSet = baseSet.map(map => this.GetProbability(map.frequency, totalFrequency))
+			var totalFrequency = baseSet.reduce((total, obj) => { return total + obj.frequency }, 0);
+			var percentageSet = baseSet.map(map => this.GetProbability(map.frequency, totalFrequency));
 
 			return <div className="row">
 				<div className="col-md-6">
-					{this.renderGraph(positiveLabeling, { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, positiveLabeling, "rgba(99,200,132,1)")] })}
+					{this.RenderGraph(positiveLabeling, { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, positiveLabeling, "rgba(99,200,132,1)")] })}
 				</div>
 				<div className="col-md-6">
 					<div className="row">
 						<div className="col-xl-12 col-sm-6">
-							{this.RenderBreakdown(positiveLabeling, positiveSet, totalFrequency)}
-						</div>
-						<div className="col-xl-12 col-sm-6">
-							{this.RenderBreakdown(negativeLabeling, negativeSet, totalFrequency)}
+							{this.RenderBreakdown(mode, positiveLabeling, negativeLabeling, baseSet, totalFrequency)}
 						</div>
 					</div>
 				</div>
@@ -92,11 +91,14 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 		}
 	}
 
-	private renderGraph(label: string, graphData: any) {
+	private RenderGraph(label: string, graphData: any) {
 		const options = {
 			title: {
 				display: true,
 				text: "Distribution of " + label,
+			},
+			legend: {
+				display: false
 			},
 			scales: {
 				yAxes: [{
@@ -131,23 +133,37 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 		}
 	}
 
-	private RenderBreakdown(labeling: string, results: DiceStatistics.PoolCombinationStatistic[], totalFrequency: number) {
+	private RenderBreakdown(mode: DiceStatistics.DieSymbol, positiveLabeling: string, negativeLabeling: string, baseSet: DiceStatistics.PoolCombinationStatistic[], totalFrequency: number) {
 
-		var resultFrequency = results.reduce((total, obj) => { return total + obj.frequency }, 0);
+		var positiveSet = baseSet.filter(f => f.quantity > 0);
+		//success mode requires 0 quantity outcomes as well
+		var negativeSet = baseSet.filter(f => (f.quantity < (mode == DiceStatistics.DieSymbol.Success ? 1 : 0)));
 
+		var positiveFrequency = positiveSet.reduce((total, obj) => { return total + obj.frequency }, 0);
+		var negativeFrequency = negativeSet.reduce((total, obj) => { return total + obj.frequency }, 0);
 
+		var average = baseSet.reduce((total, obj) => { return total + (obj.quantity * obj.frequency) }, 0) / totalFrequency;
+		//val - avg squared * qty
+		var deviationSet = baseSet.map(map => ((map.quantity - average) ** 2) * map.frequency);
+		var standardDeviation = Math.sqrt(deviationSet.reduce((total, obj) => { return total + obj }, 0) / totalFrequency);
 
 		return <dl>
-			<dt>{labeling} Outcomes</dt>
-			<dd>{resultFrequency}</dd>
-			<dt>{labeling} Rate</dt>
-			<dd>{resultFrequency / totalFrequency * 100}%</dd>
-			<dt>{labeling} Average</dt>
-			<dd>~~%  ~~sigma</dd>
+			<dt>{positiveLabeling} Outcomes</dt>
+			<dd>{positiveFrequency}</dd>
+			<dt>{positiveLabeling} Rate</dt>
+			<dd>{positiveFrequency / totalFrequency * 100}%</dd>
+			<dt>{negativeLabeling} Outcomes</dt>
+			<dd>{negativeFrequency}</dd>
+			<dt>{negativeLabeling} Rate</dt>
+			<dd>{negativeFrequency / totalFrequency * 100}%</dd>
+			<dt>Average</dt>
+			<dd>{average}</dd>
+			<dt>Standard Deviation</dt>
+			<dd>{standardDeviation}</dd>
 		</dl>;
 	}
 
-	private renderResults() {
+	private RenderResults() {
 		if (this.props.poolCombinationContainer != null) {
 
 			var containers: DiceStatistics.PoolCombination[] = [];
