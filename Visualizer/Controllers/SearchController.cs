@@ -21,9 +21,9 @@ namespace Visualizer.Controllers
 			//context.PoolDice.Where(w => w.DieId == 0 && w.Quantity == 0);
 			var data = new ProbabilityBreakdown()
 			{
-				Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 1 && w.NegativePoolId == 71)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
-				Boosted = context.PoolCombinations.Where(w => (w.PositivePoolId == 92 && w.NegativePoolId == 71)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
-				Upgraded = context.PoolCombinations.Where(w => (w.PositivePoolId == 94 && w.NegativePoolId == 71)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
+				Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 13 && w.NegativePoolId == 85)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
+				Boosted = null,//context.PoolCombinations.Where(w => (w.PositivePoolId == 2 && w.NegativePoolId == 73)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
+				Upgraded = null,//context.PoolCombinations.Where(w => (w.PositivePoolId == 4 && w.NegativePoolId == 73)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
 				Setback = null,
 				Threatened = null
 			};

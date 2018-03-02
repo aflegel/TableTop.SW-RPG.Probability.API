@@ -23,12 +23,13 @@ namespace DataGenerator
 
 		static void Main(string[] args)
 		{
-
+			var time = DateTime.Now;
 			Console.WriteLine(string.Format("{0:h:m.s} Startup", DateTime.Now));
 
 			ProcessProgram();
 
 			Console.WriteLine(string.Format("Completion time: {0:h:m.s}", DateTime.Now));
+			//Console.WriteLine(string.Format("Total Runtime: {0:h:m.s}", DateTime.Now.Subtract(time)));
 			//prevent auto close
 			Console.ReadKey();
 		}
@@ -54,19 +55,20 @@ namespace DataGenerator
 			{
 				InitializeDatabase(context);
 
+				Console.WriteLine(string.Format("{0:h:m.s} Generating Pools", DateTime.Now));
+
 				var positiveDicePools = BuildPositivePool(context);
 				var negativeDicePools = BuildNegativePool(context);
-				context.SaveChanges();
 
 				foreach (var positivePool in positiveDicePools)
 				{
 					foreach (var negativePool in negativeDicePools)
 					{
-						var summary = new PoolSummary(positivePool, negativePool);
-						context.SaveChanges();
+						var summary = new PoolSummary(context, positivePool, negativePool);
 					}
 				}
 
+				Console.WriteLine(string.Format("{0:h:m.s} Saving Database Records", DateTime.Now));
 				context.SaveChanges();
 			}
 		}
@@ -89,6 +91,7 @@ namespace DataGenerator
 					for (int k = 0; k <= BOOST_LIMIT; k++)
 					{
 						positiveDicePools.Add(new PoolCalculator(context, BuildPoolDice(context, i - j, j, 0, 0, k, 0)).RollOutput);
+						context.SaveChanges();
 					}
 				}
 			}
@@ -113,6 +116,7 @@ namespace DataGenerator
 					for (int k = 0; k <= SETBACK_LIMIT; k++)
 					{
 						negativeDicePools.Add(new PoolCalculator(context, BuildPoolDice(context, 0, 0, i - j, j, 0, k)).RollOutput);
+						context.SaveChanges();
 					}
 				}
 			}

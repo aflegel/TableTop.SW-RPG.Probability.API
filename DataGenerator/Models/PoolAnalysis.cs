@@ -13,49 +13,41 @@ namespace DataGenerator.Models
 			Frequency = positivePoolResult.Quantity * negativePoolResult.Quantity;
 
 			//triumphs count as successes but advantages do not and despairs count as failures but threats do not
-			SuccessQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success);
-			FailureQuantity = negativePoolResult.CountMatchingKeys(Symbol.Failure);
+			var SuccessQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success);
+			var FailureQuantity = negativePoolResult.CountMatchingKeys(Symbol.Failure);
 
-			AdvantageQuantity = positivePoolResult.CountMatchingKeys(Symbol.Advantage);
-			ThreatQuantity = negativePoolResult.CountMatchingKeys(Symbol.Threat);
+			var AdvantageQuantity = positivePoolResult.CountMatchingKeys(Symbol.Advantage);
+			var ThreatQuantity = negativePoolResult.CountMatchingKeys(Symbol.Threat);
 
-			TriumphQuantity = positivePoolResult.CountMatchingKeys(Symbol.Triumph);
-			DespairQuantity = negativePoolResult.CountMatchingKeys(Symbol.Despair);
+			var TriumphQuantity = positivePoolResult.CountMatchingKeys(Symbol.Triumph);
+			var DespairQuantity = negativePoolResult.CountMatchingKeys(Symbol.Despair);
 
-			SuccessThreshold = SuccessQuantity + TriumphQuantity;
-			FailureThreshold = FailureQuantity + DespairQuantity;
+			var SuccessThreshold = SuccessQuantity + TriumphQuantity;
+			var FailureThreshold = FailureQuantity + DespairQuantity;
 
 			SuccessNetQuantity = SuccessThreshold - FailureThreshold;
 			AdvantageNetQuantity = AdvantageQuantity - ThreatQuantity;
-			TriumphNetQuantity = TriumphQuantity - Math.Min(SuccessNetQuantity, 0);
-			DespairNetQuantity = DespairQuantity - Math.Min(FailureNetQuantity, 0);
+
+			var TriumphThreshold = TriumphQuantity - Math.Min(IsSuccess ? SuccessNetQuantity : TriumphQuantity, 0);
+			var DespairThreshold = DespairQuantity - Math.Min(!IsSuccess ? -SuccessNetQuantity : DespairQuantity, 0);
+
+			if (TriumphThreshold > 0)
+				TriumphNetQuantity = TriumphThreshold;
+			else if (DespairThreshold > 0)
+				TriumphNetQuantity = -DespairThreshold;
+			else
+				TriumphNetQuantity = 0;
 		}
 
 		public long Frequency { get; private set; }
-		public int SuccessQuantity { get; private set; }
-		public int FailureQuantity { get; private set; }
-		public int AdvantageQuantity { get; private set; }
-		public int ThreatQuantity { get; private set; }
-		public int TriumphQuantity { get; private set; }
-		public int DespairQuantity { get; private set; }
-
-		public int SuccessThreshold { get; private set; }
-		public int FailureThreshold { get; private set; }
 
 		public int SuccessNetQuantity { get; private set; }
 		public int TriumphNetQuantity { get; private set; }
-		public int DespairNetQuantity { get; private set; }
 		public int AdvantageNetQuantity { get; private set; }
-		public int ThreatNetQuantity { get { return -AdvantageNetQuantity; } }
-		public int FailureNetQuantity { get { return -SuccessNetQuantity; } }
+		private int DespairNetQuantity { get; set; }
 
-
-		public bool IsSuccess { get { return SuccessNetQuantity > 0; } }
-		public bool IsTriumph { get { return TriumphNetQuantity > 0; } }
-		public bool IsDespair { get { return DespairNetQuantity > 0; } }
-		public bool IsAdvantage { get { return AdvantageNetQuantity > 0; } }
-		public bool IsThreat { get { return ThreatNetQuantity > 0; } }
-
-
+		private bool IsSuccess { get { return SuccessNetQuantity > 0; } }
+		private bool IsTriumph { get { return TriumphNetQuantity > 0; } }
+		private bool IsDespair { get { return DespairNetQuantity > 0; } }
 	}
 }
