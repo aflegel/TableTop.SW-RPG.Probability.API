@@ -31,7 +31,7 @@ namespace DataFramework.Models
 
 		public long PoolId { get; set; }
 
-		public long Quantity { get; set; }
+		public long Frequency { get; set; }
 
 		[JsonIgnore]
 		public virtual Pool Pool { get; set; }

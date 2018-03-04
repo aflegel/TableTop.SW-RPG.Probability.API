@@ -17,8 +17,11 @@ module.exports = (env) => {
         },
         entry: {
             vendor: [
-                'bootstrap',
-                'bootstrap/dist/css/bootstrap.css',
+				'bootstrap',
+				'bootstrap/dist/css/bootstrap.css',
+				'mdi/css/materialdesignicons.css',
+				'sw-rpg-icons/css/sw-rpg-icons.css',
+				'sw-rpg-icons/css/sw-rpg-colors.css',
                 'domain-task',
                 'event-source-polyfill',
                 'history',

@@ -119,7 +119,7 @@ namespace DataGenerator.Models
 					var mergedPool = new PoolResult(MergePoolSymbols(topPool.PoolResultSymbols, bottomPool.PoolResultSymbols))
 					{
 						//cross the quantity
-						Quantity = (topPool.Quantity) * (bottomPool.Quantity > 0 ? bottomPool.Quantity : 1)
+						Frequency = (topPool.Frequency) * (bottomPool.Frequency > 0 ? bottomPool.Frequency : 1)
 					};
 
 					int? match = EntryExists(result, mergedPool);
@@ -127,7 +127,7 @@ namespace DataGenerator.Models
 					//if the new merged pool exists, up the quantity
 					if (match.HasValue)
 					{
-						result[match.Value].Quantity += mergedPool.Quantity;
+						result[match.Value].Frequency += mergedPool.Frequency;
 					}
 					else
 					{
@@ -195,7 +195,7 @@ namespace DataGenerator.Models
 			{
 				var poolResult = new PoolResult()
 				{
-					Quantity = 1
+					Frequency = 1
 				};
 
 				foreach (var facesymbol in face.DieFaceSymbols)

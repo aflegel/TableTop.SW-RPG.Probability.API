@@ -10,7 +10,7 @@ namespace DataGenerator.Models
 	{
 		public PoolAnalysis(PoolResult positivePoolResult, PoolResult negativePoolResult)
 		{
-			Frequency = positivePoolResult.Quantity * negativePoolResult.Quantity;
+			Frequency = positivePoolResult.Frequency * negativePoolResult.Frequency;
 
 			//triumphs count as successes but advantages do not and despairs count as failures but threats do not
 			var SuccessQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success);
@@ -28,8 +28,11 @@ namespace DataGenerator.Models
 			SuccessNetQuantity = SuccessThreshold - FailureThreshold;
 			AdvantageNetQuantity = AdvantageQuantity - ThreatQuantity;
 
-			var TriumphThreshold = TriumphQuantity - Math.Min(IsSuccess ? SuccessNetQuantity : TriumphQuantity, 0);
-			var DespairThreshold = DespairQuantity - Math.Min(!IsSuccess ? -SuccessNetQuantity : DespairQuantity, 0);
+			//adjust the triumph quantity by the difference between the success quantity and failure threshold
+			//if the difference is greater than 0, take 0 instead
+			//if it is not a success, no triumph can take place, adjust the triumph quantity to 0
+			var TriumphThreshold = TriumphQuantity + (IsSuccess ? Math.Min(SuccessQuantity - FailureThreshold, 0) : -TriumphQuantity);
+			var DespairThreshold = DespairQuantity + (!IsSuccess ? Math.Min(FailureQuantity - SuccessThreshold, 0) : -DespairQuantity);
 
 			if (TriumphThreshold > 0)
 				TriumphNetQuantity = TriumphThreshold;
@@ -47,7 +50,5 @@ namespace DataGenerator.Models
 		private int DespairNetQuantity { get; set; }
 
 		private bool IsSuccess { get { return SuccessNetQuantity > 0; } }
-		private bool IsTriumph { get { return TriumphNetQuantity > 0; } }
-		private bool IsDespair { get { return DespairNetQuantity > 0; } }
 	}
 }
