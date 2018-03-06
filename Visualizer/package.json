@@ -45,6 +45,6 @@
     "chart.js": "^2.7.1",
     "mdi": "^2.1.19",
     "react-chartjs-2": "^2.7.0",
-    "sw-rpg-icons": "^1.6.0"
+    "sw-rpg-icons": "^1.6.2"
   }
 }

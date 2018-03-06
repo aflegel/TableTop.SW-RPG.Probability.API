@@ -12,22 +12,27 @@ namespace Visualizer.Controllers
 	[Route("api/[controller]")]
 	public class SearchController : Controller
 	{
-		ProbabilityContext context = new ProbabilityContext();
-		[HttpGet("[action]")]
-		public ProbabilityBreakdown GetStatistics(/*List<PoolDie> dice*/)
+		private ProbabilityContext context = new ProbabilityContext();
+		private enum DieType
 		{
-			//separate positive and negative dice
+			Ability = 1,
+			Boost = 2,
+			Challenge = 3,
+			Difficulty = 4,
+			Force = 5,
+			Proficiency = 6,
+			Setback = 7,
+		}
 
+		[HttpGet("[action]")]
+		public ProbabilityBreakdown GetTests()
+		{
 			//context.PoolDice.Where(w => w.DieId == 0 && w.Quantity == 0);
 			var data = new ProbabilityBreakdown()
 			{
 				//Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 72 && w.NegativePoolId == 144)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
 				//Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 13 && w.NegativePoolId == 85)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
 				Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 47 && w.NegativePoolId == 90)).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault(),
-			//	Boosted = null,//context.PoolCombinations.Where(w => (w.PositivePoolId == 2 && w.NegativePoolId == 73)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
-//				Upgraded = null,//context.PoolCombinations.Where(w => (w.PositivePoolId == 4 && w.NegativePoolId == 73)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
-	//			Setback = null,
-		//		Threatened = null
 			};
 
 			data.BaseDice = data.Baseline.PositivePool.PoolDice.Union(data.Baseline.NegativePool.PoolDice);
@@ -35,15 +40,40 @@ namespace Visualizer.Controllers
 			return data;
 		}
 
-		public ProbabilityBreakdown GetStatistics(int number, int numbe)
+		[HttpGet("[action]")]
+		public ProbabilityBreakdown GetStatistics(List<PoolDie> dice)
 		{
+			if(dice.Count == 0)
+			{
+				dice.Add(new PoolDie() { DieId = (int)DieType.Ability, Quantity = 1 });
+				dice.Add(new PoolDie() { DieId = (int)DieType.Difficulty, Quantity = 1 });
+			}
+
+			var tester = new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost };
+			var tester2 = new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback };
+
 			//separate positive and negative dice
+			var positivePool = dice.Where(w => tester.Contains(w.DieId));
+			var negativePool = dice.Where(w => tester2.Contains(w.DieId));
 
-			//context.PoolDice.Where(w => w.DieId == 0 && w.Quantity == 0);
+			var positiveTest = context.Pools.Where(w => !w.PoolDice.Except(positivePool).Any()).ToList();
+			var negativeTest = context.Pools.Where(w => !w.PoolDice.Except(negativePool).Any()).ToList();
+			//				if (listA.Except(listB).Any())
 
-			var data = GetStatistics();
+			var result = new ProbabilityBreakdown();
 
-			return data;
+			if(positiveTest.Count > 0 && negativeTest.Count > 0)
+			{
+
+				result.Baseline =  context.PoolCombinations.Where(w => w.PositivePoolId == positiveTest.FirstOrDefault().PoolId && w.NegativePoolId == negativeTest.FirstOrDefault().PoolId).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
+				result.BaseDice = result.Baseline.PositivePool.PoolDice.Union(result.Baseline.NegativePool.PoolDice);
+			}
+			else
+			{
+				result = GetTests();
+			}
+
+			return result;
 		}
 	}
 }

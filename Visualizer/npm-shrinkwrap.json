@@ -3058,9 +3058,9 @@
       "dev": true
     },
     "sw-rpg-icons": {
-      "version": "1.6.0",
-      "from": "sw-rpg-icons@latest",
-      "resolved": "https://registry.npmjs.org/sw-rpg-icons/-/sw-rpg-icons-1.6.0.tgz"
+      "version": "1.6.2",
+      "from": "sw-rpg-icons@1.6.2",
+      "resolved": "https://registry.npmjs.org/sw-rpg-icons/-/sw-rpg-icons-1.6.2.tgz"
     },
     "symbol-observable": {
       "version": "1.0.4",

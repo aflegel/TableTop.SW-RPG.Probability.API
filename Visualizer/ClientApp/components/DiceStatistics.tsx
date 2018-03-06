@@ -14,51 +14,118 @@ type DiceStatisticsProps =
 	& typeof DiceStatistics.actionCreators     // ... plus action creators we've requested
 	& RouteComponentProps<{ positivePoolId?: number, negativePoolId?: number }>; // ... plus incoming routing parameters
 
-class FetchData extends React.Component<DiceStatisticsProps, {}> {
+class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	componentWillMount() {
 		// This method runs when the component is first added to the page
 		//let startDateIndex = parseInt(this.props.match.params.startDateIndex) || 0;
-		this.props.requestDiceStatistics(0, 0);
+		this.props.requestDiceStatistics();
 	}
 
 	componentWillReceiveProps(nextProps: DiceStatisticsProps) {
 		// This method runs when incoming props (e.g., route params) change
 		//let startDateIndex = parseInt(nextProps.match.params.startDateIndex) || 0;
-		this.props.requestDiceStatistics(0, 0);
+
+		if (this.props.poolCombinationContainer.baseDice == null) {
+			this.props.requestDiceStatistics();
+			return;
+		} else {
+			if (nextProps.searchDice == null)
+				return;
+			else if (this.props.searchDice.length != nextProps.searchDice.length) {
+
+			}
+			//this.props.requestDiceStatistics();
+		}
 	}
 
 	public render() {
 		return <div>
-			<h1>Probability Breakdown</h1>
 			{this.RenderSearch()}
+			<hr />
+			<h1>Probability Breakdown</h1>
+			{this.RenderPoolData()}
 			<h2>Distribution of Success and Failure</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
+			<p>Both <i className="ffi-swrpg-success"></i> and <i className="ffi-swrpg-triumph"></i> are counted as successes and are countered by both <i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i>.</p>
 			<hr />
 			<h2>Distribution of Advantage and Threat</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
+			<p><i className="ffi-swrpg-advantage"></i> is countered by <i className="ffi-swrpg-threat"></i>.</p>
 			<hr />
 			<h2>Distribution of Triumph and Despair</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
-			<hr />
-			{this.RenderResults()}
+			<p><i className="ffi-swrpg-triumph"></i> is countered by both <i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i>. As a result a triumph can only occur on a success and net count of <i className="ffi-swrpg-triumph"></i> is adjusted by the uncountered <i className="ffi-swrpg-triumph"></i></p>
 		</div>;
 	}
 
 	/**
 	 * Renders the current search icons as well as a search builder
 	 */
-	private RenderSearch() {
-		var output: JSX.Element[] = [];
-		if (this.props.poolCombinationContainer.baseDice != null) {
-			this.props.poolCombinationContainer.baseDice.forEach(item => output = output.concat(this.RenderDie(item.dieId, item.quantity)));
-		}
+	private RenderPoolData() {
+		if (this.props.poolCombinationContainer.baseDice != null)
+			return <div className="row">
+				<div className="col-md-12">
+					<h3>Current Pool: {this.RenderDice(this.props.poolCombinationContainer.baseDice, false)}</h3>
+				</div>
+			</div>;
+	}
 
+	/**
+	 * Renders the current search icons as well as a search builder
+	 */
+	private RenderSearch() {
 		return <div className="row">
 			<div className="col-md-12">
-				<h3>Current Pool: {output}</h3>
-				<button className="hidden" onClick={() => { this.AddDie(DiceStatistics.DieType.Ability) }}>Increment</button>
+				<hr />
+				<h3>Add Dice:
+					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Ability) }}>{this.RenderDie(DiceStatistics.DieType.Ability)}</a>
+					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Proficiency) }}>{this.RenderDie(DiceStatistics.DieType.Proficiency)}</a>
+					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Boost) }}>{this.RenderDie(DiceStatistics.DieType.Boost)}</a>
+					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Difficulty) }}>{this.RenderDie(DiceStatistics.DieType.Difficulty)}</a>
+					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Challenge) }}>{this.RenderDie(DiceStatistics.DieType.Challenge)}</a>
+					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Setback) }}>{this.RenderDie(DiceStatistics.DieType.Setback)}</a>
+				</h3>
+				<h3>Search for: {this.RenderDice(this.props.searchDice, true)}</h3>
+				<a onClick={() => { return; }} className="btn btn-primary">Search</a>
 			</div>
 		</div>;
+	}
+
+	private RenderDice(dice: DiceStatistics.PoolDice[], includeDelete: boolean) {
+		var output: JSX.Element[] = [];
+		if (dice != null) {
+			dice.sort((a, b) => {
+				switch (a.dieId) {
+					case DiceStatistics.DieType.Proficiency:
+					case DiceStatistics.DieType.Ability:
+					case DiceStatistics.DieType.Boost:
+						switch (b.dieId) {
+							case DiceStatistics.DieType.Proficiency:
+								return 1;
+							case DiceStatistics.DieType.Ability:
+							case DiceStatistics.DieType.Boost:
+								return 0;
+							default:
+								return -1;
+						}
+					case DiceStatistics.DieType.Challenge:
+					case DiceStatistics.DieType.Difficulty:
+					case DiceStatistics.DieType.Setback:
+						switch (b.dieId) {
+							case DiceStatistics.DieType.Challenge:
+								return 1;
+							case DiceStatistics.DieType.Difficulty:
+							case DiceStatistics.DieType.Setback:
+								return 0;
+							default:
+								return -1;
+						}
+					default:
+						return 0;
+				}
+			}).forEach(item => output = output.concat(this.RenderDieSet(item.dieId, item.quantity, includeDelete)));
+		}
+		return output;
 	}
 
 	/**
@@ -66,7 +133,28 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 	 * @param dieType
 	 * @param quantity
 	 */
-	private RenderDie(dieType: DiceStatistics.DieType, quantity: number): JSX.Element[] {
+	private RenderDieSet(dieType: DiceStatistics.DieType, quantity: number, includeDelete: boolean): JSX.Element[] {
+		var output: JSX.Element[] = [];
+
+		for (var i = 0; i < quantity; i++) {
+			if (includeDelete)
+				output.push(<a onClick={() => { this.DeleteDie(dieType) }}>{this.RenderDie(dieType)}</a>)
+			else
+				output.push(this.RenderDie(dieType));
+		}
+
+		return output;
+	}
+
+	private DeleteDie(dieType: DiceStatistics.DieType) {
+		this.props.removeSearchDie({ dieId: dieType, quantity: 1 });
+	}
+
+	/**
+	 * Returns an icon element with the appropriate css classes
+	 * @param dieSymbol
+	 */
+	private RenderDie(dieType: DiceStatistics.DieType) {
 		var dieSize = 0;
 		switch (dieType) {
 			case DiceStatistics.DieType.Ability:
@@ -79,17 +167,12 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 				break;
 			case DiceStatistics.DieType.Challenge:
 			case DiceStatistics.DieType.Proficiency:
+			case DiceStatistics.DieType.Force:
 				dieSize = 12;
 				break;
 		}
 
-		var output: JSX.Element[] = [];
-
-		for (var i = 0; i < quantity; i++) {
-			output.push(<i className={"ffi-d" + dieSize + " ffi-swrpg-" + DiceStatistics.DieType[dieType].toString().toLowerCase()}></i>)
-		}
-
-		return output;
+		return <i className={"die-stroke ffi-d" + dieSize + " ffi-swrpg-" + DiceStatistics.DieType[dieType].toString().toLowerCase() + "-color"}></i>;
 	}
 
 	/**
@@ -101,8 +184,11 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 	}
 
 	private AddDie(dieType: DiceStatistics.DieType) {
+		var poolDie: DiceStatistics.PoolDice = { dieId: dieType, quantity: 1 };
 
-		//this.props.dice = this.props.dice.concat(dieType);
+		this.props.addSearchDie(poolDie);
+
+		//this.componentWillReceiveProps(this.props);
 	}
 
 	/**
@@ -233,15 +319,15 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 			<dt>{this.RenderDieSymbol(mode)}{DiceStatistics.DieSymbol[mode]} Frequency</dt>
 			<dd>{new Intl.NumberFormat('en-Us').format(positiveFrequency)}</dd>
 			<dt>Probability of {DiceStatistics.DieSymbol[mode]}</dt>
-			<dd>{new Intl.NumberFormat('en-Us').format(positiveFrequency / totalFrequency * 100)}%</dd>
+			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(positiveFrequency / totalFrequency * 100)}%</dd>
 			<dt>{this.RenderDieSymbol(counterMode)}{DiceStatistics.DieSymbol[counterMode]} Frequency</dt>
 			<dd>{new Intl.NumberFormat('en-Us').format(negativeFrequency)}</dd>
 			<dt>Probability of {DiceStatistics.DieSymbol[counterMode]}</dt>
-			<dd>{new Intl.NumberFormat('en-Us').format(negativeFrequency / totalFrequency * 100)}%</dd>
+			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(negativeFrequency / totalFrequency * 100)}%</dd>
 			<dt>Average {DiceStatistics.DieSymbol[mode]}</dt>
-			<dd>{new Intl.NumberFormat('en-Us').format(average)}</dd>
+			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(average)}</dd>
 			<dt>Standard Deviation</dt>
-			<dd>{new Intl.NumberFormat('en-Us').format(standardDeviation)}</dd>
+			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(standardDeviation)}</dd>
 		</dl>;
 	}
 
@@ -284,5 +370,5 @@ class FetchData extends React.Component<DiceStatisticsProps, {}> {
 
 export default connect(
 	(state: ApplicationState) => state.diceStatistics, // Selects which state properties are merged into the component's props
-	DiceStatistics.actionCreators                 // Selects which action creators are merged into the component's props
-)(FetchData) as typeof FetchData;
+	DiceStatistics.actionCreators					  // Selects which action creators are merged into the component's props
+)(FetchDiceStatistics) as typeof FetchDiceStatistics;
