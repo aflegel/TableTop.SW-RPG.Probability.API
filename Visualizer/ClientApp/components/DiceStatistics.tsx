@@ -46,15 +46,14 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			{this.RenderPoolData()}
 			<h2>Distribution of Success and Failure</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
-			<p>Both <i className="ffi-swrpg-success"></i> and <i className="ffi-swrpg-triumph"></i> are counted as successes and are countered by both <i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i>.</p>
 			<hr />
 			<h2>Distribution of Advantage and Threat</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
-			<p><i className="ffi-swrpg-advantage"></i> is countered by <i className="ffi-swrpg-threat"></i>.</p>
 			<hr />
 			<h2>Distribution of Triumph and Despair</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
-			<p><i className="ffi-swrpg-triumph"></i> is countered by both <i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i>. As a result a triumph can only occur on a success and net count of <i className="ffi-swrpg-triumph"></i> is adjusted by the uncountered <i className="ffi-swrpg-triumph"></i></p>
+			<hr />
+			{this.RenderResults()}
 		</div>;
 	}
 
@@ -86,7 +85,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Setback) }}>{this.RenderDie(DiceStatistics.DieType.Setback)}</a>
 				</h3>
 				<h3>Search for: {this.RenderDice(this.props.searchDice, true)}</h3>
-				<a onClick={() => { return; }} className="btn btn-primary">Search</a>
+				<a onClick={() => { this.props.requestDiceStatistics(); }} className="btn btn-primary">Search</a>
 			</div>
 		</div>;
 	}
@@ -223,8 +222,11 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				<div className="col-lg-6 col-md-12">
 					{this.RenderGraph(DiceStatistics.DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DiceStatistics.DieSymbol[mode], "rgba(99,200,132,1)")] })}
 				</div>
-				<div className="col-lg-6 col-md-12">
+				<div className="col-lg-3 col-md-6">
 					{this.RenderBreakdown(mode, counterMode, baseSet, totalFrequency)}
+				</div>
+				<div className="col-lg-3 col-md-6">
+					{this.RenderAdditionalDetails(mode)}
 				</div>
 			</div>;
 		}
@@ -331,6 +333,45 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 		</dl>;
 	}
 
+	/**
+	 *
+	 * @param mode
+	 */
+	private RenderAdditionalDetails(mode: DiceStatistics.DieSymbol) {
+
+		switch (mode) {
+			case DiceStatistics.DieSymbol.Success:
+				return <dl>
+					<dt>Success Symbols</dt>
+					<dd><i className="ffi-swrpg-success"></i> and <i className="ffi-swrpg-triumph"></i></dd>
+					<dt>Failure Symbols</dt>
+					<dd><i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i></dd>
+					<dt>Calculation</dt>
+					<dd>(<i className="ffi-swrpg-success"></i> + <i className="ffi-swrpg-triumph"></i>) - (<i className="ffi-swrpg-failure"></i> + <i className="ffi-swrpg-despair"></i>)</dd>
+				</dl>;
+			case DiceStatistics.DieSymbol.Advantage:
+				return <dl>
+					<dt>Advantage Symbol</dt>
+					<dd><i className="ffi-swrpg-advantage"></i></dd>
+					<dt>Threat Symbol</dt>
+					<dd><i className="ffi-swrpg-threat"></i></dd>
+					<dt>Calculation</dt>
+					<dd><i className="ffi-swrpg-advantage"></i> - <i className="ffi-swrpg-threat"></i></dd>
+				</dl>;
+			case DiceStatistics.DieSymbol.Triumph:
+				return <dl>
+					<dt>Triumph Symbol</dt>
+					<dd><i className="ffi-swrpg-triumph"></i></dd>
+					<dt>Despair Symbol</dt>
+					<dd><i className="ffi-swrpg-despair"></i></dd>
+					<dt>Calculation</dt>
+					<dd>It's rather complicated</dd>
+				</dl>;
+			default:
+				return <span></span>;
+		}
+		//			<p><i className="ffi-swrpg-triumph"></i> is countered by both <i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i>. As a result a triumph can only occur on a success and net count of <i className="ffi-swrpg-triumph"></i> is adjusted by the uncountered <i className="ffi-swrpg-triumph"></i></p>
+	}
 	/**
 	 * Renders a table with the raw data used for populating the tables and statistics data
 	 */

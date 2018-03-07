@@ -94,7 +94,7 @@ export const actionCreators = {
 		//if (positivePoolId !== getState().diceStatistics.positivePoolId) {
 		var data = JSON.stringify(getState().diceStatistics.searchDice);
 
-		let fetchTask = fetch(`api/Search/GetStatistics?dice=${data}`)
+		let fetchTask = fetch(`api/Search/GetStatistics?data=${data}`)
 			.then(response => response.json() as Promise<PoolCombinationContainer>)
 			.then(data => {
 				dispatch({ type: 'RECEIVE_DICE_STATISTICS', poolCombinationContainer: data });
@@ -107,11 +107,7 @@ export const actionCreators = {
 };
 
 export function FormatDice(dice: PoolDice[]): string {
-	var output = "";
-
-	dice.forEach(item => output += "{" + item.dieId + "," + item.quantity + "}");
-
-	return output;
+	return "{" + dice.map(map => "{" + map.dieId + "," + map.quantity + "}").join(",") + "}";
 }
 
 export function CopyDice(dice: PoolDice[]): PoolDice[] {

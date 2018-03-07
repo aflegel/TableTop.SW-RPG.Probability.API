@@ -2,6 +2,7 @@
 using DataFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Visualizer.Models;
@@ -27,7 +28,6 @@ namespace Visualizer.Controllers
 		[HttpGet("[action]")]
 		public ProbabilityBreakdown GetTests()
 		{
-			//context.PoolDice.Where(w => w.DieId == 0 && w.Quantity == 0);
 			var data = new ProbabilityBreakdown()
 			{
 				//Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 72 && w.NegativePoolId == 144)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
@@ -40,37 +40,56 @@ namespace Visualizer.Controllers
 			return data;
 		}
 
-		[HttpGet("[action]")]
-		public ProbabilityBreakdown GetStatistics(List<PoolDie> dice)
+		private long? GetPoolId(List<PoolDie> searchForPool)
 		{
-			if(dice.Count == 0)
+			//fetch results for each type of die and
+			var positiveTest = new List<long>();
+			foreach (var die in searchForPool)
 			{
-				dice.Add(new PoolDie() { DieId = (int)DieType.Ability, Quantity = 1 });
-				dice.Add(new PoolDie() { DieId = (int)DieType.Difficulty, Quantity = 1 });
+				var dieSearch = context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count).Select(s => s.PoolId).ToList();
+				if (positiveTest.Count == 0)
+				{
+					positiveTest = dieSearch;
+				}
+				else
+				{
+					positiveTest = positiveTest.Intersect(dieSearch).ToList();
+				}
 			}
 
-			var tester = new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost };
-			var tester2 = new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback };
+			return positiveTest.FirstOrDefault();
+		}
+
+		[HttpGet("[action]")]
+		public ProbabilityBreakdown GetStatistics(string data)
+		{
+			List<PoolDie> searchDice = null;
+
+			try
+			{
+				searchDice = ((PoolDie[])JsonConvert.DeserializeObject(data, typeof(PoolDie[]))).ToList();
+			}
+			catch { }
+
+			if (searchDice == null)
+			{
+				searchDice = new List<PoolDie>
+				{
+					new PoolDie() { DieId = (int)DieType.Ability, Quantity = 1 },
+					new PoolDie() { DieId = (int)DieType.Difficulty, Quantity = 1 }
+				};
+			}
 
 			//separate positive and negative dice
-			var positivePool = dice.Where(w => tester.Contains(w.DieId));
-			var negativePool = dice.Where(w => tester2.Contains(w.DieId));
-
-			var positiveTest = context.Pools.Where(w => !w.PoolDice.Except(positivePool).Any()).ToList();
-			var negativeTest = context.Pools.Where(w => !w.PoolDice.Except(negativePool).Any()).ToList();
-			//				if (listA.Except(listB).Any())
+			var positiveId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost }.Contains(w.DieId)).ToList());
+			var negativeId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback }.Contains(w.DieId)).ToList());
 
 			var result = new ProbabilityBreakdown();
 
-			if(positiveTest.Count > 0 && negativeTest.Count > 0)
+			if (positiveId.HasValue && negativeId.HasValue)
 			{
-
-				result.Baseline =  context.PoolCombinations.Where(w => w.PositivePoolId == positiveTest.FirstOrDefault().PoolId && w.NegativePoolId == negativeTest.FirstOrDefault().PoolId).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
+				result.Baseline = context.PoolCombinations.Where(w => w.PositivePoolId == positiveId.Value && w.NegativePoolId == negativeId.Value).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
 				result.BaseDice = result.Baseline.PositivePool.PoolDice.Union(result.Baseline.NegativePool.PoolDice);
-			}
-			else
-			{
-				result = GetTests();
 			}
 
 			return result;
