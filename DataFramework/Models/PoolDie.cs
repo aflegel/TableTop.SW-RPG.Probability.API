@@ -20,7 +20,7 @@ namespace DataFramework.Models
 		}
 
 		public int DieId { get; set; }
-		public long PoolId { get; set; }
+		public int PoolId { get; set; }
 
 		public int Quantity { get; set; }
 

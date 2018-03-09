@@ -8,30 +8,48 @@ using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
 {
-	public class PoolCombinationStatistic
+	public class PoolCombinationStatistic : IEquatable<PoolCombinationStatistic>
 	{
 		public PoolCombinationStatistic()
 		{
 		}
 
-		public long PositivePoolId { get; set; }
-		public long NegativePoolId { get; set; }
+		public int PositivePoolId { get; set; }
+		public int NegativePoolId { get; set; }
 		public Symbol Symbol { get; set; }
-
-		public long Quantity { get; set; }
+		public int Quantity { get; set; }
 		public long Frequency { get; set; }
-
-		public override string ToString()
-		{
-			return string.Format("{0}{1}", Symbol, Quantity).ToString();
-		}
-
-		public override int GetHashCode()
-		{
-			return ToString().GetHashCode();
-		}
 
 		[JsonIgnore]
 		public virtual PoolCombination PoolCombination { get; set; }
+
+		public bool Equals(PoolCombinationStatistic other)
+		{
+			if (Symbol != other.Symbol)
+				return false;
+			if (Quantity != other.Quantity)
+				return false;
+
+			return true;
+		}
+	}
+
+	public class PoolCombinationStatisticEqualityComparer : IEqualityComparer<PoolCombinationStatistic>
+	{
+		public bool Equals(PoolCombinationStatistic x, PoolCombinationStatistic y)
+		{
+			return x.Equals(y);
+		}
+
+		public int GetHashCode(PoolCombinationStatistic obj)
+		{
+			unchecked
+			{
+				if (obj == null)
+					return 0;
+
+				return obj.Symbol.ToString().GetHashCode() + obj.Quantity;
+			}
+		}
 	}
 }

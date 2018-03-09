@@ -48,7 +48,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Success,
 						Quantity = analysis.SuccessNetQuantity,
-						Frequency = analysis.Frequency
+						Frequency = (long)analysis.Frequency
 					});
 
 					//add the net advantage quantity
@@ -56,7 +56,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Advantage,
 						Quantity = analysis.AdvantageNetQuantity,
-						Frequency = analysis.Frequency
+						Frequency = (long)analysis.Frequency
 					});
 
 					//add the net triumph
@@ -64,7 +64,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Triumph,
 						Quantity = analysis.TriumphNetQuantity,
-						Frequency = analysis.Frequency
+						Frequency = (long)analysis.Frequency
 					});
 				}
 			}
@@ -76,18 +76,18 @@ namespace DataGenerator.Models
 		/// <param name="outcomePool"></param>
 		protected void PrintConsoleLog(Pool PositiveContainer, Pool NegativeContainer)
 		{
-			PrintStartLog(PositiveContainer.Name + ", " + NegativeContainer.Name, PositiveContainer.TotalOutcomes * NegativeContainer.TotalOutcomes);
-			PrintFinishLog(PositiveContainer.UniqueOutcomes * NegativeContainer.UniqueOutcomes);
+			PrintStartLog(PositiveContainer.Name + ", " + NegativeContainer.Name, (ulong)PositiveContainer.TotalOutcomes * (ulong)NegativeContainer.TotalOutcomes);
+			PrintFinishLog((ulong)PositiveContainer.UniqueOutcomes * (ulong)NegativeContainer.UniqueOutcomes);
 		}
 
-		public static void PrintStartLog(string poolText, long rollEstimation)
+		public static void PrintStartLog(string poolText, ulong rollEstimation)
 		{
-			Console.Write(string.Format("{0,-80}|{1,23:n0}", poolText, rollEstimation));
+			Console.Write(string.Format("{0,-80}|{1,29:n0}", poolText, rollEstimation));
 		}
 
-		public static void PrintFinishLog(long rollEstimation)
+		public static void PrintFinishLog(ulong rollEstimation)
 		{
-			Console.Write(string.Format("  |{0,15:n0}\n", rollEstimation));
+			Console.Write(string.Format("  |{0,12:n0}\n", rollEstimation));
 		}
 
 

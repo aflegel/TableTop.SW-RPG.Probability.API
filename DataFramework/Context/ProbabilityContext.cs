@@ -25,6 +25,8 @@ namespace DataFramework.Context
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+
+
 			modelBuilder.Entity<Die>().ToTable(nameof(Die));
 			modelBuilder.Entity<Pool>().ToTable(nameof(Pool));
 			modelBuilder.Entity<PoolCombination>().ToTable(nameof(PoolCombination));
@@ -43,7 +45,7 @@ namespace DataFramework.Context
 			modelBuilder.Entity<PoolCombination>()
 				.HasOne(e => e.PositivePool)
 				.WithMany(c => c.PositivePoolCombinations)
-				.HasForeignKey(f =>f.PositivePoolId)
+				.HasForeignKey(f => f.PositivePoolId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
 
 			modelBuilder.Entity<PoolCombination>()
@@ -79,6 +81,13 @@ namespace DataFramework.Context
 			modelBuilder.Entity<DieFace>()
 				.HasOne(e => e.Die)
 				.WithMany(c => c.DieFaces);
+
+			foreach (var property in modelBuilder.Model.GetEntityTypes()
+				.SelectMany(t => t.GetProperties())
+				.Where(p => p.ClrType == typeof(decimal)))
+			{
+				property.Relational().ColumnType = "decimal(24, 0)";// 100,000,000,000,000,000,000
+			}
 
 		}
 	}

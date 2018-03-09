@@ -145,7 +145,7 @@ export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationSta
 						MergeDice(stateDice, action.poolDie);
 					break;
 				case DieType.Boost:
-					if (stateDice.filter(f => (f.dieId == DieType.Boost)).reduce((total, obj) => { return total + obj.quantity }, 0) < 2)
+					if (stateDice.filter(f => (f.dieId == DieType.Boost)).reduce((total, obj) => { return total + obj.quantity }, 0) < 4)
 						MergeDice(stateDice, action.poolDie);
 					break;
 				case DieType.Difficulty:
@@ -154,7 +154,7 @@ export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationSta
 						MergeDice(stateDice, action.poolDie);
 					break;
 				case DieType.Setback:
-					if (stateDice.filter(f => (f.dieId == DieType.Setback)).reduce((total, obj) => { return total + obj.quantity }, 0) < 2)
+					if (stateDice.filter(f => (f.dieId == DieType.Setback)).reduce((total, obj) => { return total + obj.quantity }, 0) < 4)
 						MergeDice(stateDice, action.poolDie);
 					break;
 			}

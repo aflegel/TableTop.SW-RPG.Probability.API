@@ -27,10 +27,8 @@ namespace DataFramework.Models
 			}
 		}
 
-		public long PoolResultId { get; set; }
-
-		public long PoolId { get; set; }
-
+		public int PoolResultId { get; set; }
+		public int PoolId { get; set; }
 		public long Frequency { get; set; }
 
 		[JsonIgnore]
@@ -47,20 +45,6 @@ namespace DataFramework.Models
 		public int CountMatchingKeys(Symbol key)
 		{
 			return PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
-		}
-
-		public override int GetHashCode()
-		{
-			//gets a unique has by summing the hash of the string and a hash of the value
-			return ToString().GetHashCode();
-		}
-
-		public override string ToString()
-		{
-			var ordered = PoolResultSymbols.OrderBy(x => x.Symbol.ToString());
-
-			return string.Join("", ordered.Select(x => x.ToString()));
-
 		}
 	}
 }

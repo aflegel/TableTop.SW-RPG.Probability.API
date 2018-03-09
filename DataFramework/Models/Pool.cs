@@ -16,7 +16,7 @@ namespace DataFramework.Models
 			NegativePoolCombinations = new HashSet<PoolCombination>();
 		}
 
-		public long PoolId { get; set; }
+		public int PoolId { get; set; }
 		public string Name { get; set; }
 
 		public long TotalOutcomes { get; set; }
@@ -38,9 +38,9 @@ namespace DataFramework.Models
 			return string.Join(", ", PoolDice.Select(group => string.Format("{0} {1}", group.Die.Name, group.Quantity)).ToList());
 		}
 
-		public long GetRollEstimation()
+		public ulong GetRollEstimation()
 		{
-			return PoolDice.Aggregate((long)1, (x, y) => x * Convert.ToInt64(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
+			return PoolDice.Aggregate((ulong)1, (x, y) => x * Convert.ToUInt64(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
 		}
 
 	}

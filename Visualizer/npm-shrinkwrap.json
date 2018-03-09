@@ -487,12 +487,6 @@
       "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.7.tgz",
       "dev": true
     },
-    "bootstrap": {
-      "version": "3.3.7",
-      "from": "bootstrap@3.3.7",
-      "resolved": "https://registry.npmjs.org/bootstrap/-/bootstrap-3.3.7.tgz",
-      "dev": true
-    },
     "brace-expansion": {
       "version": "1.1.8",
       "from": "brace-expansion@>=1.1.7 <2.0.0",
@@ -1229,6 +1223,11 @@
       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz",
       "dev": true
     },
+    "hammerjs": {
+      "version": "2.0.8",
+      "from": "hammerjs@>=2.0.8 <3.0.0",
+      "resolved": "https://registry.npmjs.org/hammerjs/-/hammerjs-2.0.8.tgz"
+    },
     "has": {
       "version": "1.0.1",
       "from": "has@>=1.0.1 <2.0.0",
@@ -1585,8 +1584,7 @@
     "jquery": {
       "version": "3.2.1",
       "from": "jquery@3.2.1",
-      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
-      "dev": true
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz"
     },
     "js-base64": {
       "version": "2.1.9",
@@ -1742,6 +1740,11 @@
           "dev": true
         }
       }
+    },
+    "materialize-css": {
+      "version": "0.100.2",
+      "from": "materialize-css@latest",
+      "resolved": "https://registry.npmjs.org/materialize-css/-/materialize-css-0.100.2.tgz"
     },
     "math-expression-evaluator": {
       "version": "1.2.17",

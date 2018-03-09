@@ -26,16 +26,9 @@ namespace Visualizer.Controllers
 		}
 
 		[HttpGet("[action]")]
-		public ProbabilityBreakdown GetTests()
+		public SearchViewModel GetTests()
 		{
-			var data = new ProbabilityBreakdown()
-			{
-				//Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 72 && w.NegativePoolId == 144)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
-				//Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 13 && w.NegativePoolId == 85)).Include(i => i.PoolCombinationStatistics).FirstOrDefault(),
-				Baseline = context.PoolCombinations.Where(w => (w.PositivePoolId == 47 && w.NegativePoolId == 90)).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault(),
-			};
-
-			data.BaseDice = data.Baseline.PositivePool.PoolDice.Union(data.Baseline.NegativePool.PoolDice);
+			var data = new SearchViewModel(context.PoolCombinations.Where(w => (w.PositivePoolId == 47 && w.NegativePoolId == 90)).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault());
 
 			return data;
 		}
@@ -43,7 +36,7 @@ namespace Visualizer.Controllers
 		private long? GetPoolId(List<PoolDie> searchForPool)
 		{
 			//fetch results for each type of die and
-			var positiveTest = new List<long>();
+			var positiveTest = new List<int>();
 			foreach (var die in searchForPool)
 			{
 				var dieSearch = context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count).Select(s => s.PoolId).ToList();
@@ -61,7 +54,7 @@ namespace Visualizer.Controllers
 		}
 
 		[HttpGet("[action]")]
-		public ProbabilityBreakdown GetStatistics(string data)
+		public SearchViewModel GetStatistics(string data)
 		{
 			List<PoolDie> searchDice = null;
 
@@ -84,15 +77,17 @@ namespace Visualizer.Controllers
 			var positiveId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost }.Contains(w.DieId)).ToList());
 			var negativeId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback }.Contains(w.DieId)).ToList());
 
-			var result = new ProbabilityBreakdown();
 
-			if (positiveId.HasValue && negativeId.HasValue)
+			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
-				result.Baseline = context.PoolCombinations.Where(w => w.PositivePoolId == positiveId.Value && w.NegativePoolId == negativeId.Value).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
-				result.BaseDice = result.Baseline.PositivePool.PoolDice.Union(result.Baseline.NegativePool.PoolDice);
+				var result = new SearchViewModel(context.PoolCombinations.Where(w => w.PositivePoolId == positiveId.Value && w.NegativePoolId == negativeId.Value).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault());
+				return result;
+			}
+			else
+			{
+				return new SearchViewModel();
 			}
 
-			return result;
 		}
 	}
 }

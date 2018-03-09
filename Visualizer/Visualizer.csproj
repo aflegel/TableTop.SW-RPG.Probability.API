@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Models\ProbabilityBreakdown.cs" />
+    <None Include="Models\SearchViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

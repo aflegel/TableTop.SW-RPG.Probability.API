@@ -10,7 +10,7 @@ namespace DataGenerator.Models
 	{
 		public PoolAnalysis(PoolResult positivePoolResult, PoolResult negativePoolResult)
 		{
-			Frequency = positivePoolResult.Frequency * negativePoolResult.Frequency;
+			Frequency = (ulong)positivePoolResult.Frequency * (ulong)negativePoolResult.Frequency;
 
 			//triumphs count as successes but advantages do not and despairs count as failures but threats do not
 			var SuccessQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success);
@@ -42,7 +42,7 @@ namespace DataGenerator.Models
 				TriumphNetQuantity = 0;
 		}
 
-		public long Frequency { get; private set; }
+		public ulong Frequency { get; private set; }
 
 		public int SuccessNetQuantity { get; private set; }
 		public int TriumphNetQuantity { get; private set; }

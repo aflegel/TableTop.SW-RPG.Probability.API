@@ -41,19 +41,10 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	public render() {
 		return <div>
 			{this.RenderSearch()}
-			<hr />
-			<h1>Probability Breakdown</h1>
 			{this.RenderPoolData()}
-			<h2>Distribution of Success and Failure</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
-			<hr />
-			<h2>Distribution of Advantage and Threat</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
-			<hr />
-			<h2>Distribution of Triumph and Despair</h2>
 			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
-			<hr />
-			{this.RenderResults()}
 		</div>;
 	}
 
@@ -62,8 +53,10 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	 */
 	private RenderPoolData() {
 		if (this.props.poolCombinationContainer.baseDice != null)
-			return <div className="row">
-				<div className="col-md-12">
+			return <div className="row row-fill">
+				<div className="col s12">
+					<h1>Probability Breakdown</h1>
+
 					<h3>Current Pool: {this.RenderDice(this.props.poolCombinationContainer.baseDice, false)}</h3>
 				</div>
 			</div>;
@@ -73,19 +66,25 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	 * Renders the current search icons as well as a search builder
 	 */
 	private RenderSearch() {
-		return <div className="row">
-			<div className="col-md-12">
-				<hr />
+		return <div className="row row-fill">
+			<div className="col s12">
 				<h3>Add Dice:
-					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Ability) }}>{this.RenderDie(DiceStatistics.DieType.Ability)}</a>
-					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Proficiency) }}>{this.RenderDie(DiceStatistics.DieType.Proficiency)}</a>
-					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Boost) }}>{this.RenderDie(DiceStatistics.DieType.Boost)}</a>
-					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Difficulty) }}>{this.RenderDie(DiceStatistics.DieType.Difficulty)}</a>
-					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Challenge) }}>{this.RenderDie(DiceStatistics.DieType.Challenge)}</a>
-					<a onClick={() => { this.AddDie(DiceStatistics.DieType.Setback) }}>{this.RenderDie(DiceStatistics.DieType.Setback)}</a>
+					<span className="btn-group">
+						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Proficiency) }}>{this.RenderDie(DiceStatistics.DieType.Proficiency)}</button>
+						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Ability) }}>{this.RenderDie(DiceStatistics.DieType.Ability)}</button>
+						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Boost) }}>{this.RenderDie(DiceStatistics.DieType.Boost)}</button>
+						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Challenge) }}>{this.RenderDie(DiceStatistics.DieType.Challenge)}</button>
+						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Difficulty) }}>{this.RenderDie(DiceStatistics.DieType.Difficulty)}</button>
+						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Setback) }}>{this.RenderDie(DiceStatistics.DieType.Setback)}</button>
+					</span>
+					Search:
+					<span className="btn-group">
+						{this.RenderDice(this.props.searchDice, true)}
+					</span>
+					<span>
+						<button onClick={() => { this.props.requestDiceStatistics(); }} className="btn btn-primary">Search</button>
+					</span>
 				</h3>
-				<h3>Search for: {this.RenderDice(this.props.searchDice, true)}</h3>
-				<a onClick={() => { this.props.requestDiceStatistics(); }} className="btn btn-primary">Search</a>
 			</div>
 		</div>;
 	}
@@ -137,7 +136,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 
 		for (var i = 0; i < quantity; i++) {
 			if (includeDelete)
-				output.push(<a onClick={() => { this.DeleteDie(dieType) }}>{this.RenderDie(dieType)}</a>)
+				output.push(<button className="btn btn-defult" onClick={() => { this.DeleteDie(dieType) }}>{this.RenderDie(dieType)}</button>)
 			else
 				output.push(this.RenderDie(dieType));
 		}
@@ -218,16 +217,23 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			var totalFrequency = baseSet.reduce((total, obj) => { return total + obj.frequency }, 0);
 			var percentageSet = baseSet.map(map => this.GetProbability(map.frequency, totalFrequency));
 
-			return <div className="row">
-				<div className="col-lg-6 col-md-12">
-					{this.RenderGraph(DiceStatistics.DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DiceStatistics.DieSymbol[mode], "rgba(99,200,132,1)")] })}
+			return <div className="row row-fill">
+				<div className="col s12">
+					<h2>Distribution of {DiceStatistics.DieSymbol[mode]} and {DiceStatistics.DieSymbol[counterMode]}</h2>
+
+					<div className="row">
+						<div className="col s6">
+							{this.RenderGraph(DiceStatistics.DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DiceStatistics.DieSymbol[mode], "rgba(99,200,132,1)")] })}
+						</div>
+						<div className="col s3">
+							{this.RenderBreakdown(mode, counterMode, baseSet, totalFrequency)}
+						</div>
+						<div className="col s3">
+							{this.RenderAdditionalDetails(mode)}
+						</div>
+					</div>
 				</div>
-				<div className="col-lg-3 col-md-6">
-					{this.RenderBreakdown(mode, counterMode, baseSet, totalFrequency)}
-				</div>
-				<div className="col-lg-3 col-md-6">
-					{this.RenderAdditionalDetails(mode)}
-				</div>
+
 			</div>;
 		}
 	}
@@ -318,11 +324,11 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 		return <dl>
 			<dt>{totalLabeling}</dt>
 			<dd>{totalData}</dd>
-			<dt>{this.RenderDieSymbol(mode)}{DiceStatistics.DieSymbol[mode]} Frequency</dt>
+			<dt>{DiceStatistics.DieSymbol[mode]} Frequency</dt>
 			<dd>{new Intl.NumberFormat('en-Us').format(positiveFrequency)}</dd>
 			<dt>Probability of {DiceStatistics.DieSymbol[mode]}</dt>
 			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(positiveFrequency / totalFrequency * 100)}%</dd>
-			<dt>{this.RenderDieSymbol(counterMode)}{DiceStatistics.DieSymbol[counterMode]} Frequency</dt>
+			<dt>{DiceStatistics.DieSymbol[counterMode]} Frequency</dt>
 			<dd>{new Intl.NumberFormat('en-Us').format(negativeFrequency)}</dd>
 			<dt>Probability of {DiceStatistics.DieSymbol[counterMode]}</dt>
 			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(negativeFrequency / totalFrequency * 100)}%</dd>

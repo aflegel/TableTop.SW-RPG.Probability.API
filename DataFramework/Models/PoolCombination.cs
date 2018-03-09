@@ -14,8 +14,8 @@ namespace DataFramework.Models
 			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
 		}
 
-		public long PositivePoolId { get; set; }
-		public long NegativePoolId { get; set; }
+		public int PositivePoolId { get; set; }
+		public int NegativePoolId { get; set; }
 
 		[JsonIgnore]
 		public virtual Pool PositivePool { get; set; }
@@ -30,7 +30,7 @@ namespace DataFramework.Models
 			{
 				if (poolCombinationStatistic.Symbol  == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
 				{
-					stat.Frequency += poolCombinationStatistic.Frequency;
+					stat.Frequency = (long)((ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency);
 					return;
 				}
 			}

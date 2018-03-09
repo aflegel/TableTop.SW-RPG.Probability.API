@@ -9,6 +9,7 @@ using DataGenerator.Models;
 using System.Collections.ObjectModel;
 using DataFramework.Context;
 using DataFramework.Models;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DataGenerator.Models
 {
@@ -31,7 +32,7 @@ namespace DataGenerator.Models
 		/// <returns></returns>
 		protected void ProcessDicePool()
 		{
-			PoolSummary.PrintStartLog(RollOutput.Name, RollOutput.TotalOutcomes);
+			PoolSummary.PrintStartLog(RollOutput.Name, (ulong)RollOutput.TotalOutcomes);
 
 			var indexDice = CopyPoolDice();
 
@@ -40,7 +41,7 @@ namespace DataGenerator.Models
 
 			RollOutput.UniqueOutcomes = RollOutput.PoolResults.Count;
 
-			PoolSummary.PrintFinishLog(RollOutput.UniqueOutcomes);
+			PoolSummary.PrintFinishLog((ulong)RollOutput.UniqueOutcomes);
 		}
 
 		protected Collection<PoolDie> CopyPoolDice()
@@ -119,7 +120,7 @@ namespace DataGenerator.Models
 					var mergedPool = new PoolResult(MergePoolSymbols(topPool.PoolResultSymbols, bottomPool.PoolResultSymbols))
 					{
 						//cross the quantity
-						Frequency = (topPool.Frequency) * (bottomPool.Frequency > 0 ? bottomPool.Frequency : 1)
+						Frequency = (long)((ulong)(topPool.Frequency) * (ulong)(bottomPool.Frequency != 0 ? bottomPool.Frequency : 1))
 					};
 
 					int? match = EntryExists(result, mergedPool);
@@ -127,7 +128,7 @@ namespace DataGenerator.Models
 					//if the new merged pool exists, up the quantity
 					if (match.HasValue)
 					{
-						result[match.Value].Frequency += mergedPool.Frequency;
+						result[match.Value].Frequency = (long)((ulong)result[match.Value].Frequency + (ulong)mergedPool.Frequency);
 					}
 					else
 					{
@@ -142,10 +143,17 @@ namespace DataGenerator.Models
 
 		private int? EntryExists(Collection<PoolResult> result, PoolResult mergedPool)
 		{
-
 			foreach (var existing in result)
 			{
-				if (existing.GetHashCode() == mergedPool.GetHashCode())
+				if (existing.PoolResultSymbols.Count != mergedPool.PoolResultSymbols.Count)
+					continue;
+
+				var comparer = new PoolResultSymbolEqualityComparer();
+
+				var notA = existing.PoolResultSymbols.Except(mergedPool.PoolResultSymbols, comparer);
+				var notB = mergedPool.PoolResultSymbols.Except(existing.PoolResultSymbols, comparer);
+
+				if (!notA.Any() && !notB.Any())
 					return result.IndexOf(existing);
 			}
 
