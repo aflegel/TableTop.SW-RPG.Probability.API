@@ -1,7 +1,12 @@
 {
   "name": "Visualizer",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "dependencies": {
+    "@types/chart.js": {
+      "version": "2.7.10",
+      "from": "@types/chart.js@latest",
+      "resolved": "https://registry.npmjs.org/@types/chart.js/-/chart.js-2.7.10.tgz"
+    },
     "@types/history": {
       "version": "4.6.0",
       "from": "@types/history@4.6.0",
@@ -214,9 +219,9 @@
       "dev": true
     },
     "aspnet-webpack": {
-      "version": "2.0.1",
-      "from": "aspnet-webpack@2.0.1",
-      "resolved": "https://registry.npmjs.org/aspnet-webpack/-/aspnet-webpack-2.0.1.tgz",
+      "version": "2.0.3",
+      "from": "aspnet-webpack@2.0.3",
+      "resolved": "https://registry.npmjs.org/aspnet-webpack/-/aspnet-webpack-2.0.3.tgz",
       "dev": true
     },
     "aspnet-webpack-react": {
@@ -630,9 +635,9 @@
       "dev": true
     },
     "chart.js": {
-      "version": "2.7.1",
-      "from": "chart.js@latest",
-      "resolved": "https://registry.npmjs.org/chart.js/-/chart.js-2.7.1.tgz"
+      "version": "2.7.2",
+      "from": "chart.js@2.7.2",
+      "resolved": "https://registry.npmjs.org/chart.js/-/chart.js-2.7.2.tgz"
     },
     "chartjs-color": {
       "version": "2.2.0",
@@ -793,10 +798,18 @@
       "dev": true
     },
     "connect": {
-      "version": "3.6.2",
+      "version": "3.6.6",
       "from": "connect@>=3.4.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/connect/-/connect-3.6.2.tgz",
-      "dev": true
+      "resolved": "https://registry.npmjs.org/connect/-/connect-3.6.6.tgz",
+      "dev": true,
+      "dependencies": {
+        "debug": {
+          "version": "2.6.9",
+          "from": "debug@2.6.9",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+          "dev": true
+        }
+      }
     },
     "console-browserify": {
       "version": "1.1.0",
@@ -984,9 +997,9 @@
       "dev": true
     },
     "encodeurl": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "from": "encodeurl@>=1.0.1 <1.1.0",
-      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz",
       "dev": true
     },
     "encoding": {
@@ -1140,10 +1153,18 @@
       "dev": true
     },
     "finalhandler": {
-      "version": "1.0.3",
-      "from": "finalhandler@1.0.3",
-      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-1.0.3.tgz",
-      "dev": true
+      "version": "1.1.0",
+      "from": "finalhandler@1.1.0",
+      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.0.tgz",
+      "dev": true,
+      "dependencies": {
+        "debug": {
+          "version": "2.6.9",
+          "from": "debug@2.6.9",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+          "dev": true
+        }
+      }
     },
     "find-up": {
       "version": "1.1.2",
@@ -1753,9 +1774,9 @@
       "dev": true
     },
     "mdi": {
-      "version": "2.1.19",
-      "from": "mdi@latest",
-      "resolved": "https://registry.npmjs.org/mdi/-/mdi-2.1.19.tgz"
+      "version": "2.1.99",
+      "from": "mdi@2.1.99",
+      "resolved": "https://registry.npmjs.org/mdi/-/mdi-2.1.99.tgz"
     },
     "memory-fs": {
       "version": "0.3.0",
@@ -1824,9 +1845,9 @@
       "dev": true
     },
     "moment": {
-      "version": "2.18.1",
-      "from": "moment@>=2.18.0 <2.19.0",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
+      "version": "2.21.0",
+      "from": "moment@>=2.10.2 <3.0.0",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.21.0.tgz"
     },
     "ms": {
       "version": "2.0.0",
@@ -2025,9 +2046,9 @@
       "dev": true
     },
     "parseurl": {
-      "version": "1.3.1",
-      "from": "parseurl@>=1.3.1 <1.4.0",
-      "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.1.tgz",
+      "version": "1.3.2",
+      "from": "parseurl@>=1.3.2 <1.4.0",
+      "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.2.tgz",
       "dev": true
     },
     "pascalcase": {
@@ -3061,9 +3082,9 @@
       "dev": true
     },
     "sw-rpg-icons": {
-      "version": "1.6.2",
-      "from": "sw-rpg-icons@1.6.2",
-      "resolved": "https://registry.npmjs.org/sw-rpg-icons/-/sw-rpg-icons-1.6.2.tgz"
+      "version": "1.7.1",
+      "from": "sw-rpg-icons@1.7.1",
+      "resolved": "https://registry.npmjs.org/sw-rpg-icons/-/sw-rpg-icons-1.7.1.tgz"
     },
     "symbol-observable": {
       "version": "1.0.4",
@@ -3075,6 +3096,12 @@
       "version": "0.2.6",
       "from": "tapable@>=0.2.5 <0.3.0",
       "resolved": "https://registry.npmjs.org/tapable/-/tapable-0.2.6.tgz",
+      "dev": true
+    },
+    "time-stamp": {
+      "version": "2.0.0",
+      "from": "time-stamp@>=2.0.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/time-stamp/-/time-stamp-2.0.0.tgz",
       "dev": true
     },
     "timers-browserify": {
@@ -3302,9 +3329,9 @@
       "dev": true
     },
     "utils-merge": {
-      "version": "1.0.0",
-      "from": "utils-merge@1.0.0",
-      "resolved": "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.0.tgz",
+      "version": "1.0.1",
+      "from": "utils-merge@1.0.1",
+      "resolved": "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz",
       "dev": true
     },
     "validate-npm-package-license": {
@@ -3382,15 +3409,21 @@
       }
     },
     "webpack-dev-middleware": {
-      "version": "1.11.0",
+      "version": "1.12.2",
       "from": "webpack-dev-middleware@>=1.8.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/webpack-dev-middleware/-/webpack-dev-middleware-1.11.0.tgz",
+      "resolved": "https://registry.npmjs.org/webpack-dev-middleware/-/webpack-dev-middleware-1.12.2.tgz",
       "dev": true,
       "dependencies": {
         "memory-fs": {
           "version": "0.4.1",
           "from": "memory-fs@>=0.4.1 <0.5.0",
           "resolved": "https://registry.npmjs.org/memory-fs/-/memory-fs-0.4.1.tgz",
+          "dev": true
+        },
+        "mime": {
+          "version": "1.6.0",
+          "from": "mime@>=1.5.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz",
           "dev": true
         }
       }

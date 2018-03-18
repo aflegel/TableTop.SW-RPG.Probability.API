@@ -1,8 +1,9 @@
 {
-	"name": "Visualizer",
-	"private": true,
-	"version": "1.0.0",
+  "name": "Visualizer",
+  "private": true,
+  "version": "1.0.0",
 	"devDependencies": {
+		"@types/chart.js": "^2.7.10",
 		"@types/history": "4.6.0",
 		"@types/react": "15.0.35",
 		"@types/react-dom": "15.5.1",
@@ -14,7 +15,7 @@
 		"@types/webpack": "2.2.15",
 		"@types/webpack-env": "1.13.0",
 		"aspnet-prerendering": "^3.0.1",
-		"aspnet-webpack": "^2.0.1",
+		"aspnet-webpack": "^2.0.3",
 		"aspnet-webpack-react": "^3.0.0",
 		"awesome-typescript-loader": "3.2.1",
 		"css-loader": "0.28.4",
@@ -39,11 +40,11 @@
 		"webpack-hot-middleware": "2.18.2",
 		"webpack-merge": "4.1.0"
 	},
-	"dependencies": {
-		"chart.js": "^2.7.1",
-		"materialize-css": "^0.100.2",
-		"mdi": "^2.1.19",
-		"react-chartjs-2": "^2.7.0",
-		"sw-rpg-icons": "^1.6.2"
-	}
+  "dependencies": {
+    "chart.js": "^2.7.2",
+    "materialize-css": "^0.100.2",
+    "mdi": "^2.1.99",
+    "react-chartjs-2": "^2.7.0",
+    "sw-rpg-icons": "^1.7.1"
+  }
 }

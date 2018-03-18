@@ -3,9 +3,11 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../store';
 import * as DiceStatistics from '../store/DiceStatistics';
+import DiceUtility from '../framework/DiceUtility';
 
 import { Line } from 'react-chartjs-2';
 import { Chart } from 'chart.js';
+import { DieType } from '../store/DiceStatistics';
 
 
 // At runtime, Redux will merge together...
@@ -41,10 +43,65 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	public render() {
 		return <div>
 			{this.RenderSearch()}
-			{this.RenderPoolData()}
-			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
-			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
-			{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
+
+			<ul className="collection with-header">
+				<li className="collection-header">
+					{this.RenderPoolData()}
+				</li>
+				<li className="collection-item">
+					{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
+				</li>
+				<li className="collection-item">
+					{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
+				</li>
+				<li className="collection-item">
+					{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
+				</li>
+			</ul>
+
+
+		</div>;
+	}
+
+	/**
+	 * Renders the current search icons as well as a search builder
+	 */
+	private RenderSearch() {
+		return <div className="row row-fill">
+			<div className="col s12">
+				<div className="card">
+					<div className="card-content">
+						<div className="row">
+							<div className="col s6">
+								<div>
+									{this.RenderDieCount(DiceStatistics.DieType.Proficiency)}
+								</div>
+								<div>
+									{this.RenderDieCount(DiceStatistics.DieType.Ability)}
+								</div>
+								<div>
+									{this.RenderDieCount(DiceStatistics.DieType.Boost)}
+								</div>
+							</div>
+							<div className="col s6">
+								<div>
+									{this.RenderDieCount(DiceStatistics.DieType.Challenge)}
+								</div>
+								<div>
+									{this.RenderDieCount(DiceStatistics.DieType.Difficulty)}
+								</div>
+								<div>
+									{this.RenderDieCount(DiceStatistics.DieType.Setback)}
+								</div>
+							</div>
+						</div>
+
+						<span>
+							<button onClick={() => { this.props.requestDiceStatistics(); }} className="btn btn-primary">Search</button>
+						</span>
+					</div>
+				</div>
+			</div>
 		</div>;
 	}
 
@@ -55,138 +112,37 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 		if (this.props.poolCombinationContainer.baseDice != null)
 			return <div className="row row-fill">
 				<div className="col s12">
-					<h1>Probability Breakdown</h1>
+					<h2>Probability Breakdown</h2>
 
-					<h3>Current Pool: {this.RenderDice(this.props.poolCombinationContainer.baseDice, false)}</h3>
+					<h3>Current Pool: {DiceUtility.RenderDice(this.props.poolCombinationContainer.baseDice)}</h3>
 				</div>
 			</div>;
 	}
 
-	/**
-	 * Renders the current search icons as well as a search builder
-	 */
-	private RenderSearch() {
-		return <div className="row row-fill">
-			<div className="col s12">
-				<h3>Add Dice:
-					<span className="btn-group">
-						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Proficiency) }}>{this.RenderDie(DiceStatistics.DieType.Proficiency)}</button>
-						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Ability) }}>{this.RenderDie(DiceStatistics.DieType.Ability)}</button>
-						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Boost) }}>{this.RenderDie(DiceStatistics.DieType.Boost)}</button>
-						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Challenge) }}>{this.RenderDie(DiceStatistics.DieType.Challenge)}</button>
-						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Difficulty) }}>{this.RenderDie(DiceStatistics.DieType.Difficulty)}</button>
-						<button className="btn btn-defult" onClick={() => { this.AddDie(DiceStatistics.DieType.Setback) }}>{this.RenderDie(DiceStatistics.DieType.Setback)}</button>
-					</span>
-					Search:
-					<span className="btn-group">
-						{this.RenderDice(this.props.searchDice, true)}
-					</span>
-					<span>
-						<button onClick={() => { this.props.requestDiceStatistics(); }} className="btn btn-primary">Search</button>
-					</span>
-				</h3>
-			</div>
-		</div>;
-	}
+	private RenderDieCount(dieType: DiceStatistics.DieType) {
+		var count = 0;
+		var test = this.props.searchDice.filter(f => f.dieId == dieType);
 
-	private RenderDice(dice: DiceStatistics.PoolDice[], includeDelete: boolean) {
-		var output: JSX.Element[] = [];
-		if (dice != null) {
-			dice.sort((a, b) => {
-				switch (a.dieId) {
-					case DiceStatistics.DieType.Proficiency:
-					case DiceStatistics.DieType.Ability:
-					case DiceStatistics.DieType.Boost:
-						switch (b.dieId) {
-							case DiceStatistics.DieType.Proficiency:
-								return 1;
-							case DiceStatistics.DieType.Ability:
-							case DiceStatistics.DieType.Boost:
-								return 0;
-							default:
-								return -1;
-						}
-					case DiceStatistics.DieType.Challenge:
-					case DiceStatistics.DieType.Difficulty:
-					case DiceStatistics.DieType.Setback:
-						switch (b.dieId) {
-							case DiceStatistics.DieType.Challenge:
-								return 1;
-							case DiceStatistics.DieType.Difficulty:
-							case DiceStatistics.DieType.Setback:
-								return 0;
-							default:
-								return -1;
-						}
-					default:
-						return 0;
-				}
-			}).forEach(item => output = output.concat(this.RenderDieSet(item.dieId, item.quantity, includeDelete)));
-		}
-		return output;
-	}
-
-	/**
-	 * Returns an icon with proper css classes for the die type and size
-	 * @param dieType
-	 * @param quantity
-	 */
-	private RenderDieSet(dieType: DiceStatistics.DieType, quantity: number, includeDelete: boolean): JSX.Element[] {
-		var output: JSX.Element[] = [];
-
-		for (var i = 0; i < quantity; i++) {
-			if (includeDelete)
-				output.push(<button className="btn btn-defult" onClick={() => { this.DeleteDie(dieType) }}>{this.RenderDie(dieType)}</button>)
-			else
-				output.push(this.RenderDie(dieType));
+		if (test.length > 0) {
+			count = test[0].quantity
 		}
 
-		return output;
+		return <span>
+			<button className="btn light-green darken-3" onClick={() => { this.AddDie(dieType) }}>+</button>
+			{DiceUtility.RenderDie(dieType)}x{count}
+			<button className="btn light-green darken-3" onClick={() => { this.DeleteDie(dieType) }}>-</button>
+		</span>;
 	}
+
 
 	private DeleteDie(dieType: DiceStatistics.DieType) {
 		this.props.removeSearchDie({ dieId: dieType, quantity: 1 });
-	}
-
-	/**
-	 * Returns an icon element with the appropriate css classes
-	 * @param dieSymbol
-	 */
-	private RenderDie(dieType: DiceStatistics.DieType) {
-		var dieSize = 0;
-		switch (dieType) {
-			case DiceStatistics.DieType.Ability:
-			case DiceStatistics.DieType.Difficulty:
-				dieSize = 8;
-				break;
-			case DiceStatistics.DieType.Boost:
-			case DiceStatistics.DieType.Setback:
-				dieSize = 6;
-				break;
-			case DiceStatistics.DieType.Challenge:
-			case DiceStatistics.DieType.Proficiency:
-			case DiceStatistics.DieType.Force:
-				dieSize = 12;
-				break;
-		}
-
-		return <i className={"die-stroke ffi-d" + dieSize + " ffi-swrpg-" + DiceStatistics.DieType[dieType].toString().toLowerCase() + "-color"}></i>;
-	}
-
-	/**
-	 * Returns an icon element with the appropriate css classes
-	 * @param dieSymbol
-	 */
-	private RenderDieSymbol(dieSymbol: DiceStatistics.DieSymbol) {
-		return <i className={"ffi-swrpg-" + DiceStatistics.DieSymbol[dieSymbol].toString().toLowerCase()}></i>;
 	}
 
 	private AddDie(dieType: DiceStatistics.DieType) {
 		var poolDie: DiceStatistics.PoolDice = { dieId: dieType, quantity: 1 };
 
 		this.props.addSearchDie(poolDie);
-
-		//this.componentWillReceiveProps(this.props);
 	}
 
 	/**
@@ -223,7 +179,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 
 					<div className="row">
 						<div className="col s6">
-							{this.RenderGraph(DiceStatistics.DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DiceStatistics.DieSymbol[mode], "rgba(99,200,132,1)")] })}
+							{this.RenderGraph(DiceStatistics.DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DiceStatistics.DieSymbol[mode], "#b71c1c")] })}
 						</div>
 						<div className="col s3">
 							{this.RenderBreakdown(mode, counterMode, baseSet, totalFrequency)}
@@ -289,9 +245,13 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	private BuildDataSet(dataset: number[], label: string, color: string) {
 		return {
 			label: label,
+			pointBackgroundColor: color,
 			borderColor: color,
-			backgroundColor: 'rgba(0,0,0,0)',
-			pointHitRadius: 25,
+			pointHoverBackgroundColor: color,
+			fill: false,
+			pointRadius: 5,
+			pointHitRadius: 10,
+			pointHoverRadius: 10,
 			data: dataset
 		}
 	}
@@ -349,34 +309,34 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			case DiceStatistics.DieSymbol.Success:
 				return <dl>
 					<dt>Success Symbols</dt>
-					<dd><i className="ffi-swrpg-success"></i> and <i className="ffi-swrpg-triumph"></i></dd>
+					<dd><i className="ffi ffi-swrpg-success"></i> and <i className="ffi ffi-swrpg-triumph"></i></dd>
 					<dt>Failure Symbols</dt>
-					<dd><i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i></dd>
+					<dd><i className="ffi ffi-swrpg-failure"></i> and <i className="ffi ffi-swrpg-despair"></i></dd>
 					<dt>Calculation</dt>
-					<dd>(<i className="ffi-swrpg-success"></i> + <i className="ffi-swrpg-triumph"></i>) - (<i className="ffi-swrpg-failure"></i> + <i className="ffi-swrpg-despair"></i>)</dd>
+					<dd>(<i className="ffi ffi-swrpg-success"></i> + <i className="ffi ffi-swrpg-triumph"></i>) - (<i className="ffi ffi-swrpg-failure"></i> + <i className="ffi ffi-swrpg-despair"></i>)</dd>
 				</dl>;
 			case DiceStatistics.DieSymbol.Advantage:
 				return <dl>
 					<dt>Advantage Symbol</dt>
-					<dd><i className="ffi-swrpg-advantage"></i></dd>
+					<dd><i className="ffi ffi-swrpg-advantage"></i></dd>
 					<dt>Threat Symbol</dt>
-					<dd><i className="ffi-swrpg-threat"></i></dd>
+					<dd><i className="ffi ffi-swrpg-threat"></i></dd>
 					<dt>Calculation</dt>
-					<dd><i className="ffi-swrpg-advantage"></i> - <i className="ffi-swrpg-threat"></i></dd>
+					<dd><i className="ffi ffi-swrpg-advantage"></i> - <i className="ffi ffi-swrpg-threat"></i></dd>
 				</dl>;
 			case DiceStatistics.DieSymbol.Triumph:
 				return <dl>
 					<dt>Triumph Symbol</dt>
-					<dd><i className="ffi-swrpg-triumph"></i></dd>
+					<dd><i className="ffi ffi-swrpg-triumph"></i></dd>
 					<dt>Despair Symbol</dt>
-					<dd><i className="ffi-swrpg-despair"></i></dd>
+					<dd><i className="ffi ffi-swrpg-despair"></i></dd>
 					<dt>Calculation</dt>
 					<dd>It's rather complicated</dd>
 				</dl>;
 			default:
 				return <span></span>;
 		}
-		//			<p><i className="ffi-swrpg-triumph"></i> is countered by both <i className="ffi-swrpg-failure"></i> and <i className="ffi-swrpg-despair"></i>. As a result a triumph can only occur on a success and net count of <i className="ffi-swrpg-triumph"></i> is adjusted by the uncountered <i className="ffi-swrpg-triumph"></i></p>
+		//			<p><i className="ffi ffi-swrpg-triumph"></i> is countered by both <i className="ffi ffi-swrpg-failure"></i> and <i className="ffi ffi-swrpg-despair"></i>. As a result a triumph can only occur on a success and net count of <i className="ffi ffi-swrpg-triumph"></i> is adjusted by the uncountered <i className="ffi ffi-swrpg-triumph"></i></p>
 	}
 	/**
 	 * Renders a table with the raw data used for populating the tables and statistics data
