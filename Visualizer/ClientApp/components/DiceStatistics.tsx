@@ -73,26 +73,14 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 					<div className="card-content">
 						<div className="row">
 							<div className="col s6">
-								<div>
-									{this.RenderDieCount(DiceStatistics.DieType.Proficiency)}
-								</div>
-								<div>
-									{this.RenderDieCount(DiceStatistics.DieType.Ability)}
-								</div>
-								<div>
-									{this.RenderDieCount(DiceStatistics.DieType.Boost)}
-								</div>
+								{this.RenderDieCount(DiceStatistics.DieType.Proficiency)}
+								{this.RenderDieCount(DiceStatistics.DieType.Ability)}
+								{this.RenderDieCount(DiceStatistics.DieType.Boost)}
 							</div>
 							<div className="col s6">
-								<div>
-									{this.RenderDieCount(DiceStatistics.DieType.Challenge)}
-								</div>
-								<div>
-									{this.RenderDieCount(DiceStatistics.DieType.Difficulty)}
-								</div>
-								<div>
-									{this.RenderDieCount(DiceStatistics.DieType.Setback)}
-								</div>
+								{this.RenderDieCount(DiceStatistics.DieType.Challenge)}
+								{this.RenderDieCount(DiceStatistics.DieType.Difficulty)}
+								{this.RenderDieCount(DiceStatistics.DieType.Setback)}
 							</div>
 						</div>
 
@@ -114,7 +102,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				<div className="col s12">
 					<h2>Probability Breakdown</h2>
 
-					<h3>Current Pool: {DiceUtility.RenderDice(this.props.poolCombinationContainer.baseDice)}</h3>
+					<h5>{DiceUtility.RenderDice(this.props.poolCombinationContainer.baseDice)}</h5>
 				</div>
 			</div>;
 	}
@@ -127,11 +115,24 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			count = test[0].quantity
 		}
 
-		return <span>
-			<button className="btn light-green darken-3" onClick={() => { this.AddDie(dieType) }}>+</button>
-			{DiceUtility.RenderDie(dieType)}x{count}
-			<button className="btn light-green darken-3" onClick={() => { this.DeleteDie(dieType) }}>-</button>
-		</span>;
+		return <div className="row">
+			<div className="col s4 right-align">
+				<h5 className="">{DiceUtility.RenderDie(dieType)}</h5>
+			</div>
+			<div className="col s8">
+				<div className="row">
+					<div className="col s4">
+						<button className="btn light-green darken-3" onClick={() => { this.AddDie(dieType) }}>+</button>
+					</div>
+					<div className="col s4 center-align">
+						{count}
+					</div>
+					<div className="col s4">
+						<button className="btn light-green darken-3" onClick={() => { this.DeleteDie(dieType) }}>-</button>
+					</div>
+				</div>
+			</div>
+		</div>;
 	}
 
 
@@ -175,7 +176,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 
 			return <div className="row row-fill">
 				<div className="col s12">
-					<h2>Distribution of {DiceStatistics.DieSymbol[mode]} and {DiceStatistics.DieSymbol[counterMode]}</h2>
+					<h3>Distribution of {DiceStatistics.DieSymbol[mode]} and {DiceStatistics.DieSymbol[counterMode]}</h3>
 
 					<div className="row">
 						<div className="col s6">
