@@ -9,7 +9,7 @@ namespace DataFramework.Context
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=SwRpgProbability;integrated security=True;MultipleActiveResultSets=true");
+			optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
 		}
 
 		// Add a DbSet for each entity type that you want to include in your model. For more information
