@@ -26,7 +26,7 @@
 		{
 			var die = new Die()
 			{
-				Name = Die.DieNames.Ability.ToString()
+				Name = DieNames.Ability.ToString()
 			};
 
 			var faceList = new List<DieFace>()

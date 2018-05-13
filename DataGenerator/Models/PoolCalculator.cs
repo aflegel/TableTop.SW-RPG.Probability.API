@@ -15,26 +15,20 @@ namespace DataGenerator.Models
 {
 	class PoolCalculator
 	{
-		public Pool RollOutput { get; private set; }
-
-		public PoolCalculator(ProbabilityContext context, Pool RollOutput)
+		public PoolCalculator(Pool RollOutput)
 		{
-			this.RollOutput = RollOutput;
-
-			//PoolSummary.PrintConsoleLog(RollOutput.GetPoolText(), RollOutput.GetRollEstimation());
-
-			ProcessDicePool();
+			ProcessDicePool(RollOutput);
 		}
 
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
 		/// </summary>
 		/// <returns></returns>
-		protected void ProcessDicePool()
+		protected void ProcessDicePool(Pool RollOutput)
 		{
 			PoolSummary.PrintStartLog(RollOutput.Name, (ulong)RollOutput.TotalOutcomes);
 
-			var indexDice = CopyPoolDice();
+			var indexDice = CopyPoolDice(RollOutput);
 
 			foreach (var die in RecursiveProcessing(indexDice))
 				RollOutput.PoolResults.Add(die);
@@ -44,7 +38,7 @@ namespace DataGenerator.Models
 			PoolSummary.PrintFinishLog((ulong)RollOutput.UniqueOutcomes);
 		}
 
-		protected Collection<PoolDie> CopyPoolDice()
+		protected Collection<PoolDie> CopyPoolDice(Pool RollOutput)
 		{
 			var indexDice = new Collection<PoolDie>();
 

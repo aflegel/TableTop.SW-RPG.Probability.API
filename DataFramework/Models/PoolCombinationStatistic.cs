@@ -19,6 +19,7 @@ namespace DataFramework.Models
 		public Symbol Symbol { get; set; }
 		public int Quantity { get; set; }
 		public long Frequency { get; set; }
+		public decimal OffSymbolAverage { get; set; }
 
 		[JsonIgnore]
 		public virtual PoolCombination PoolCombination { get; set; }

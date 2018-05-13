@@ -24,13 +24,24 @@ namespace DataFramework.Models
 
 		public virtual ICollection<PoolCombinationStatistic> PoolCombinationStatistics { get; set; }
 
+		/// <summary>
+		/// Adds or Merges a new CombinationStatistic
+		/// </summary>
+		/// <param name="poolCombinationStatistic"></param>
 		public void AddPoolCombinationStatistic(PoolCombinationStatistic poolCombinationStatistic)
 		{
 			foreach (var stat in PoolCombinationStatistics)
 			{
-				if (poolCombinationStatistic.Symbol  == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
+				if (poolCombinationStatistic.Symbol == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
 				{
-					stat.Frequency = (long)((ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency);
+					//calculate the new frequency
+					var updatedFrequency = (ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency;
+
+					//update the running average.  A running total will result in numbers too large for Int64
+					stat.OffSymbolAverage = ((stat.OffSymbolAverage * stat.Frequency) + (poolCombinationStatistic.OffSymbolAverage * poolCombinationStatistic.Frequency)) / updatedFrequency;
+
+					stat.Frequency = (long)updatedFrequency;
+
 					return;
 				}
 			}

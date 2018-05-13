@@ -48,7 +48,8 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Success,
 						Quantity = analysis.SuccessNetQuantity,
-						Frequency = (long)analysis.Frequency
+						Frequency = (long)analysis.Frequency,
+						OffSymbolAverage = analysis.AdvantageNetQuantity
 					});
 
 					//add the net advantage quantity
@@ -56,7 +57,8 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Advantage,
 						Quantity = analysis.AdvantageNetQuantity,
-						Frequency = (long)analysis.Frequency
+						Frequency = (long)analysis.Frequency,
+						OffSymbolAverage = analysis.SuccessNetQuantity
 					});
 
 					//add the net triumph
@@ -64,7 +66,8 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Triumph,
 						Quantity = analysis.TriumphNetQuantity,
-						Frequency = (long)analysis.Frequency
+						Frequency = (long)analysis.Frequency,
+						OffSymbolAverage = 0
 					});
 				}
 			}
