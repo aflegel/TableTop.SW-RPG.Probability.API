@@ -1,66 +1,66 @@
 ﻿import * as React from "react";
-import * as DiceStatistics from "../store/DiceStatistics";
+import {DieSymbol, DieType, PoolDice} from "../statistics/DiceModels";
 
 export default class DiceUtilty {
 	/**
 	 * Returns an icon element with the appropriate css classes
 	 * @param dieSymbol
 	 */
-	public static RenderDieSymbol(dieSymbol: DiceStatistics.DieSymbol) {
-		return <i className={"ffi ffi-swrpg-" + DiceStatistics.DieSymbol[dieSymbol].toString().toLowerCase()}></i>;
+	public static RenderDieSymbol(dieSymbol: DieSymbol) {
+		return <i className={"ffi ffi-swrpg-" + DieSymbol[dieSymbol].toString().toLowerCase()}></i>;
 	}
 
 	/**
 	 * Returns an icon element with the appropriate css classes
 	 * @param dieSymbol
 	 */
-	public static RenderDie(dieType: DiceStatistics.DieType) {
+	public static RenderDie(dieType: DieType) {
 		var dieSize = 0;
 		switch (dieType) {
-			case DiceStatistics.DieType.Ability:
-			case DiceStatistics.DieType.Difficulty:
+			case DieType.Ability:
+			case DieType.Difficulty:
 				dieSize = 8;
 				break;
-			case DiceStatistics.DieType.Boost:
-			case DiceStatistics.DieType.Setback:
+			case DieType.Boost:
+			case DieType.Setback:
 				dieSize = 6;
 				break;
-			case DiceStatistics.DieType.Challenge:
-			case DiceStatistics.DieType.Proficiency:
-			case DiceStatistics.DieType.Force:
+			case DieType.Challenge:
+			case DieType.Proficiency:
+			case DieType.Force:
 				dieSize = 12;
 				break;
 		}
 
-		return <i className={"die-stroke ffi ffi-d" + dieSize + " ffi ffi-swrpg-" + DiceStatistics.DieType[dieType].toString().toLowerCase() + "-color"}></i>;
+		return <i className={"die-stroke ffi ffi-d" + dieSize + " ffi ffi-swrpg-" + DieType[dieType].toString().toLowerCase() + "-color"}></i>;
 	}
 
 
-	public static RenderDice(dice: DiceStatistics.PoolDice[]) {
+	public static RenderDice(dice: PoolDice[]) {
 		var output: JSX.Element[] = [];
 		if (dice != null) {
 			dice.sort((a, b) => {
 				switch (a.dieId) {
-					case DiceStatistics.DieType.Proficiency:
-					case DiceStatistics.DieType.Ability:
-					case DiceStatistics.DieType.Boost:
+					case DieType.Proficiency:
+					case DieType.Ability:
+					case DieType.Boost:
 						switch (b.dieId) {
-							case DiceStatistics.DieType.Proficiency:
+							case DieType.Proficiency:
 								return 1;
-							case DiceStatistics.DieType.Ability:
-							case DiceStatistics.DieType.Boost:
+							case DieType.Ability:
+							case DieType.Boost:
 								return 0;
 							default:
 								return -1;
 						}
-					case DiceStatistics.DieType.Challenge:
-					case DiceStatistics.DieType.Difficulty:
-					case DiceStatistics.DieType.Setback:
+					case DieType.Challenge:
+					case DieType.Difficulty:
+					case DieType.Setback:
 						switch (b.dieId) {
-							case DiceStatistics.DieType.Challenge:
+							case DieType.Challenge:
 								return 1;
-							case DiceStatistics.DieType.Difficulty:
-							case DiceStatistics.DieType.Setback:
+							case DieType.Difficulty:
+							case DieType.Setback:
 								return 0;
 							default:
 								return -1;
@@ -78,7 +78,7 @@ export default class DiceUtilty {
 	 * @param dieType
 	 * @param quantity
 	 */
-	public static RenderDieSet(dieType: DiceStatistics.DieType, quantity: number): JSX.Element[] {
+	public static RenderDieSet(dieType: DieType, quantity: number): JSX.Element[] {
 		var output: JSX.Element[] = [];
 
 		for (var i = 0; i < quantity; i++) {

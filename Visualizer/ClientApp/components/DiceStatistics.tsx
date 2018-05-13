@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ApplicationState } from '../store';
-import * as DiceStatistics from '../store/DiceStatistics';
+import { ApplicationState } from '../statistics';
+import * as DiceStatistics from '../statistics/DiceStatistics';
 import DiceUtility from '../framework/DiceUtility';
 
 import { Line } from 'react-chartjs-2';
 import { Chart } from 'chart.js';
-import { DieType } from '../store/DiceStatistics';
+import { DieType, DieSymbol, PoolCombinationState, PoolCombinationStatistic, PoolDice, PoolCombination } from '../statistics/DiceModels';
 
 
 // At runtime, Redux will merge together...
 type DiceStatisticsProps =
-	DiceStatistics.PoolCombinationState        // ... state we've requested from the Redux store
+	PoolCombinationState        // ... state we've requested from the Redux store
 	& typeof DiceStatistics.actionCreators     // ... plus action creators we've requested
 	& RouteComponentProps<{ positivePoolId?: number, negativePoolId?: number }>; // ... plus incoming routing parameters
 
@@ -49,13 +49,13 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 					{this.RenderPoolData()}
 				</li>
 				<li className="collection-item">
-					{this.RenderGraphAndData(DiceStatistics.DieSymbol.Success)}
+					{this.RenderGraphAndData(DieSymbol.Success)}
 				</li>
 				<li className="collection-item">
-					{this.RenderGraphAndData(DiceStatistics.DieSymbol.Advantage)}
+					{this.RenderGraphAndData(DieSymbol.Advantage)}
 				</li>
 				<li className="collection-item">
-					{this.RenderGraphAndData(DiceStatistics.DieSymbol.Triumph)}
+					{this.RenderGraphAndData(DieSymbol.Triumph)}
 				</li>
 			</ul>
 
@@ -73,14 +73,14 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 					<div className="card-content">
 						<div className="row">
 							<div className="col s6">
-								{this.RenderDieCount(DiceStatistics.DieType.Proficiency)}
-								{this.RenderDieCount(DiceStatistics.DieType.Ability)}
-								{this.RenderDieCount(DiceStatistics.DieType.Boost)}
+								{this.RenderDieCount(DieType.Proficiency)}
+								{this.RenderDieCount(DieType.Ability)}
+								{this.RenderDieCount(DieType.Boost)}
 							</div>
 							<div className="col s6">
-								{this.RenderDieCount(DiceStatistics.DieType.Challenge)}
-								{this.RenderDieCount(DiceStatistics.DieType.Difficulty)}
-								{this.RenderDieCount(DiceStatistics.DieType.Setback)}
+								{this.RenderDieCount(DieType.Challenge)}
+								{this.RenderDieCount(DieType.Difficulty)}
+								{this.RenderDieCount(DieType.Setback)}
 							</div>
 						</div>
 
@@ -107,7 +107,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			</div>;
 	}
 
-	private RenderDieCount(dieType: DiceStatistics.DieType) {
+	private RenderDieCount(dieType: DieType) {
 		var count = 0;
 		var test = this.props.searchDice.filter(f => f.dieId == dieType);
 
@@ -136,12 +136,12 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	}
 
 
-	private DeleteDie(dieType: DiceStatistics.DieType) {
+	private DeleteDie(dieType: DieType) {
 		this.props.removeSearchDie({ dieId: dieType, quantity: 1 });
 	}
 
-	private AddDie(dieType: DiceStatistics.DieType) {
-		var poolDie: DiceStatistics.PoolDice = { dieId: dieType, quantity: 1 };
+	private AddDie(dieType: DieType) {
+		var poolDie: PoolDice = { dieId: dieType, quantity: 1 };
 
 		this.props.addSearchDie(poolDie);
 	}
@@ -150,19 +150,19 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	 * Configures the data for a given symbol and renders a graph and a statistics breakdown panel
 	 * @param mode
 	 */
-	private RenderGraphAndData(mode: DiceStatistics.DieSymbol) {
+	private RenderGraphAndData(mode: DieSymbol) {
 		if (this.props.poolCombinationContainer != null && this.props.poolCombinationContainer.baseline != null) {
 
-			var counterMode: DiceStatistics.DieSymbol = DiceStatistics.DieSymbol.Failure;
+			var counterMode: DieSymbol = DieSymbol.Failure;
 			switch (mode) {
-				case DiceStatistics.DieSymbol.Success:
-					counterMode = DiceStatistics.DieSymbol.Failure;
+				case DieSymbol.Success:
+					counterMode = DieSymbol.Failure;
 					break;
-				case DiceStatistics.DieSymbol.Advantage:
-					counterMode = DiceStatistics.DieSymbol.Threat;
+				case DieSymbol.Advantage:
+					counterMode = DieSymbol.Threat;
 					break;
-				case DiceStatistics.DieSymbol.Triumph:
-					counterMode = DiceStatistics.DieSymbol.Despair;
+				case DieSymbol.Triumph:
+					counterMode = DieSymbol.Despair;
 					break;
 			}
 
@@ -176,11 +176,11 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 
 			return <div className="row row-fill">
 				<div className="col s12">
-					<h3>Distribution of {DiceStatistics.DieSymbol[mode]} and {DiceStatistics.DieSymbol[counterMode]}</h3>
+					<h3>Distribution of {DieSymbol[mode]} and {DieSymbol[counterMode]}</h3>
 
 					<div className="row">
 						<div className="col s6">
-							{this.RenderGraph(DiceStatistics.DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DiceStatistics.DieSymbol[mode], "#b71c1c")] })}
+							{this.RenderGraph(DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DieSymbol[mode], "#b71c1c")] })}
 						</div>
 						<div className="col s3">
 							{this.RenderBreakdown(mode, counterMode, baseSet, totalFrequency)}
@@ -264,11 +264,11 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	 * @param baseSet
 	 * @param totalFrequency
 	 */
-	private RenderBreakdown(mode: DiceStatistics.DieSymbol, counterMode: DiceStatistics.DieSymbol, baseSet: DiceStatistics.PoolCombinationStatistic[], totalFrequency: number) {
+	private RenderBreakdown(mode: DieSymbol, counterMode: DieSymbol, baseSet: PoolCombinationStatistic[], totalFrequency: number) {
 
 		var positiveSet = baseSet.filter(f => f.quantity > 0);
 		//success mode requires 0 quantity outcomes as well
-		var negativeSet = baseSet.filter(f => (f.quantity < (mode == DiceStatistics.DieSymbol.Success ? 1 : 0)));
+		var negativeSet = baseSet.filter(f => (f.quantity < (mode == DieSymbol.Success ? 1 : 0)));
 
 		var positiveFrequency = positiveSet.reduce((total, obj) => { return total + obj.frequency }, 0);
 		var negativeFrequency = negativeSet.reduce((total, obj) => { return total + obj.frequency }, 0);
@@ -278,22 +278,22 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 		var deviationSet = baseSet.map(map => ((map.quantity - average) ** 2) * map.frequency);
 		var standardDeviation = Math.sqrt(deviationSet.reduce((total, obj) => { return total + obj }, 0) / totalFrequency);
 
-		var totalLabeling = mode == DiceStatistics.DieSymbol.Success ? "Total Frequency" : "";
-		var totalData = mode == DiceStatistics.DieSymbol.Success ? new Intl.NumberFormat('en-Us').format(totalFrequency) : null;
+		var totalLabeling = mode == DieSymbol.Success ? "Total Frequency" : "";
+		var totalData = mode == DieSymbol.Success ? new Intl.NumberFormat('en-Us').format(totalFrequency) : null;
 
 
 		return <dl>
 			<dt>{totalLabeling}</dt>
 			<dd>{totalData}</dd>
-			<dt>{DiceStatistics.DieSymbol[mode]} Frequency</dt>
+			<dt>{DieSymbol[mode]} Frequency</dt>
 			<dd>{new Intl.NumberFormat('en-Us').format(positiveFrequency)}</dd>
-			<dt>Probability of {DiceStatistics.DieSymbol[mode]}</dt>
+			<dt>Probability of {DieSymbol[mode]}</dt>
 			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(positiveFrequency / totalFrequency * 100)}%</dd>
-			<dt>{DiceStatistics.DieSymbol[counterMode]} Frequency</dt>
+			<dt>{DieSymbol[counterMode]} Frequency</dt>
 			<dd>{new Intl.NumberFormat('en-Us').format(negativeFrequency)}</dd>
-			<dt>Probability of {DiceStatistics.DieSymbol[counterMode]}</dt>
+			<dt>Probability of {DieSymbol[counterMode]}</dt>
 			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(negativeFrequency / totalFrequency * 100)}%</dd>
-			<dt>Average {DiceStatistics.DieSymbol[mode]}</dt>
+			<dt>Average {DieSymbol[mode]}</dt>
 			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(average)}</dd>
 			<dt>Standard Deviation</dt>
 			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(standardDeviation)}</dd>
@@ -304,10 +304,10 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	 *
 	 * @param mode
 	 */
-	private RenderAdditionalDetails(mode: DiceStatistics.DieSymbol) {
+	private RenderAdditionalDetails(mode: DieSymbol) {
 
 		switch (mode) {
-			case DiceStatistics.DieSymbol.Success:
+			case DieSymbol.Success:
 				return <dl>
 					<dt>Success Symbols</dt>
 					<dd><i className="ffi ffi-swrpg-success"></i> and <i className="ffi ffi-swrpg-triumph"></i></dd>
@@ -316,7 +316,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 					<dt>Calculation</dt>
 					<dd>(<i className="ffi ffi-swrpg-success"></i> + <i className="ffi ffi-swrpg-triumph"></i>) - (<i className="ffi ffi-swrpg-failure"></i> + <i className="ffi ffi-swrpg-despair"></i>)</dd>
 				</dl>;
-			case DiceStatistics.DieSymbol.Advantage:
+			case DieSymbol.Advantage:
 				return <dl>
 					<dt>Advantage Symbol</dt>
 					<dd><i className="ffi ffi-swrpg-advantage"></i></dd>
@@ -325,7 +325,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 					<dt>Calculation</dt>
 					<dd><i className="ffi ffi-swrpg-advantage"></i> - <i className="ffi ffi-swrpg-threat"></i></dd>
 				</dl>;
-			case DiceStatistics.DieSymbol.Triumph:
+			case DieSymbol.Triumph:
 				return <dl>
 					<dt>Triumph Symbol</dt>
 					<dd><i className="ffi ffi-swrpg-triumph"></i></dd>
@@ -345,7 +345,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	private RenderResults() {
 		if (this.props.poolCombinationContainer != null) {
 
-			var containers: DiceStatistics.PoolCombination[] = [];
+			var containers: PoolCombination[] = [];
 
 			if (this.props.poolCombinationContainer.baseline != null)
 				containers = containers.concat(this.props.poolCombinationContainer.baseline);
@@ -361,7 +361,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				<tbody>
 					{containers.map(poolCombination => poolCombination.poolCombinationStatistics.map(combination =>
 						<tr>
-							<td>{DiceStatistics.DieSymbol[combination.symbol]}</td>
+							<td>{DieSymbol[combination.symbol]}</td>
 							<td>{combination.quantity}</td>
 							<td>{new Intl.NumberFormat('en-Us').format(combination.frequency)}</td>
 						</tr>

@@ -1,9 +1,9 @@
 import * as DiceStatistics from './DiceStatistics';
-import { Line } from 'react-chartjs-2';
+import { PoolCombinationState } from "./DiceModels";
 
 // The top-level state object
 export interface ApplicationState {
-	diceStatistics: DiceStatistics.PoolCombinationState;
+	diceStatistics: PoolCombinationState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
