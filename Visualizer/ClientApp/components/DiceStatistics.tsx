@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { ApplicationState } from '../statistics';
-import * as DiceStatistics from '../statistics/DiceStatistics';
-import DiceUtility from '../framework/DiceUtility';
-import ChartUtility from '../framework/ChartUtility';
+import * as React from "react";
+import { Link, RouteComponentProps } from "react-router-dom";
+import { connect } from "react-redux";
+import { ApplicationState } from "../statistics";
+import * as DiceStatistics from "../statistics/DiceStatistics";
+import DiceUtility from "../framework/DiceUtility";
+import ChartUtility from "../framework/ChartUtility";
 
-import { Line } from 'react-chartjs-2';
-import { Chart } from 'chart.js';
-import { DieType, DieSymbol, PoolCombinationState, PoolCombinationStatistic, PoolDice, PoolCombination } from '../statistics/DiceModels';
+import { Line } from "react-chartjs-2";
+import { Chart } from "chart.js";
+import { DieType, DieSymbol, PoolCombinationState, PoolCombinationStatistic, PoolDice, PoolCombination } from "../statistics/DiceModels";
 
 
 // At runtime, Redux will merge together...
@@ -157,7 +157,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			var xAxis = baseSet.map(map => map.quantity.toString());
 			var totalFrequency = baseSet.reduce((total, obj) => { return total + obj.frequency }, 0);
 			var percentageSet = baseSet.map(map => this.GetProbability(map.frequency, totalFrequency));
-			var averageSet = baseSet.map(map => map.alternateTotal / totalFrequency);
+			var averageSet = baseSet.map(map => map.alternateTotal / map.frequency);
 
 			var datasets = [ChartUtility.BuildDataSet(percentageSet, DieSymbol[mode], "#b71c1c", "Probability")];
 
@@ -231,24 +231,24 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 		var standardDeviation = Math.sqrt(deviationSet.reduce((total, obj) => { return total + obj }, 0) / totalFrequency);
 
 		var totalLabeling = mode == DieSymbol.Success ? "Total Frequency" : "";
-		var totalData = mode == DieSymbol.Success ? new Intl.NumberFormat('en-Us').format(totalFrequency) : null;
+		var totalData = mode == DieSymbol.Success ? new Intl.NumberFormat("en-Us").format(totalFrequency) : null;
 
 
 		return <dl>
 			<dt>{totalLabeling}</dt>
 			<dd>{totalData}</dd>
 			<dt>{DieSymbol[mode]} Frequency</dt>
-			<dd>{new Intl.NumberFormat('en-Us').format(positiveFrequency)}</dd>
+			<dd>{new Intl.NumberFormat("en-Us").format(positiveFrequency)}</dd>
 			<dt>Probability of {DieSymbol[mode]}</dt>
-			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(positiveFrequency / totalFrequency * 100)}%</dd>
+			<dd>{new Intl.NumberFormat("en-Us", { minimumFractionDigits: 4 }).format(positiveFrequency / totalFrequency * 100)}%</dd>
 			<dt>{DieSymbol[counterMode]} Frequency</dt>
-			<dd>{new Intl.NumberFormat('en-Us').format(negativeFrequency)}</dd>
+			<dd>{new Intl.NumberFormat("en-Us").format(negativeFrequency)}</dd>
 			<dt>Probability of {DieSymbol[counterMode]}</dt>
-			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(negativeFrequency / totalFrequency * 100)}%</dd>
+			<dd>{new Intl.NumberFormat("en-Us", { minimumFractionDigits: 4 }).format(negativeFrequency / totalFrequency * 100)}%</dd>
 			<dt>Average {DieSymbol[mode]}</dt>
-			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(average)}</dd>
+			<dd>{new Intl.NumberFormat("en-Us", { minimumFractionDigits: 4 }).format(average)}</dd>
 			<dt>Standard Deviation</dt>
-			<dd>{new Intl.NumberFormat('en-Us', { minimumFractionDigits: 4 }).format(standardDeviation)}</dd>
+			<dd>{new Intl.NumberFormat("en-Us", { minimumFractionDigits: 4 }).format(standardDeviation)}</dd>
 		</dl>;
 	}
 
@@ -306,7 +306,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				<div className="col s12">
 					<div className="card">
 						<div className="card-content">
-							<table className='table'>
+							<table className="table">
 								<thead>
 									<tr>
 										<th>Symbol</th>
@@ -320,8 +320,8 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 										<tr>
 											<td>{DieSymbol[combination.symbol]}</td>
 											<td>{combination.quantity}</td>
-											<td>{new Intl.NumberFormat('en-Us').format(combination.frequency)}</td>
-											<td>{new Intl.NumberFormat('en-Us').format(combination.alternateTotal)}</td>
+											<td>{new Intl.NumberFormat("en-Us").format(combination.frequency)}</td>
+											<td>{new Intl.NumberFormat("en-Us").format(combination.alternateTotal)}</td>
 										</tr>
 									))}
 								</tbody>

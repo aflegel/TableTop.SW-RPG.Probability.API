@@ -27,7 +27,7 @@ namespace DataGenerator
 			var time = DateTime.Now;
 			Console.WriteLine(string.Format("{0:hh:mm.ss} Startup", DateTime.Now));
 
-			ProcessProgram();
+			//ProcessProgram();
 
 			Console.WriteLine(string.Format("Start time: {0:hh:mm.ss}", time));
 			Console.WriteLine(string.Format("Completion time: {0:hh:mm.ss}", DateTime.Now));
@@ -42,6 +42,7 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void InitializeDatabase(ProbabilityContext context)
 		{
+			//todo: wait for confirmation before deleting
 			Console.WriteLine(string.Format("{0:hh:mm.ss} Database Initialization", DateTime.Now));
 
 			//delete and recreate the database
@@ -69,7 +70,6 @@ namespace DataGenerator
 				CommitData(context);
 
 				ProcessPoolComparison(context);
-				//UpdatePoolComparison(context);
 
 				//save the outcome results
 				CommitData(context);
@@ -107,71 +107,26 @@ namespace DataGenerator
 		{
 			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Comparison", DateTime.Now));
 			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Ability.ToString() || a.Die.Name == Die.DieNames.Boost.ToString() || a.Die.Name == Die.DieNames.Proficiency.ToString()))
-				.Include(i => i.PoolResults);
+				.Include(i => i.PositivePoolCombinations)
+						.ThenInclude(tti => tti.PoolCombinationStatistics)
+				.Include(i => i.PoolResults)
+						.ThenInclude(tti => tti.PoolResultSymbols);
 
 			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Difficulty.ToString() || a.Die.Name == Die.DieNames.SetBack.ToString() || a.Die.Name == Die.DieNames.Challenge.ToString()))
-				.Include(i => i.PoolResults);
+				.Include(i => i.NegativePoolCombinations)
+					.ThenInclude(tti => tti.PoolCombinationStatistics)
+				.Include(i => i.PoolResults)
+					.ThenInclude(tti => tti.PoolResultSymbols);
+
 
 			foreach (var positivePool in positivePools)
 			{
 				foreach (var negativePool in negativePools)
 				{
-					new OutcomeComparison(context, new PoolCombination(positivePool, negativePool));
+					new OutcomeComparison(new PoolCombination(positivePool, negativePool));
 				}
 			}
 			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Comparison", DateTime.Now));
-		}
-
-		/// <summary>
-		/// Function to create the average offstat
-		/// </summary>
-		/// <param name="context"></param>
-		private static void UpdatePoolComparison(ProbabilityContext context)
-		{
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Update", DateTime.Now));
-			var combinations = context.PoolCombinations.Where(w => w.PositivePoolId > 0)
-				.Include(i => i.PoolCombinationStatistics)
-				.Include(i => i.PositivePool)
-					.ThenInclude(ti => ti.PoolResults)
-						.ThenInclude(tti => tti.PoolResultSymbols)
-
-				.Include(i => i.NegativePool)
-					.ThenInclude(ti => ti.PoolResults)
-						.ThenInclude(tti => tti.PoolResultSymbols);
-
-			foreach (var combination in combinations)
-			{
-				Console.WriteLine(string.Format("{0:hh:mm.ss} {1}, {2}", DateTime.Now, combination.PositivePool.Name,combination.NegativePool.Name));
-
-				foreach (var positivePoolResult in combination.PositivePool.PoolResults)
-				{
-					//loop through the simple pool to find matches
-					foreach (var negativePoolResult in combination.NegativePool.PoolResults)
-					{
-						var analysis = new OutcomeAnalysis(positivePoolResult, negativePoolResult);
-
-						foreach (var stat in combination.PoolCombinationStatistics)
-						{
-							if (Symbol.Success == stat.Symbol && analysis.SuccessNetQuantity == stat.Quantity)
-							{
-								stat.AlternateTotal += analysis.AdvantageNetQuantity;
-								break;
-							}
-						}
-
-						//add the net advantage quantity
-						foreach (var stat in combination.PoolCombinationStatistics)
-						{
-							if (Symbol.Advantage == stat.Symbol && analysis.AdvantageNetQuantity == stat.Quantity)
-							{
-								stat.AlternateTotal += analysis.SuccessNetQuantity;
-								break;
-							}
-						}
-					}
-				}
-			}
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Update", DateTime.Now));
 		}
 
 		/// <summary>

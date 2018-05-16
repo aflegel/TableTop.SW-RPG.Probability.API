@@ -1,30 +1,30 @@
-import { fetch, addTask } from 'domain-task';
-import { Action, Reducer, ActionCreator } from 'redux';
-import { AppThunkAction } from './';
+import { fetch, addTask } from "domain-task";
+import { Action, Reducer, ActionCreator } from "redux";
+import { AppThunkAction } from "./";
 import { PoolDice, PoolCombinationContainer, PoolCombinationState, DieType } from "./DiceModels";
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 interface AddSearchDieAction {
-	type: 'ADD_SEARCH_DIE';
+	type: "ADD_SEARCH_DIE";
 	poolDie: PoolDice;
 }
 interface RemoveSearchDieAction {
-	type: 'REMOVE_SEARCH_DIE'
+	type: "REMOVE_SEARCH_DIE"
 	poolDie: PoolDice;
 }
 
 interface RequestDiceStatisticsAction {
-	type: 'REQUEST_DICE_STATISTICS';
+	type: "REQUEST_DICE_STATISTICS";
 }
 
 interface ReceiveDiceStatisticsAction {
-	type: 'RECEIVE_DICE_STATISTICS';
+	type: "RECEIVE_DICE_STATISTICS";
 	poolCombinationContainer: PoolCombinationContainer;
 }
 
-// Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
+// Declare a "discriminated union" type. This guarantees that all references to "type" properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = RequestDiceStatisticsAction | ReceiveDiceStatisticsAction | AddSearchDieAction | RemoveSearchDieAction;
 
@@ -33,8 +33,8 @@ type KnownAction = RequestDiceStatisticsAction | ReceiveDiceStatisticsAction | A
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-	addSearchDie: (poolDie: PoolDice) => <AddSearchDieAction>{ type: 'ADD_SEARCH_DIE', poolDie: poolDie },
-	removeSearchDie: (poolDie: PoolDice) => <RemoveSearchDieAction>{ type: 'REMOVE_SEARCH_DIE', poolDie: poolDie },
+	addSearchDie: (poolDie: PoolDice) => <AddSearchDieAction>{ type: "ADD_SEARCH_DIE", poolDie: poolDie },
+	removeSearchDie: (poolDie: PoolDice) => <RemoveSearchDieAction>{ type: "REMOVE_SEARCH_DIE", poolDie: poolDie },
 	requestDiceStatistics: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
 
 		// Only load data if it's something we don't already have (and are not already loading)
@@ -44,11 +44,11 @@ export const actionCreators = {
 		let fetchTask = fetch(`api/Search/GetStatistics?data=${data}`)
 			.then(response => response.json() as Promise<PoolCombinationContainer>)
 			.then(data => {
-				dispatch({ type: 'RECEIVE_DICE_STATISTICS', poolCombinationContainer: data });
+				dispatch({ type: "RECEIVE_DICE_STATISTICS", poolCombinationContainer: data });
 			});
 
 		addTask(fetchTask); // Ensure server-side prerendering waits for this to complete
-		dispatch({ type: 'REQUEST_DICE_STATISTICS', });
+		dispatch({ type: "REQUEST_DICE_STATISTICS", });
 		//}
 	}
 };
@@ -82,7 +82,7 @@ const unloadedState: PoolCombinationState = { poolCombinationContainer: {}, sear
 export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationState, incomingAction: Action) => {
 	const action = incomingAction as KnownAction;
 	switch (action.type) {
-		case 'ADD_SEARCH_DIE':
+		case "ADD_SEARCH_DIE":
 			var stateDice = CopyDice(state.searchDice);
 
 			switch (action.poolDie.dieId) {
@@ -112,7 +112,7 @@ export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationSta
 				negativePoolId: state.negativePoolId + 1,
 				isLoading: false
 			};
-		case 'REMOVE_SEARCH_DIE':
+		case "REMOVE_SEARCH_DIE":
 			var stateDice = CopyDice(state.searchDice);
 			var existingRecord = stateDice.find(f => f.dieId == action.poolDie.dieId);
 
@@ -129,14 +129,14 @@ export const reducer: Reducer<PoolCombinationState> = (state: PoolCombinationSta
 				searchDice: stateDice,
 				isLoading: false
 			};
-		case 'REQUEST_DICE_STATISTICS':
+		case "REQUEST_DICE_STATISTICS":
 			return {
 				poolCombinationContainer: state.poolCombinationContainer,
 				negativePoolId: 0,
 				searchDice: state.searchDice,
 				isLoading: true
 			};
-		case 'RECEIVE_DICE_STATISTICS':
+		case "RECEIVE_DICE_STATISTICS":
 			// Only accept the incoming data if it matches the most recent request. This ensures we correctly
 			// handle out-of-order responses.
 			//if (action.positivePoolId === state.positivePoolId && action.negativePoolId === state.negativePoolId) {

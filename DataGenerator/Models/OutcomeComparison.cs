@@ -19,18 +19,18 @@ namespace DataGenerator.Models
 		/// </summary>
 		/// <param name="positivePool"></param>
 		/// <param name="negativePool"></param>
-		public OutcomeComparison(ProbabilityContext context, PoolCombination poolCombination)
+		public OutcomeComparison(PoolCombination poolCombination)
 		{
 			//print to console
 			PrintConsoleLog(poolCombination);
 
-			ProcessRollComparison(context, poolCombination);
+			ProcessRollComparison(poolCombination);
 		}
 
 		/// <summary>
 		/// Compares the outcome of each pool's combined rolls
 		/// </summary>
-		private void ProcessRollComparison(ProbabilityContext context, PoolCombination poolCombination)
+		private void ProcessRollComparison(PoolCombination poolCombination)
 		{
 			foreach (var positivePoolResult in poolCombination.PositivePool.PoolResults)
 			{

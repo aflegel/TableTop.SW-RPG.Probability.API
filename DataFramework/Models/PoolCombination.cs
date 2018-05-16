@@ -18,6 +18,9 @@ namespace DataFramework.Models
 		{
 			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
 
+			PositivePool = positivePool;
+			NegativePool = negativePool;
+
 			positivePool.PositivePoolCombinations.Add(this);
 			negativePool.NegativePoolCombinations.Add(this);
 		}
@@ -43,7 +46,7 @@ namespace DataFramework.Models
 				if (poolCombinationStatistic.Symbol == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
 				{
 					//update the running average.  A running total will result in numbers too large for Int64
-					stat.AlternateTotal = (long)((ulong)stat.AlternateTotal + (ulong)poolCombinationStatistic.AlternateTotal);
+					stat.AlternateTotal = (long)((ulong)stat.AlternateTotal + ((ulong)poolCombinationStatistic.AlternateTotal * (ulong)poolCombinationStatistic.Frequency));
 
 					stat.Frequency = (long)((ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency);
 

@@ -1,4 +1,4 @@
-import * as DiceStatistics from './DiceStatistics';
+import * as DiceStatistics from "./DiceStatistics";
 import { PoolCombinationState } from "./DiceModels";
 
 // The top-level state object
