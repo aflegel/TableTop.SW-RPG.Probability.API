@@ -9,6 +9,7 @@ using System.Threading;
 using DataGenerator.Models;
 using DataFramework.Context;
 using DataFramework.Models;
+using static DataFramework.Models.Die;
 
 namespace DataGenerator
 {
@@ -24,25 +25,30 @@ namespace DataGenerator
 		static void Main(string[] args)
 		{
 			var time = DateTime.Now;
-			Console.WriteLine(string.Format("{0:h:mm.s} Startup", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Startup", DateTime.Now));
 
 			ProcessProgram();
 
-			Console.WriteLine(string.Format("Start time: {0:h:mm.s}", time));
-			Console.WriteLine(string.Format("Completion time: {0:h:mm.s}", DateTime.Now));
-			//Console.WriteLine(string.Format("Total Runtime: {0:h:m.s}", DateTime.Now.Subtract(time)));
+			Console.WriteLine(string.Format("Start time: {0:hh:mm.ss}", time));
+			Console.WriteLine(string.Format("Completion time: {0:hh:mm.ss}", DateTime.Now));
+			//Console.WriteLine(string.Format("Total Runtime: {0:hh:mm.ss}", DateTime.Now.Subtract(time)));
 			//prevent auto close
 			Console.ReadKey();
 		}
 
+		/// <summary>
+		/// Destroys and recreates the database and seeds the database with the dice information
+		/// </summary>
+		/// <param name="context"></param>
 		private static void InitializeDatabase(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:h:m.s} Database Initialization", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Database Initialization", DateTime.Now));
+
+			//delete and recreate the database
 			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
-			//context.Database.Migrate();
 
-			Console.WriteLine(string.Format("{0:h:m.s} Database Seeding", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Database Seeding", DateTime.Now));
 
 			ProbabilityContextSeed.SeedData(context);
 		}
@@ -56,12 +62,14 @@ namespace DataGenerator
 			{
 				InitializeDatabase(context);
 
+				//partial pools are each half of a roll
 				ProcessPartialPools(context);
 
 				//save the pools before generating the full comparison
 				CommitData(context);
 
 				ProcessPoolComparison(context);
+				//UpdatePoolComparison(context);
 
 				//save the outcome results
 				CommitData(context);
@@ -74,9 +82,9 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void CommitData(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:h:mm.s} Initialize Database Commit", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hhh:mm.sss} Initialize Database Commit", DateTime.Now));
 			context.SaveChanges();
-			Console.WriteLine(string.Format("{0:h:mm.s} Completed Database Commit", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hhh:mm.sss} Completed Database Commit", DateTime.Now));
 		}
 
 		/// <summary>
@@ -85,10 +93,10 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void ProcessPartialPools(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:h:mm.s} Initialize Pool Generation", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Generation", DateTime.Now));
 			BuildPositivePool(context);
 			BuildNegativePool(context);
-			Console.WriteLine(string.Format("{0:h:mm.s} Completed Pool Generation", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Generation", DateTime.Now));
 		}
 
 		/// <summary>
@@ -97,22 +105,73 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void ProcessPoolComparison(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:h:mm.s} Initialize Pool Comparison", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Comparison", DateTime.Now));
 			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Ability.ToString() || a.Die.Name == Die.DieNames.Boost.ToString() || a.Die.Name == Die.DieNames.Proficiency.ToString()))
 				.Include(i => i.PoolResults);
 
 			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Difficulty.ToString() || a.Die.Name == Die.DieNames.SetBack.ToString() || a.Die.Name == Die.DieNames.Challenge.ToString()))
 				.Include(i => i.PoolResults);
 
-
 			foreach (var positivePool in positivePools)
 			{
 				foreach (var negativePool in negativePools)
 				{
-					var summary = new PoolSummary(context, positivePool, negativePool);
+					new OutcomeComparison(context, new PoolCombination(positivePool, negativePool));
 				}
 			}
-			Console.WriteLine(string.Format("{0:h:mm.s} Completed Pool Comparison", DateTime.Now));
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Comparison", DateTime.Now));
+		}
+
+		/// <summary>
+		/// Function to create the average offstat
+		/// </summary>
+		/// <param name="context"></param>
+		private static void UpdatePoolComparison(ProbabilityContext context)
+		{
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Update", DateTime.Now));
+			var combinations = context.PoolCombinations.Where(w => w.PositivePoolId > 0)
+				.Include(i => i.PoolCombinationStatistics)
+				.Include(i => i.PositivePool)
+					.ThenInclude(ti => ti.PoolResults)
+						.ThenInclude(tti => tti.PoolResultSymbols)
+
+				.Include(i => i.NegativePool)
+					.ThenInclude(ti => ti.PoolResults)
+						.ThenInclude(tti => tti.PoolResultSymbols);
+
+			foreach (var combination in combinations)
+			{
+				Console.WriteLine(string.Format("{0:hh:mm.ss} {1}, {2}", DateTime.Now, combination.PositivePool.Name,combination.NegativePool.Name));
+
+				foreach (var positivePoolResult in combination.PositivePool.PoolResults)
+				{
+					//loop through the simple pool to find matches
+					foreach (var negativePoolResult in combination.NegativePool.PoolResults)
+					{
+						var analysis = new OutcomeAnalysis(positivePoolResult, negativePoolResult);
+
+						foreach (var stat in combination.PoolCombinationStatistics)
+						{
+							if (Symbol.Success == stat.Symbol && analysis.SuccessNetQuantity == stat.Quantity)
+							{
+								stat.AlternateTotal += analysis.AdvantageNetQuantity;
+								break;
+							}
+						}
+
+						//add the net advantage quantity
+						foreach (var stat in combination.PoolCombinationStatistics)
+						{
+							if (Symbol.Advantage == stat.Symbol && analysis.AdvantageNetQuantity == stat.Quantity)
+							{
+								stat.AlternateTotal += analysis.SuccessNetQuantity;
+								break;
+							}
+						}
+					}
+				}
+			}
+			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Update", DateTime.Now));
 		}
 
 		/// <summary>
@@ -131,7 +190,7 @@ namespace DataGenerator
 				{
 					for (int k = 0; k <= BOOST_LIMIT; k++)
 					{
-						 new PoolCalculator(BuildPoolDice(context, ability: i - j, proficiency: j, boost: k));
+						new OutcomeGenerator(BuildPoolDice(context, ability: i - j, proficiency: j, boost: k));
 					}
 				}
 			}
@@ -152,7 +211,7 @@ namespace DataGenerator
 				{
 					for (int k = 0; k <= SETBACK_LIMIT; k++)
 					{
-						new PoolCalculator(BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k));
+						new OutcomeGenerator(BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k));
 					}
 				}
 			}

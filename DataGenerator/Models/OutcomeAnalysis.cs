@@ -6,9 +6,9 @@ using static DataFramework.Models.Die;
 
 namespace DataGenerator.Models
 {
-	class PoolAnalysis
+	class OutcomeAnalysis
 	{
-		public PoolAnalysis(PoolResult positivePoolResult, PoolResult negativePoolResult)
+		public OutcomeAnalysis(PoolResult positivePoolResult, PoolResult negativePoolResult)
 		{
 			Frequency = (ulong)positivePoolResult.Frequency * (ulong)negativePoolResult.Frequency;
 

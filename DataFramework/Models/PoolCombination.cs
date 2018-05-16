@@ -14,6 +14,14 @@ namespace DataFramework.Models
 			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
 		}
 
+		public PoolCombination(Pool positivePool, Pool negativePool)
+		{
+			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
+
+			positivePool.PositivePoolCombinations.Add(this);
+			negativePool.NegativePoolCombinations.Add(this);
+		}
+
 		public int PositivePoolId { get; set; }
 		public int NegativePoolId { get; set; }
 
@@ -34,13 +42,10 @@ namespace DataFramework.Models
 			{
 				if (poolCombinationStatistic.Symbol == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
 				{
-					//calculate the new frequency
-					var updatedFrequency = (ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency;
-
 					//update the running average.  A running total will result in numbers too large for Int64
-					stat.OffSymbolAverage = ((stat.OffSymbolAverage * stat.Frequency) + (poolCombinationStatistic.OffSymbolAverage * poolCombinationStatistic.Frequency)) / updatedFrequency;
+					stat.AlternateTotal = (long)((ulong)stat.AlternateTotal + (ulong)poolCombinationStatistic.AlternateTotal);
 
-					stat.Frequency = (long)updatedFrequency;
+					stat.Frequency = (long)((ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency);
 
 					return;
 				}

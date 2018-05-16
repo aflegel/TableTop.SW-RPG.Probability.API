@@ -28,7 +28,8 @@ namespace Visualizer.Models
 				{
 					Symbol = stat.Symbol,
 					Quantity = stat.Quantity,
-					Frequency = (ulong)stat.Frequency
+					Frequency = (ulong)stat.Frequency,
+					AlternateTotal = stat.AlternateTotal
 				});
 			}
 
@@ -52,5 +53,6 @@ namespace Visualizer.Models
 		public Symbol Symbol { get; set; }
 		public int Quantity { get; set; }
 		public ulong Frequency { get; set; }
+		public long AlternateTotal { get; set; }
 	}
 }

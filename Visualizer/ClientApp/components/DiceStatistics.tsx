@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../statistics';
 import * as DiceStatistics from '../statistics/DiceStatistics';
 import DiceUtility from '../framework/DiceUtility';
+import ChartUtility from '../framework/ChartUtility';
 
 import { Line } from 'react-chartjs-2';
 import { Chart } from 'chart.js';
@@ -59,6 +60,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				</li>
 			</ul>
 
+			{this.RenderResults()}
 
 		</div>;
 	}
@@ -72,14 +74,16 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				<div className="card">
 					<div className="card-content">
 						<div className="row">
-							<div className="col s6">
+							<div className="col l4 m6 s12">
 								{this.RenderDieCount(DieType.Proficiency)}
-								{this.RenderDieCount(DieType.Ability)}
-								{this.RenderDieCount(DieType.Boost)}
-							</div>
-							<div className="col s6">
 								{this.RenderDieCount(DieType.Challenge)}
+							</div>
+							<div className="col l4 m6 s12">
+								{this.RenderDieCount(DieType.Ability)}
 								{this.RenderDieCount(DieType.Difficulty)}
+							</div>
+							<div className="col l4 m6 s12">
+								{this.RenderDieCount(DieType.Boost)}
 								{this.RenderDieCount(DieType.Setback)}
 							</div>
 						</div>
@@ -116,21 +120,14 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 		}
 
 		return <div className="row">
-			<div className="col s4 right-align">
-				<h5 className="">{DiceUtility.RenderDie(dieType)}</h5>
+			<div className="col s4">
+				<button className="btn light-green darken-3" onClick={() => { this.AddDie(dieType) }}>+</button>
 			</div>
-			<div className="col s8">
-				<div className="row">
-					<div className="col s4">
-						<button className="btn light-green darken-3" onClick={() => { this.AddDie(dieType) }}>+</button>
-					</div>
-					<div className="col s4 center-align">
-						{count}
-					</div>
-					<div className="col s4">
-						<button className="btn light-green darken-3" onClick={() => { this.DeleteDie(dieType) }}>-</button>
-					</div>
-				</div>
+			<div className="col s4 center-align">
+				<h5 className="">{DiceUtility.RenderDie(dieType)} x{count}</h5>
+			</div>
+			<div className="col s4">
+				<button className="btn light-green darken-3" onClick={() => { this.DeleteDie(dieType) }}>-</button>
 			</div>
 		</div>;
 	}
@@ -153,19 +150,6 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	private RenderGraphAndData(mode: DieSymbol) {
 		if (this.props.poolCombinationContainer != null && this.props.poolCombinationContainer.baseline != null) {
 
-			var counterMode: DieSymbol = DieSymbol.Failure;
-			switch (mode) {
-				case DieSymbol.Success:
-					counterMode = DieSymbol.Failure;
-					break;
-				case DieSymbol.Advantage:
-					counterMode = DieSymbol.Threat;
-					break;
-				case DieSymbol.Triumph:
-					counterMode = DieSymbol.Despair;
-					break;
-			}
-
 			//get short list of combinations ordered lowest to highest
 			var baseSet = this.props.poolCombinationContainer.baseline.poolCombinationStatistics.filter(f => f.symbol == mode).sort((n1, n2) => n1.quantity - n2.quantity);
 
@@ -173,19 +157,40 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			var xAxis = baseSet.map(map => map.quantity.toString());
 			var totalFrequency = baseSet.reduce((total, obj) => { return total + obj.frequency }, 0);
 			var percentageSet = baseSet.map(map => this.GetProbability(map.frequency, totalFrequency));
+			var averageSet = baseSet.map(map => map.alternateTotal / totalFrequency);
+
+			var datasets = [ChartUtility.BuildDataSet(percentageSet, DieSymbol[mode], "#b71c1c", "Probability")];
+
+			var counterMode: DieSymbol = DieSymbol.Failure;
+			var offLabel: string = "";
+			switch (mode) {
+				case DieSymbol.Success:
+					counterMode = DieSymbol.Failure;
+					offLabel = "Average Advantage";
+					datasets = datasets.concat(ChartUtility.BuildDataSet(averageSet, offLabel, "#000000", "Average"));
+					break;
+				case DieSymbol.Advantage:
+					counterMode = DieSymbol.Threat;
+					offLabel = "Average Success";
+					datasets = datasets.concat(ChartUtility.BuildDataSet(averageSet, offLabel, "#000000", "Average"));
+					break;
+				case DieSymbol.Triumph:
+					counterMode = DieSymbol.Despair;
+					break;
+			}
 
 			return <div className="row row-fill">
 				<div className="col s12">
 					<h3>Distribution of {DieSymbol[mode]} and {DieSymbol[counterMode]}</h3>
 
 					<div className="row">
-						<div className="col s6">
-							{this.RenderGraph(DieSymbol[mode], { labels: xAxis, datasets: [this.BuildDataSet(percentageSet, DieSymbol[mode], "#b71c1c")] })}
+						<div className="col l6 m8 s12">
+							{ChartUtility.RenderGraph(DieSymbol[mode], offLabel, mode, { labels: xAxis, datasets: datasets })}
 						</div>
-						<div className="col s3">
+						<div className="col l3 m4 s6">
 							{this.RenderBreakdown(mode, counterMode, baseSet, totalFrequency)}
 						</div>
-						<div className="col s3">
+						<div className="col l3 m4 s6">
 							{this.RenderAdditionalDetails(mode)}
 						</div>
 					</div>
@@ -196,65 +201,12 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	}
 
 	/**
-	 * Renders a standardized chart.js graph given a dataset.
-	 * @param label
-	 * @param graphData
-	 */
-	private RenderGraph(label: string, graphData: any) {
-		const options = {
-			title: {
-				display: true,
-				text: "Distribution of " + label,
-			},
-			legend: {
-				display: false
-			},
-			scales: {
-				yAxes: [{
-					scaleLabel: {
-						display: true,
-						labelString: "Probability (%)"
-					}
-				}],
-				xAxes: [{
-					scaleLabel: {
-						display: true,
-						labelString: "Net " + label
-					}
-				}]
-			}
-		}
-
-		return <Line data={graphData} options={options} />;
-	}
-
-	/**
 	 * Calculates the probability returned as a number between 0 and 100
 	 * @param top
 	 * @param bottom
 	 */
 	private GetProbability(numerator: number, denominator: number): number {
 		return numerator / denominator * 100;
-	}
-
-	/**
-	 * Returns a standardized object for the chart.js utility
-	 * @param dataset
-	 * @param label
-	 * @param color
-	 */
-	private BuildDataSet(dataset: number[], label: string, color: string) {
-		return {
-			label: label,
-			pointBackgroundColor: color,
-			borderColor: color,
-			pointHoverBackgroundColor: color,
-			fill: false,
-			pointRadius: 5,
-			pointHitRadius: 10,
-			pointHoverRadius: 10,
-			data: dataset
-		}
 	}
 
 	/**
@@ -350,24 +302,34 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			if (this.props.poolCombinationContainer.baseline != null)
 				containers = containers.concat(this.props.poolCombinationContainer.baseline);
 
-			return <table className='table'>
-				<thead>
-					<tr>
-						<th>Symbol</th>
-						<th>Quantity</th>
-						<th>Frequency</th>
-					</tr>
-				</thead>
-				<tbody>
-					{containers.map(poolCombination => poolCombination.poolCombinationStatistics.map(combination =>
-						<tr>
-							<td>{DieSymbol[combination.symbol]}</td>
-							<td>{combination.quantity}</td>
-							<td>{new Intl.NumberFormat('en-Us').format(combination.frequency)}</td>
-						</tr>
-					))}
-				</tbody>
-			</table>;
+			return <div className="row row-fill">
+				<div className="col s12">
+					<div className="card">
+						<div className="card-content">
+							<table className='table'>
+								<thead>
+									<tr>
+										<th>Symbol</th>
+										<th>Quantity</th>
+										<th>Frequency</th>
+										<th>Alternate Total</th>
+									</tr>
+								</thead>
+								<tbody>
+									{containers.map(poolCombination => poolCombination.poolCombinationStatistics.map(combination =>
+										<tr>
+											<td>{DieSymbol[combination.symbol]}</td>
+											<td>{combination.quantity}</td>
+											<td>{new Intl.NumberFormat('en-Us').format(combination.frequency)}</td>
+											<td>{new Intl.NumberFormat('en-Us').format(combination.alternateTotal)}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>;
 		}
 		else {
 

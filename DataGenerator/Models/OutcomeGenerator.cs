@@ -13,36 +13,36 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DataGenerator.Models
 {
-	class PoolCalculator
+	class OutcomeGenerator
 	{
-		public PoolCalculator(Pool RollOutput)
+		public OutcomeGenerator(Pool pool)
 		{
-			ProcessDicePool(RollOutput);
+			ProcessDicePool(pool);
 		}
 
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
 		/// </summary>
 		/// <returns></returns>
-		protected void ProcessDicePool(Pool RollOutput)
+		protected void ProcessDicePool(Pool pool)
 		{
-			PoolSummary.PrintStartLog(RollOutput.Name, (ulong)RollOutput.TotalOutcomes);
+			OutcomeComparison.PrintStartLog(pool.Name, (ulong)pool.TotalOutcomes);
 
-			var indexDice = CopyPoolDice(RollOutput);
+			var indexDice = CopyPoolDice(pool);
 
 			foreach (var die in RecursiveProcessing(indexDice))
-				RollOutput.PoolResults.Add(die);
+				pool.PoolResults.Add(die);
 
-			RollOutput.UniqueOutcomes = RollOutput.PoolResults.Count;
+			pool.UniqueOutcomes = pool.PoolResults.Count;
 
-			PoolSummary.PrintFinishLog((ulong)RollOutput.UniqueOutcomes);
+			OutcomeComparison.PrintFinishLog((ulong)pool.UniqueOutcomes);
 		}
 
-		protected Collection<PoolDie> CopyPoolDice(Pool RollOutput)
+		protected Collection<PoolDie> CopyPoolDice(Pool pool)
 		{
 			var indexDice = new Collection<PoolDie>();
 
-			foreach (var poolDie in RollOutput.PoolDice)
+			foreach (var poolDie in pool.PoolDice)
 			{
 				indexDice.Add(new PoolDie(poolDie.Die, poolDie.Quantity));
 			}

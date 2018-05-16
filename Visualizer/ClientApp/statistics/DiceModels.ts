@@ -22,7 +22,7 @@ export interface PoolCombinationStatistic {
 	symbol: DieSymbol;
 	quantity: number;
 	frequency: number;
-	offSymbolAverage: number;
+	alternateTotal: number;
 }
 
 export interface PoolDice {
