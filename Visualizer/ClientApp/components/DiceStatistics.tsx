@@ -44,21 +44,24 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 	public render() {
 		return <div>
 			{this.RenderSearch()}
-
-			<ul className="collection with-header">
-				<li className="collection-header">
-					{this.RenderPoolData()}
-				</li>
-				<li className="collection-item">
-					{this.RenderGraphAndData(DieSymbol.Success)}
-				</li>
-				<li className="collection-item">
-					{this.RenderGraphAndData(DieSymbol.Advantage)}
-				</li>
-				<li className="collection-item">
-					{this.RenderGraphAndData(DieSymbol.Triumph)}
-				</li>
-			</ul>
+			<div className="row row-fill">
+				<div className="col s12">
+					<ul className="collection with-header">
+						<li className="collection-header">
+							{this.RenderPoolData()}
+						</li>
+						<li className="collection-item">
+							{this.RenderGraphAndData(DieSymbol.Success)}
+						</li>
+						<li className="collection-item">
+							{this.RenderGraphAndData(DieSymbol.Advantage)}
+						</li>
+						<li className="collection-item">
+							{this.RenderGraphAndData(DieSymbol.Triumph)}
+						</li>
+					</ul>
+				</div>
+			</div>
 
 			{this.RenderResults()}
 
@@ -159,7 +162,7 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 			var percentageSet = baseSet.map(map => this.GetProbability(map.frequency, totalFrequency));
 			var averageSet = baseSet.map(map => map.alternateTotal / map.frequency);
 
-			var datasets = [ChartUtility.BuildDataSet(percentageSet, DieSymbol[mode], "#b71c1c", "Probability")];
+			var datasets = [ChartUtility.BuildDataSet(percentageSet, DieSymbol[mode], "#58125A", "Probability")];
 
 			var counterMode: DieSymbol = DieSymbol.Failure;
 			var offLabel: string = "";
@@ -167,12 +170,12 @@ class FetchDiceStatistics extends React.Component<DiceStatisticsProps, {}> {
 				case DieSymbol.Success:
 					counterMode = DieSymbol.Failure;
 					offLabel = "Average Advantage";
-					datasets = datasets.concat(ChartUtility.BuildDataSet(averageSet, offLabel, "#000000", "Average"));
+					datasets = datasets.concat(ChartUtility.BuildDataSet(averageSet, offLabel, "#8D4A8F", "Average"));
 					break;
 				case DieSymbol.Advantage:
 					counterMode = DieSymbol.Threat;
 					offLabel = "Average Success";
-					datasets = datasets.concat(ChartUtility.BuildDataSet(averageSet, offLabel, "#000000", "Average"));
+					datasets = datasets.concat(ChartUtility.BuildDataSet(averageSet, offLabel, "#8D4A8F", "Average"));
 					break;
 				case DieSymbol.Triumph:
 					counterMode = DieSymbol.Despair;
