@@ -9,7 +9,8 @@ namespace DataFramework.Context
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
+			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
+			optionsBuilder.UseNpgsql(@"Server=192.168.3.7;Port=5432;Database=TableTop.Utility.StarWarsRPGProbability;User Id=pi;Password=");
 		}
 
 		// Add a DbSet for each entity type that you want to include in your model. For more information
