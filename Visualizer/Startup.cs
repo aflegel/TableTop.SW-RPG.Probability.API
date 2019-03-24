@@ -32,11 +32,6 @@ namespace Visualizer
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
-				app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-				{
-					HotModuleReplacement = true,
-					ReactHotModuleReplacement = true
-				});
 			}
 			else
 			{
@@ -45,8 +40,6 @@ namespace Visualizer
 				{
 					ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 				});
-
-				app.UseExceptionHandler("/Home/Error");
 			}
 
 			app.UseStaticFiles();
