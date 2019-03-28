@@ -53,8 +53,8 @@ namespace Visualizer.Controllers
 			return positiveTest.FirstOrDefault();
 		}
 
-		[HttpGet("[action]")]
-		public SearchViewModel GetStatistics(string data)
+		[HttpGet]
+		public SearchViewModel Get(string data)
 		{
 			List<PoolDie> searchDice = null;
 
@@ -74,13 +74,16 @@ namespace Visualizer.Controllers
 			}
 
 			//separate positive and negative dice
-			var positiveId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost }.Contains(w.DieId)).ToList());
-			var negativeId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback }.Contains(w.DieId)).ToList());
+			var positiveId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost }
+			.Contains(w.DieId)).ToList());
+			var negativeId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback }
+			.Contains(w.DieId)).ToList());
 
 
 			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
-				var result = new SearchViewModel(context.PoolCombinations.Where(w => w.PositivePoolId == positiveId.Value && w.NegativePoolId == negativeId.Value).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault());
+				var result = new SearchViewModel(context.PoolCombinations.Where(w => w.PositivePoolId == positiveId.Value && w.NegativePoolId == negativeId.Value)
+					.Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault());
 				return result;
 			}
 			else

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +23,7 @@ namespace Visualizer
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddCors();
 			services.AddMvc();
 		}
 
@@ -42,17 +43,18 @@ namespace Visualizer
 				});
 			}
 
-			app.UseStaticFiles();
+			app.UseCors(builder =>
+			{
+				builder.WithOrigins("http://localhost:5000");
+				builder.AllowAnyHeader();
+				builder.AllowAnyMethod();
+			});
 
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(
 					name: "default",
 					template: "{controller=Home}/{action=Index}/{id?}");
-
-				routes.MapSpaFallbackRoute(
-					name: "spa-fallback",
-					defaults: new { controller = "Home", action = "Index" });
 			});
 		}
 	}
