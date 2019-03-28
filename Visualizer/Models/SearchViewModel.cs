@@ -19,12 +19,12 @@ namespace Visualizer.Models
 			{
 				PositivePoolId = searchPool.PositivePoolId,
 				NegativePoolId = searchPool.NegativePoolId,
-				PoolCombinationStatistics = new Collection<PoolCombinationStatisticViewModel>()
+				PoolStatistics = new Collection<PoolCombinationStatisticViewModel>()
 			};
 
 			foreach (var stat in searchPool.PoolCombinationStatistics)
 			{
-				Baseline.PoolCombinationStatistics.Add(new PoolCombinationStatisticViewModel()
+				Baseline.PoolStatistics.Add(new PoolCombinationStatisticViewModel()
 				{
 					Symbol = stat.Symbol,
 					Quantity = stat.Quantity,
@@ -45,7 +45,7 @@ namespace Visualizer.Models
 		public int PositivePoolId { get; set; }
 		public int NegativePoolId { get; set; }
 
-		public virtual ICollection<PoolCombinationStatisticViewModel> PoolCombinationStatistics { get; set; }
+		public virtual ICollection<PoolCombinationStatisticViewModel> PoolStatistics { get; set; }
 	}
 
 	public class PoolCombinationStatisticViewModel
