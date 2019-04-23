@@ -10,10 +10,11 @@ using Visualizer.Models;
 namespace Visualizer.Controllers
 {
 	[Produces("application/json")]
-	[Route("api/[controller]")]
+	[Route("[controller]")]
 	public class SearchController : Controller
 	{
-		private ProbabilityContext context = new ProbabilityContext();
+		private readonly ProbabilityContext context = new ProbabilityContext();
+
 		private enum DieType
 		{
 			Ability = 1,
@@ -25,20 +26,18 @@ namespace Visualizer.Controllers
 			Setback = 7,
 		}
 
-		[HttpGet("[action]")]
-		public SearchViewModel GetTests()
-		{
-			var data = new SearchViewModel(context.PoolCombinations.Where(w => (w.PositivePoolId == 47 && w.NegativePoolId == 90)).Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault());
-
-			return data;
-		}
-
+		/// <summary>
+		/// Returns the id for the pool with the matching dice
+		/// </summary>
+		/// <param name="searchForPool"></param>
+		/// <returns></returns>
 		private long? GetPoolId(List<PoolDie> searchForPool)
 		{
 			//fetch results for each type of die and
 			var positiveTest = new List<int>();
 			foreach (var die in searchForPool)
 			{
+				//todo: This function will return an incorrect result if the number of dice match but the desired result does not
 				var dieSearch = context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count).Select(s => s.PoolId).ToList();
 				if (positiveTest.Count == 0)
 				{
@@ -53,30 +52,23 @@ namespace Visualizer.Controllers
 			return positiveTest.FirstOrDefault();
 		}
 
-		[HttpGet]
-		public SearchViewModel Get(string data)
+		/// <summary>
+		/// Returns the corresponding cached statistics for a given pool of dice
+		/// </summary>
+		/// <param name="dice"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public SearchViewModel Get([FromBody]List<PoolDie> dice)
 		{
-			List<PoolDie> searchDice = null;
-
-			try
+			if (dice == null)
 			{
-				searchDice = ((PoolDie[])JsonConvert.DeserializeObject(data, typeof(PoolDie[]))).ToList();
-			}
-			catch { }
-
-			if (searchDice == null)
-			{
-				searchDice = new List<PoolDie>
-				{
-					new PoolDie() { DieId = (int)DieType.Ability, Quantity = 1 },
-					new PoolDie() { DieId = (int)DieType.Difficulty, Quantity = 1 }
-				};
+				return new SearchViewModel();
 			}
 
 			//separate positive and negative dice
-			var positiveId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost }
+			var positiveId = GetPoolId(dice.Where(w => new List<int>() { (int)DieType.Ability, (int)DieType.Proficiency, (int)DieType.Boost }
 			.Contains(w.DieId)).ToList());
-			var negativeId = GetPoolId(searchDice.Where(w => new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback }
+			var negativeId = GetPoolId(dice.Where(w => new List<int>() { (int)DieType.Difficulty, (int)DieType.Challenge, (int)DieType.Setback }
 			.Contains(w.DieId)).ToList());
 
 
@@ -90,7 +82,6 @@ namespace Visualizer.Controllers
 			{
 				return new SearchViewModel();
 			}
-
 		}
 	}
 }
