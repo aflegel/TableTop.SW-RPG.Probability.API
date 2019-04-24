@@ -15,16 +15,11 @@ namespace Visualizer.Models
 
 		public SearchViewModel(PoolCombination searchPool)
 		{
-			Baseline = new PoolCombinationViewModel()
-			{
-				PositivePoolId = searchPool.PositivePoolId,
-				NegativePoolId = searchPool.NegativePoolId,
-				PoolCombinationStatistics = new Collection<PoolCombinationStatisticViewModel>()
-			};
+			PoolStatistics = new Collection<PoolCombinationStatisticViewModel>();
 
 			foreach (var stat in searchPool.PoolCombinationStatistics)
 			{
-				Baseline.PoolCombinationStatistics.Add(new PoolCombinationStatisticViewModel()
+				PoolStatistics.Add(new PoolCombinationStatisticViewModel()
 				{
 					Symbol = stat.Symbol,
 					Quantity = stat.Quantity,
@@ -33,19 +28,12 @@ namespace Visualizer.Models
 				});
 			}
 
-			BaseDice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice);
+			Dice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice);
 		}
 
-		public PoolCombinationViewModel Baseline { get; set; }
-		public IEnumerable<PoolDie> BaseDice { get; set; }
-	}
+		public ICollection<PoolCombinationStatisticViewModel> PoolStatistics { get; set; }
 
-	public class PoolCombinationViewModel
-	{
-		public int PositivePoolId { get; set; }
-		public int NegativePoolId { get; set; }
-
-		public virtual ICollection<PoolCombinationStatisticViewModel> PoolCombinationStatistics { get; set; }
+		public IEnumerable<PoolDie> Dice { get; set; }
 	}
 
 	public class PoolCombinationStatisticViewModel

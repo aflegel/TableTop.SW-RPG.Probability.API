@@ -1,16 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28714.193
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataGenerator", "DataGenerator\DataGenerator.csproj", "{47ABB670-502F-40F1-B158-68128FF45E7C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{48DB5912-B3D2-49C5-857B-E6E6A9638A43} = {48DB5912-B3D2-49C5-857B-E6E6A9638A43}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFramework", "DataFramework\DataFramework.csproj", "{48DB5912-B3D2-49C5-857B-E6E6A9638A43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataFramework", "DataFramework\DataFramework.csproj", "{48DB5912-B3D2-49C5-857B-E6E6A9638A43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Visualizer", "Visualizer\Visualizer.csproj", "{9692258A-BDD4-41EC-B7CB-EA7DDC31DD1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Visualizer", "Visualizer\Visualizer.csproj", "{9692258A-BDD4-41EC-B7CB-EA7DDC31DD1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0ABDAB0E-C3D4-498A-A3B7-1590104DFD18}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -9,9 +9,7 @@ namespace DataFramework.Models
 {
 	public class PoolDie
 	{
-		public PoolDie()
-		{
-		}
+		public PoolDie() { }
 
 		public PoolDie(Die Die, int Quantity)
 		{
@@ -20,6 +18,8 @@ namespace DataFramework.Models
 		}
 
 		public int DieId { get; set; }
+
+		[JsonIgnore]
 		public int PoolId { get; set; }
 
 		public int Quantity { get; set; }
