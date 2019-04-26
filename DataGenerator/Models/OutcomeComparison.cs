@@ -63,7 +63,16 @@ namespace DataGenerator.Models
 						Symbol = Symbol.Triumph,
 						Quantity = analysis.TriumphNetQuantity,
 						Frequency = (long)analysis.Frequency,
-						AlternateTotal = 0
+						AlternateTotal = analysis.DespairNetQuantity
+					});
+
+					//add the net despair
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					{
+						Symbol = Symbol.Despair,
+						Quantity = analysis.DespairNetQuantity,
+						Frequency = (long)analysis.Frequency,
+						AlternateTotal = analysis.TriumphNetQuantity
 					});
 				}
 			}

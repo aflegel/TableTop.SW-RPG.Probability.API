@@ -34,22 +34,18 @@ namespace Visualizer.Controllers
 		private long? GetPoolId(List<PoolDie> searchForPool)
 		{
 			//fetch results for each type of die and
-			var positiveTest = new List<int>();
+			var resultList = new List<int>();
+			var initialized = false;
 			foreach (var die in searchForPool)
 			{
-				//todo: This function will return an incorrect result if the number of dice match but the desired result does not
 				var dieSearch = context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count).Select(s => s.PoolId).ToList();
-				if (positiveTest.Count == 0)
-				{
-					positiveTest = dieSearch;
-				}
-				else
-				{
-					positiveTest = positiveTest.Intersect(dieSearch).ToList();
-				}
+				resultList = !initialized ? dieSearch : resultList.Intersect(dieSearch).ToList();
+
+				//increase the count and ensure the count is greater than 0 so an empty result will not be skipped
+				initialized = true;
 			}
 
-			return positiveTest.FirstOrDefault();
+			return resultList.FirstOrDefault();
 		}
 
 		/// <summary>
