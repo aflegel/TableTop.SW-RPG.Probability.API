@@ -26,6 +26,7 @@ namespace DataFramework.Models
 
 		[JsonIgnore]
 		public virtual Pool Pool { get; set; }
+
 		[JsonIgnore]
 		public virtual Die Die { get; set; }
 	}

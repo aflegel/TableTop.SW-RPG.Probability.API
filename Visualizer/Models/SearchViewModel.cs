@@ -7,19 +7,24 @@ namespace Visualizer.Models
 {
 	public class SearchViewModel
 	{
+		public ICollection<PoolStatisticViewModel> PoolStatistics { get; set; }
+
+		public ICollection<DieViewModel> Dice { get; set; }
+
 		public SearchViewModel()
 		{
-
+			PoolStatistics = new Collection<PoolStatisticViewModel>();
+			Dice = new Collection<DieViewModel>();
 		}
 
 		public SearchViewModel(PoolCombination searchPool)
 		{
-			PoolStatistics = new Collection<PoolCombinationStatisticViewModel>();
+			PoolStatistics = new Collection<PoolStatisticViewModel>();
 			Dice = new Collection<DieViewModel>();
 
 			foreach (var stat in searchPool.PoolCombinationStatistics)
 			{
-				PoolStatistics.Add(new PoolCombinationStatisticViewModel()
+				PoolStatistics.Add(new PoolStatisticViewModel()
 				{
 					Symbol = stat.Symbol.ToString(),
 					Quantity = stat.Quantity,
@@ -37,23 +42,5 @@ namespace Visualizer.Models
 				});
 			}
 		}
-
-		public ICollection<PoolCombinationStatisticViewModel> PoolStatistics { get; set; }
-
-		public ICollection<DieViewModel> Dice { get; set; }
-	}
-
-	public class PoolCombinationStatisticViewModel
-	{
-		public string Symbol { get; set; }
-		public int Quantity { get; set; }
-		public ulong Frequency { get; set; }
-		public long AlternateTotal { get; set; }
-	}
-
-	public class DieViewModel
-	{
-		public string DieType { get; set; }
-		public int Quantity { get; set; }
 	}
 }

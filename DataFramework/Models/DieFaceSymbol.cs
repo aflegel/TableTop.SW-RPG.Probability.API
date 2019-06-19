@@ -10,10 +10,7 @@ namespace DataFramework.Models
 {
 	public class DieFaceSymbol
 	{
-		public DieFaceSymbol()
-		{
-
-		}
+		public DieFaceSymbol() { }
 
 		public DieFaceSymbol(Symbol symbol, int quantity)
 		{
@@ -23,7 +20,8 @@ namespace DataFramework.Models
 
 		public int DieFaceId { get; set; }
 
-		public  Symbol Symbol { get; set; }
+		public Symbol Symbol { get; set; }
+
 		public int Quantity { get; set; }
 
 		[JsonIgnore]

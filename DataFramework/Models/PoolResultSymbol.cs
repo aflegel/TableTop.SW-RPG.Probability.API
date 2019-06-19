@@ -10,9 +10,7 @@ namespace DataFramework.Models
 {
 	public class PoolResultSymbol : IEquatable<PoolResultSymbol>
 	{
-		public PoolResultSymbol()
-		{
-		}
+		public PoolResultSymbol() { }
 
 		public PoolResultSymbol(Symbol Symbol, int Quantity)
 		{
@@ -21,7 +19,9 @@ namespace DataFramework.Models
 		}
 
 		public int PoolResultId { get; set; }
+
 		public Symbol Symbol { get; set; }
+
 		public int Quantity { get; set; }
 
 		[JsonIgnore]
