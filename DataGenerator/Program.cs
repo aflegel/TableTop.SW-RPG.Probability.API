@@ -15,10 +15,10 @@ namespace DataGenerator
 {
 	class Program
 	{
-		const int ABILITY_LIMIT = 6;
-		const int UPGRADE_LIMIT = 6;
-		const int DIFFICULTY_LIMIT = 6;
-		const int CHALLENGE_LIMIT = 6;
+		const int ABILITY_LIMIT = 4;
+		const int UPGRADE_LIMIT = 4;
+		const int DIFFICULTY_LIMIT = 4;
+		const int CHALLENGE_LIMIT = 4;
 		const int BOOST_LIMIT = 4;
 		const int SETBACK_LIMIT = 4;
 
@@ -27,7 +27,7 @@ namespace DataGenerator
 			var time = DateTime.Now;
 			Console.WriteLine(string.Format("{0:hh:mm.ss} Startup", DateTime.Now));
 
-			//ProcessProgram();
+			ProcessProgram();
 
 			Console.WriteLine(string.Format("Start time: {0:hh:mm.ss}", time));
 			Console.WriteLine(string.Format("Completion time: {0:hh:mm.ss}", DateTime.Now));
@@ -112,7 +112,7 @@ namespace DataGenerator
 				.Include(i => i.PoolResults)
 						.ThenInclude(tti => tti.PoolResultSymbols);
 
-			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Difficulty.ToString() || a.Die.Name == Die.DieNames.SetBack.ToString() || a.Die.Name == Die.DieNames.Challenge.ToString()))
+			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Difficulty.ToString() || a.Die.Name == Die.DieNames.Setback.ToString() || a.Die.Name == Die.DieNames.Challenge.ToString()))
 				.Include(i => i.NegativePoolCombinations)
 					.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
@@ -188,17 +188,17 @@ namespace DataGenerator
 			var pool = new Pool();
 
 			if (ability > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Ability), ability));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Ability), ability));
 			if (boost > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Boost), boost));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Boost), boost));
 			if (challenge > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Challenge), challenge));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Challenge), challenge));
 			if (difficulty > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Difficulty), difficulty));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Difficulty), difficulty));
 			if (proficiency > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Proficiency), proficiency));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Proficiency), proficiency));
 			if (setback > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.SetBack), setback));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Setback), setback));
 
 			pool.Name = pool.GetPoolText();
 			pool.TotalOutcomes = (long)pool.GetRollEstimation();
@@ -206,17 +206,6 @@ namespace DataGenerator
 			context.Pools.Add(pool);
 
 			return pool;
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="die"></param>
-		/// <returns></returns>
-		protected static Die GetDie(ProbabilityContext context, Die.DieNames die)
-		{
-			return context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
 		}
 	}
 }

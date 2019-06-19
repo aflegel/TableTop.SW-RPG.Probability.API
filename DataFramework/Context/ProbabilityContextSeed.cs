@@ -186,7 +186,7 @@
 		{
 			var die = new Die()
 			{
-				Name = Die.DieNames.SetBack.ToString()
+				Name = Die.DieNames.Setback.ToString()
 			};
 
 			var faceList = new List<DieFace>()

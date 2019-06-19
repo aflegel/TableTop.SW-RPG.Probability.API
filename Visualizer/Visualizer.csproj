@@ -3,8 +3,6 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.2</TargetFramework>
 		<RuntimeIdentifiers>linux-arm</RuntimeIdentifiers>
-		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-		<TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 

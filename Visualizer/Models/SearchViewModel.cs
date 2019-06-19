@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using static DataFramework.Models.Die;
 
 namespace Visualizer.Models
 {
@@ -16,31 +15,45 @@ namespace Visualizer.Models
 		public SearchViewModel(PoolCombination searchPool)
 		{
 			PoolStatistics = new Collection<PoolCombinationStatisticViewModel>();
+			Dice = new Collection<DieViewModel>();
 
 			foreach (var stat in searchPool.PoolCombinationStatistics)
 			{
 				PoolStatistics.Add(new PoolCombinationStatisticViewModel()
 				{
-					Symbol = stat.Symbol,
+					Symbol = stat.Symbol.ToString(),
 					Quantity = stat.Quantity,
 					Frequency = (ulong)stat.Frequency,
 					AlternateTotal = stat.AlternateTotal
 				});
 			}
 
-			Dice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice);
+			foreach (var die in searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice))
+			{
+				Dice.Add(new DieViewModel()
+				{
+					DieType = die.Die.Name,
+					Quantity = die.Quantity
+				});
+			}
 		}
 
 		public ICollection<PoolCombinationStatisticViewModel> PoolStatistics { get; set; }
 
-		public IEnumerable<PoolDie> Dice { get; set; }
+		public ICollection<DieViewModel> Dice { get; set; }
 	}
 
 	public class PoolCombinationStatisticViewModel
 	{
-		public Symbol Symbol { get; set; }
+		public string Symbol { get; set; }
 		public int Quantity { get; set; }
 		public ulong Frequency { get; set; }
 		public long AlternateTotal { get; set; }
+	}
+
+	public class DieViewModel
+	{
+		public string DieType { get; set; }
+		public int Quantity { get; set; }
 	}
 }
