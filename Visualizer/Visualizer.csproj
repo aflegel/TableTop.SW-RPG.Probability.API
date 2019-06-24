@@ -21,15 +21,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Models\SearchViewModel.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\DataFramework\DataFramework.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="Properties\PublishProfiles\" />
 	</ItemGroup>
-
 </Project>

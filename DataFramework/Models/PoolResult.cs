@@ -28,7 +28,9 @@ namespace DataFramework.Models
 		}
 
 		public int PoolResultId { get; set; }
+
 		public int PoolId { get; set; }
+
 		public decimal Frequency { get; set; }
 
 		[JsonIgnore]
@@ -39,12 +41,8 @@ namespace DataFramework.Models
 		/// <summary>
 		/// Returns a sum of the Symbols in the map
 		/// </summary>
-		/// <param name="map"></param>
-		/// <param name="keys"></param>
+		/// <param name="key"></param>
 		/// <returns></returns>
-		public int CountMatchingKeys(Symbol key)
-		{
-			return PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
-		}
+		public int CountMatchingKeys(Symbol key) => PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
 	}
 }

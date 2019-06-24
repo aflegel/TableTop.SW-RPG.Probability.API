@@ -24,7 +24,7 @@ namespace Visualizer.Models
 
 			foreach (var stat in searchPool.PoolCombinationStatistics)
 			{
-				PoolStatistics.Add(new PoolStatisticViewModel()
+				PoolStatistics.Add(new PoolStatisticViewModel
 				{
 					Symbol = stat.Symbol.ToString(),
 					Quantity = stat.Quantity,
@@ -35,7 +35,7 @@ namespace Visualizer.Models
 
 			foreach (var die in searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice))
 			{
-				Dice.Add(new DieViewModel()
+				Dice.Add(new DieViewModel
 				{
 					DieType = die.Die.Name,
 					Quantity = die.Quantity

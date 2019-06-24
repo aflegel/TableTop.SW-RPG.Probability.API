@@ -145,7 +145,7 @@ namespace DataGenerator
 				{
 					for (int k = BoostLimit.Start; k <= BoostLimit.End; k++)
 					{
-						_ = new OutcomeGenerator(BuildPoolDice(context, ability: i - j, proficiency: j, boost: k));
+						_ = new OutcomeGenerator(BuildPoolDice(context, i - j, j, boost: k));
 					}
 				}
 			}
@@ -200,8 +200,8 @@ namespace DataGenerator
 			if (setback > 0)
 				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Setback), setback));
 
-			pool.Name = pool.GetPoolText();
-			pool.TotalOutcomes = pool.GetRollEstimation();
+			pool.Name = pool.PoolText;
+			pool.TotalOutcomes = pool.RollEstimation;
 
 			context.Pools.Add(pool);
 

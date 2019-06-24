@@ -11,10 +11,15 @@ namespace DataFramework.Models
 	public class PoolCombinationStatistic : IEquatable<PoolCombinationStatistic>
 	{
 		public int PositivePoolId { get; set; }
+
 		public int NegativePoolId { get; set; }
+
 		public Symbol Symbol { get; set; }
+
 		public int Quantity { get; set; }
+
 		public decimal Frequency { get; set; }
+
 		public decimal AlternateTotal { get; set; }
 
 		[JsonIgnore]
@@ -33,10 +38,7 @@ namespace DataFramework.Models
 
 	public class PoolCombinationStatisticEqualityComparer : IEqualityComparer<PoolCombinationStatistic>
 	{
-		public bool Equals(PoolCombinationStatistic x, PoolCombinationStatistic y)
-		{
-			return x.Equals(y);
-		}
+		public bool Equals(PoolCombinationStatistic x, PoolCombinationStatistic y) => x.Equals(y);
 
 		public int GetHashCode(PoolCombinationStatistic obj)
 		{

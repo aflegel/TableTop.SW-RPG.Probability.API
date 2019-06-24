@@ -44,11 +44,12 @@ namespace DataFramework.Models
 		}
 
 		public int DieId { get; set; }
+
 		public string Name { get; set; }
 
-		public virtual ICollection<DieFace> DieFaces { get; set; }
+		public ICollection<DieFace> DieFaces { get; set; }
 
-		public virtual ICollection<PoolDie> PoolDice { get; set; }
+		public ICollection<PoolDie> PoolDice { get; set; }
 
 		/// <summary>
 		///
@@ -56,9 +57,6 @@ namespace DataFramework.Models
 		/// <param name="context"></param>
 		/// <param name="die"></param>
 		/// <returns></returns>
-		public static Die GetDie(ProbabilityContext context, DieNames die)
-		{
-			return context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
-		}
+		public static Die GetDie(ProbabilityContext context, DieNames die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
 	}
 }

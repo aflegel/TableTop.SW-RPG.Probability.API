@@ -17,30 +17,25 @@ namespace DataFramework.Models
 		}
 
 		public int PoolId { get; set; }
+
 		public string Name { get; set; }
 
 		public decimal TotalOutcomes { get; set; }
+
 		public decimal UniqueOutcomes { get; set; }
 
 		public ICollection<PoolDie> PoolDice { get; set; }
+
 		public ICollection<PoolResult> PoolResults { get; set; }
 
 		public ICollection<PoolCombination> PositivePoolCombinations { get; set; }
+
 		public ICollection<PoolCombination> NegativePoolCombinations { get; set; }
 
-		protected int GetPoolDiceCount()
-		{
-			return PoolDice.Sum(die => die.Quantity);
-		}
+		protected int PoolDiceCount => PoolDice.Sum(die => die.Quantity);
 
-		public string GetPoolText()
-		{
-			return string.Join(", ", PoolDice.Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
-		}
+		public string PoolText => string.Join(", ", PoolDice.Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
 
-		public decimal GetRollEstimation()
-		{
-			return PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
-		}
+		public decimal RollEstimation => PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
 	}
 }

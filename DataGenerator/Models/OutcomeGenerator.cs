@@ -82,7 +82,7 @@ namespace DataGenerator.Models
 				if (GetPoolDiceCount(Dice) == 1)
 				{
 					//there is only one die left
-					return PoolCrossProduct(partial, new Collection<PoolResult>() { new PoolResult() });
+					return PoolCrossProduct(partial, new Collection<PoolResult> { new PoolResult() });
 				}
 				else
 				{
@@ -248,9 +248,6 @@ namespace DataGenerator.Models
 			return indexDice;
 		}
 
-		protected int GetPoolDiceCount(Collection<PoolDie> Dice)
-		{
-			return Dice.Sum(die => die.Quantity);
-		}
+		protected int GetPoolDiceCount(Collection<PoolDie> Dice) => Dice.Sum(die => die.Quantity);
 	}
 }

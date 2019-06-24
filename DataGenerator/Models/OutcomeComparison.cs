@@ -17,8 +17,7 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Create the container and run the simulation
 		/// </summary>
-		/// <param name="positivePool"></param>
-		/// <param name="negativePool"></param>
+		/// <param name="poolCombination"></param>
 		public OutcomeComparison(PoolCombination poolCombination)
 		{
 			//print to console
@@ -40,7 +39,7 @@ namespace DataGenerator.Models
 					var analysis = new OutcomeAnalysis(positivePoolResult, negativePoolResult);
 
 					//add the net success quantity
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Success,
 						Quantity = analysis.SuccessNetQuantity,
@@ -49,7 +48,7 @@ namespace DataGenerator.Models
 					});
 
 					//add the net advantage quantity
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Advantage,
 						Quantity = analysis.AdvantageNetQuantity,
@@ -58,7 +57,7 @@ namespace DataGenerator.Models
 					});
 
 					//add the net triumph
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Triumph,
 						Quantity = analysis.TriumphNetQuantity,
@@ -67,7 +66,7 @@ namespace DataGenerator.Models
 					});
 
 					//add the net despair
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Despair,
 						Quantity = analysis.DespairNetQuantity,
@@ -81,22 +80,16 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Displays the Unique List of rolls
 		/// </summary>
-		/// <param name="outcomePool"></param>
+		/// <param name="poolCombination"></param>
 		protected void PrintConsoleLog(PoolCombination poolCombination)
 		{
 			PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
 			PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
 		}
 
-		public static void PrintStartLog(string poolText, decimal rollEstimation)
-		{
-			Console.Write($"{poolText,-80}|{rollEstimation,29:n0}");
-		}
+		public static void PrintStartLog(string poolText, decimal rollEstimation) => Console.Write($"{poolText,-80}|{rollEstimation,29:n0}");
 
-		public static void PrintFinishLog(decimal rollEstimation)
-		{
-			Console.Write($"  |{rollEstimation,12:n0}\n");
-		}
+		public static void PrintFinishLog(decimal rollEstimation) => Console.Write($"  |{rollEstimation,12:n0}\n");
 
 
 	}

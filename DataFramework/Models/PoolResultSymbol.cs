@@ -31,6 +31,7 @@ namespace DataFramework.Models
 		{
 			if (Symbol != other.Symbol)
 				return false;
+
 			if (Quantity != other.Quantity)
 				return false;
 
@@ -40,10 +41,7 @@ namespace DataFramework.Models
 
 	public class PoolResultSymbolEqualityComparer : IEqualityComparer<PoolResultSymbol>
 	{
-		public bool Equals(PoolResultSymbol x, PoolResultSymbol y)
-		{
-			return x.Equals(y);
-		}
+		public bool Equals(PoolResultSymbol x, PoolResultSymbol y) => x.Equals(y);
 
 		public int GetHashCode(PoolResultSymbol obj)
 		{

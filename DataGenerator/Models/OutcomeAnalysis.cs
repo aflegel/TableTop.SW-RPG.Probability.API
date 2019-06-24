@@ -29,8 +29,11 @@ namespace DataGenerator.Models
 		public decimal Frequency { get; private set; }
 
 		public int SuccessNetQuantity { get; private set; }
+
 		public int TriumphNetQuantity { get; private set; }
+
 		public int AdvantageNetQuantity { get; private set; }
+
 		public int DespairNetQuantity { get; private set; }
 	}
 }

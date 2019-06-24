@@ -25,6 +25,6 @@ namespace DataFramework.Models
 		public int Quantity { get; set; }
 
 		[JsonIgnore]
-		public virtual DieFace DieFace { get; set; }
+		public DieFace DieFace { get; set; }
 	}
 }

@@ -26,9 +26,9 @@ namespace DataFramework.Models
 
 		public int DieId { get; set; }
 
-		public virtual ICollection<DieFaceSymbol> DieFaceSymbols { get; set; }
+		public ICollection<DieFaceSymbol> DieFaceSymbols { get; set; }
 
 		[JsonIgnore]
-		public virtual Die Die { get; set; }
+		public Die Die { get; set; }
 	}
 }
