@@ -19,14 +19,14 @@ namespace DataFramework.Models
 		public int PoolId { get; set; }
 		public string Name { get; set; }
 
-		public long TotalOutcomes { get; set; }
-		public long UniqueOutcomes { get; set; }
+		public decimal TotalOutcomes { get; set; }
+		public decimal UniqueOutcomes { get; set; }
 
-		public virtual ICollection<PoolDie> PoolDice { get; set; }
-		public virtual ICollection<PoolResult> PoolResults { get; set; }
+		public ICollection<PoolDie> PoolDice { get; set; }
+		public ICollection<PoolResult> PoolResults { get; set; }
 
-		public virtual ICollection<PoolCombination> PositivePoolCombinations { get; set; }
-		public virtual ICollection<PoolCombination> NegativePoolCombinations { get; set; }
+		public ICollection<PoolCombination> PositivePoolCombinations { get; set; }
+		public ICollection<PoolCombination> NegativePoolCombinations { get; set; }
 
 		protected int GetPoolDiceCount()
 		{
@@ -35,13 +35,12 @@ namespace DataFramework.Models
 
 		public string GetPoolText()
 		{
-			return string.Join(", ", PoolDice.Select(group => string.Format("{0} {1}", group.Die.Name, group.Quantity)).ToList());
+			return string.Join(", ", PoolDice.Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
 		}
 
-		public ulong GetRollEstimation()
+		public decimal GetRollEstimation()
 		{
-			return PoolDice.Aggregate((ulong)1, (x, y) => x * Convert.ToUInt64(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
+			return PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
 		}
-
 	}
 }

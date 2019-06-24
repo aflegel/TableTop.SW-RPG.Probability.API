@@ -26,14 +26,16 @@ namespace DataFramework.Models
 		}
 
 		public int PositivePoolId { get; set; }
+
 		public int NegativePoolId { get; set; }
 
 		[JsonIgnore]
-		public virtual Pool PositivePool { get; set; }
-		[JsonIgnore]
-		public virtual Pool NegativePool { get; set; }
+		public Pool PositivePool { get; set; }
 
-		public virtual ICollection<PoolCombinationStatistic> PoolCombinationStatistics { get; set; }
+		[JsonIgnore]
+		public Pool NegativePool { get; set; }
+
+		public ICollection<PoolCombinationStatistic> PoolCombinationStatistics { get; set; }
 
 		/// <summary>
 		/// Adds or Merges a new CombinationStatistic
@@ -46,9 +48,9 @@ namespace DataFramework.Models
 				if (poolCombinationStatistic.Symbol == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
 				{
 					//update the running average.  A running total will result in numbers too large for Int64
-					stat.AlternateTotal = (long)((ulong)stat.AlternateTotal + ((ulong)poolCombinationStatistic.AlternateTotal * (ulong)poolCombinationStatistic.Frequency));
+					stat.AlternateTotal += poolCombinationStatistic.AlternateTotal * poolCombinationStatistic.Frequency;
 
-					stat.Frequency = (long)((ulong)stat.Frequency + (ulong)poolCombinationStatistic.Frequency);
+					stat.Frequency += poolCombinationStatistic.Frequency;
 
 					return;
 				}

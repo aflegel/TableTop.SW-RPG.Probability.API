@@ -29,12 +29,12 @@ namespace DataFramework.Models
 
 		public int PoolResultId { get; set; }
 		public int PoolId { get; set; }
-		public long Frequency { get; set; }
+		public decimal Frequency { get; set; }
 
 		[JsonIgnore]
-		public virtual Pool Pool { get; set; }
+		public Pool Pool { get; set; }
 
-		public virtual ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
+		public ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
 
 		/// <summary>
 		/// Returns a sum of the Symbols in the map

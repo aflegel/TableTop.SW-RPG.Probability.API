@@ -25,7 +25,7 @@ namespace DataFramework.Models
 		public int Quantity { get; set; }
 
 		[JsonIgnore]
-		public virtual PoolResult PoolResult { get; set; }
+		public PoolResult PoolResult { get; set; }
 
 		public bool Equals(PoolResultSymbol other)
 		{

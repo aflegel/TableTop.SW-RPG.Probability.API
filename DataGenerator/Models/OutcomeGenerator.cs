@@ -26,7 +26,7 @@ namespace DataGenerator.Models
 		/// <returns></returns>
 		protected void ProcessDicePool(Pool pool)
 		{
-			OutcomeComparison.PrintStartLog(pool.Name, (ulong)pool.TotalOutcomes);
+			OutcomeComparison.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
 			var indexDice = CopyPoolDice(pool);
 
@@ -35,7 +35,7 @@ namespace DataGenerator.Models
 
 			pool.UniqueOutcomes = pool.PoolResults.Count;
 
-			OutcomeComparison.PrintFinishLog((ulong)pool.UniqueOutcomes);
+			OutcomeComparison.PrintFinishLog(pool.UniqueOutcomes);
 		}
 
 		protected Collection<PoolDie> CopyPoolDice(Pool pool)
@@ -114,7 +114,7 @@ namespace DataGenerator.Models
 					var mergedPool = new PoolResult(MergePoolSymbols(topPool.PoolResultSymbols, bottomPool.PoolResultSymbols))
 					{
 						//cross the quantity
-						Frequency = (long)((ulong)(topPool.Frequency) * (ulong)(bottomPool.Frequency != 0 ? bottomPool.Frequency : 1))
+						Frequency = topPool.Frequency * (bottomPool.Frequency != 0 ? bottomPool.Frequency : 1)
 					};
 
 					int? match = EntryExists(result, mergedPool);
@@ -122,7 +122,7 @@ namespace DataGenerator.Models
 					//if the new merged pool exists, up the quantity
 					if (match.HasValue)
 					{
-						result[match.Value].Frequency = (long)((ulong)result[match.Value].Frequency + (ulong)mergedPool.Frequency);
+						result[match.Value].Frequency += mergedPool.Frequency;
 					}
 					else
 					{

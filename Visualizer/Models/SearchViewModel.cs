@@ -28,7 +28,7 @@ namespace Visualizer.Models
 				{
 					Symbol = stat.Symbol.ToString(),
 					Quantity = stat.Quantity,
-					Frequency = (ulong)stat.Frequency,
+					Frequency = stat.Frequency,
 					AlternateTotal = stat.AlternateTotal
 				});
 			}

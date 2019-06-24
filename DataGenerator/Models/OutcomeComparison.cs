@@ -44,7 +44,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Success,
 						Quantity = analysis.SuccessNetQuantity,
-						Frequency = (long)analysis.Frequency,
+						Frequency = analysis.Frequency,
 						AlternateTotal = analysis.AdvantageNetQuantity
 					});
 
@@ -53,7 +53,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Advantage,
 						Quantity = analysis.AdvantageNetQuantity,
-						Frequency = (long)analysis.Frequency,
+						Frequency = analysis.Frequency,
 						AlternateTotal = analysis.SuccessNetQuantity
 					});
 
@@ -62,7 +62,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Triumph,
 						Quantity = analysis.TriumphNetQuantity,
-						Frequency = (long)analysis.Frequency,
+						Frequency = analysis.Frequency,
 						AlternateTotal = analysis.DespairNetQuantity
 					});
 
@@ -71,7 +71,7 @@ namespace DataGenerator.Models
 					{
 						Symbol = Symbol.Despair,
 						Quantity = analysis.DespairNetQuantity,
-						Frequency = (long)analysis.Frequency,
+						Frequency = analysis.Frequency,
 						AlternateTotal = analysis.TriumphNetQuantity
 					});
 				}
@@ -84,18 +84,18 @@ namespace DataGenerator.Models
 		/// <param name="outcomePool"></param>
 		protected void PrintConsoleLog(PoolCombination poolCombination)
 		{
-			PrintStartLog(poolCombination.PositivePool.Name + ", " + poolCombination.NegativePool.Name, (ulong)poolCombination.PositivePool.TotalOutcomes * (ulong)poolCombination.NegativePool.TotalOutcomes);
-			PrintFinishLog((ulong)poolCombination.PositivePool.UniqueOutcomes * (ulong)poolCombination.NegativePool.UniqueOutcomes);
+			PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
+			PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
 		}
 
-		public static void PrintStartLog(string poolText, ulong rollEstimation)
+		public static void PrintStartLog(string poolText, decimal rollEstimation)
 		{
-			Console.Write(string.Format("{0,-80}|{1,29:n0}", poolText, rollEstimation));
+			Console.Write($"{poolText,-80}|{rollEstimation,29:n0}");
 		}
 
-		public static void PrintFinishLog(ulong rollEstimation)
+		public static void PrintFinishLog(decimal rollEstimation)
 		{
-			Console.Write(string.Format("  |{0,12:n0}\n", rollEstimation));
+			Console.Write($"  |{rollEstimation,12:n0}\n");
 		}
 
 

@@ -10,19 +10,15 @@ namespace DataFramework.Models
 {
 	public class PoolCombinationStatistic : IEquatable<PoolCombinationStatistic>
 	{
-		public PoolCombinationStatistic()
-		{
-		}
-
 		public int PositivePoolId { get; set; }
 		public int NegativePoolId { get; set; }
 		public Symbol Symbol { get; set; }
 		public int Quantity { get; set; }
-		public long Frequency { get; set; }
-		public long AlternateTotal { get; set; }
+		public decimal Frequency { get; set; }
+		public decimal AlternateTotal { get; set; }
 
 		[JsonIgnore]
-		public virtual PoolCombination PoolCombination { get; set; }
+		public PoolCombination PoolCombination { get; set; }
 
 		public bool Equals(PoolCombinationStatistic other)
 		{

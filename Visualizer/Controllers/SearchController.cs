@@ -51,9 +51,9 @@ namespace Visualizer.Controllers
 			}
 
 			//separate positive and negative dice
-			var positiveId = GetPoolId(dice.Where(w => new List<int>() { GetDie(context, DieNames.Ability).DieId , GetDie(context, DieNames.Proficiency).DieId, GetDie(context, DieNames.Boost).DieId }
+			var positiveId = GetPoolId(dice.Where(w => new List<int> { GetDie(context, DieNames.Ability).DieId , GetDie(context, DieNames.Proficiency).DieId, GetDie(context, DieNames.Boost).DieId }
 			.Contains(GetDie(context, GetType(w.DieType)).DieId)).ToList());
-			var negativeId = GetPoolId(dice.Where(w => new List<int>() { GetDie(context, DieNames.Difficulty).DieId, GetDie(context, DieNames.Challenge).DieId, GetDie(context, DieNames.Setback).DieId }
+			var negativeId = GetPoolId(dice.Where(w => new List<int> { GetDie(context, DieNames.Difficulty).DieId, GetDie(context, DieNames.Challenge).DieId, GetDie(context, DieNames.Setback).DieId }
 			.Contains(GetDie(context, GetType(w.DieType)).DieId)).ToList());
 
 

@@ -9,7 +9,7 @@ namespace Visualizer.Models
 	{
 		public string Symbol { get; set; }
 		public int Quantity { get; set; }
-		public ulong Frequency { get; set; }
-		public long AlternateTotal { get; set; }
+		public decimal Frequency { get; set; }
+		public decimal AlternateTotal { get; set; }
 	}
 }
