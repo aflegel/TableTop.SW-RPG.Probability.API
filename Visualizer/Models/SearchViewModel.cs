@@ -7,9 +7,9 @@ namespace Visualizer.Models
 {
 	public class SearchViewModel
 	{
-		public ICollection<PoolStatisticViewModel> PoolStatistics { get; set; }
+		public IEnumerable<PoolStatisticViewModel> PoolStatistics { get; set; }
 
-		public ICollection<DieViewModel> Dice { get; set; }
+		public IEnumerable<DieViewModel> Dice { get; set; }
 
 		public SearchViewModel()
 		{
@@ -19,28 +19,20 @@ namespace Visualizer.Models
 
 		public SearchViewModel(PoolCombination searchPool)
 		{
-			PoolStatistics = new Collection<PoolStatisticViewModel>();
-			Dice = new Collection<DieViewModel>();
-
-			foreach (var stat in searchPool.PoolCombinationStatistics)
+			PoolStatistics = searchPool.PoolCombinationStatistics.Select(stat => new PoolStatisticViewModel
 			{
-				PoolStatistics.Add(new PoolStatisticViewModel
-				{
-					Symbol = stat.Symbol.ToString(),
-					Quantity = stat.Quantity,
-					Frequency = stat.Frequency,
-					AlternateTotal = stat.AlternateTotal
-				});
-			}
+				Symbol = stat.Symbol.ToString(),
+				Quantity = stat.Quantity,
+				Frequency = stat.Frequency,
+				AlternateTotal = stat.AlternateTotal
+			});
 
-			foreach (var die in searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice))
+
+			Dice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice).Select(die => new DieViewModel
 			{
-				Dice.Add(new DieViewModel
-				{
-					DieType = die.Die.Name,
-					Quantity = die.Quantity
-				});
-			}
+				DieType = die.Die.Name,
+				Quantity = die.Quantity
+			});
 		}
 	}
 }
