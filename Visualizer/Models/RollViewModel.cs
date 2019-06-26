@@ -7,29 +7,38 @@ namespace Visualizer.Models
 {
 	public class RollViewModel
 	{
-		public IEnumerable<RollResultViewModel> PoolResults { get; set; }
+		public IEnumerable<RollResultViewModel> PositiveResults { get; set; }
+
+		public IEnumerable<RollResultViewModel> NegativeResults { get; set; }
 
 		public IEnumerable<DieViewModel> Dice { get; set; }
 
 		public RollViewModel()
 		{
-			PoolResults = new Collection<RollResultViewModel>();
+			PositiveResults = new Collection<RollResultViewModel>();
+			NegativeResults = new Collection<RollResultViewModel>();
 			Dice = new Collection<DieViewModel>();
 		}
 
-		public RollViewModel(Pool searchPool)
+		public RollViewModel(Pool positivePool, Pool negativePool)
 		{
-			PoolResults = searchPool.PoolResults.Select(stat =>
-			new RollResultViewModel
-			{
-				Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
-				Frequency = stat.Frequency,
-			});
+			PositiveResults = SetPool(positivePool);
+			NegativeResults = SetPool(negativePool);
 
-			Dice = searchPool.PoolDice.Select(die => new DieViewModel
+			Dice = positivePool.PoolDice.Select(die => new DieViewModel
 			{
 				DieType = die.Die.Name,
 				Quantity = die.Quantity
+			});
+		}
+
+		private IEnumerable<RollResultViewModel> SetPool(Pool results)
+		{
+			return results.PoolResults.Select(stat =>
+			new RollResultViewModel
+			{
+				RollSymbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
+				Frequency = stat.Frequency,
 			});
 		}
 	}

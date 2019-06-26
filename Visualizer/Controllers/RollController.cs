@@ -1,12 +1,11 @@
 ﻿using DataFramework.Context;
+using DataFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Visualizer.Framework;
 using Visualizer.Models;
-using static DataFramework.Models.Die;
 
 namespace Visualizer.Controllers
 {
@@ -30,20 +29,25 @@ namespace Visualizer.Controllers
 			}
 
 			//separate positive and negative dice
-			var positiveId = Common.GetPoolId(context, dice.Where(w => new List<int> { GetDie(context, DieNames.Ability).DieId, GetDie(context, DieNames.Proficiency).DieId, GetDie(context, DieNames.Boost).DieId }
-			.Contains(GetDie(context, Common.GetType(w.DieType)).DieId)).ToList());
+			var positiveId = Common.GetPositivePoolId(context, dice);
+			var negativeId = Common.GetNegativePoolId(context, dice);
 
 
-			if ((positiveId ?? 0) > 0)
+			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
-				var result = new RollViewModel(context.Pools.Where(w => w.PoolId == positiveId.Value)
-					.Include(i => i.PoolResults).ThenInclude(i => i.PoolResultSymbols).Include(i => i.PoolDice).FirstOrDefault());
+				var result = new RollViewModel(GetPool(positiveId.Value), GetPool(negativeId.Value));
 				return result;
 			}
 			else
 			{
 				return new RollViewModel();
 			}
+		}
+
+		private Pool GetPool(long poolId)
+		{
+			return context.Pools.Where(w => w.PoolId == poolId)
+					.Include(i => i.PoolResults).ThenInclude(i => i.PoolResultSymbols).Include(i => i.PoolDice).FirstOrDefault();
 		}
 	}
 }
