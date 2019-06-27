@@ -21,11 +21,11 @@ namespace Visualizer.Controllers
 		/// <param name="dice"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public RollViewModel Get([FromBody]List<DieViewModel> dice)
+		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice)
 		{
 			if (dice == null)
 			{
-				return new RollViewModel();
+				return new SearchRollViewModel();
 			}
 
 			//separate positive and negative dice
@@ -35,12 +35,12 @@ namespace Visualizer.Controllers
 
 			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
-				var result = new RollViewModel(GetPool(positiveId.Value), GetPool(negativeId.Value));
+				var result = new SearchRollViewModel(GetPool(positiveId.Value), GetPool(negativeId.Value));
 				return result;
 			}
 			else
 			{
-				return new RollViewModel();
+				return new SearchRollViewModel();
 			}
 		}
 

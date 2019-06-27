@@ -7,19 +7,19 @@ namespace Visualizer.Models
 {
 	public class SearchViewModel
 	{
-		public IEnumerable<PoolStatisticViewModel> PoolStatistics { get; set; }
+		public IEnumerable<PoolStatisticViewModel> Statistics { get; set; }
 
 		public IEnumerable<DieViewModel> Dice { get; set; }
 
 		public SearchViewModel()
 		{
-			PoolStatistics = new Collection<PoolStatisticViewModel>();
+			Statistics = new Collection<PoolStatisticViewModel>();
 			Dice = new Collection<DieViewModel>();
 		}
 
 		public SearchViewModel(PoolCombination searchPool)
 		{
-			PoolStatistics = searchPool.PoolCombinationStatistics.Select(stat => new PoolStatisticViewModel
+			Statistics = searchPool.PoolCombinationStatistics.Select(stat => new PoolStatisticViewModel
 			{
 				Symbol = stat.Symbol.ToString(),
 				Quantity = stat.Quantity,
