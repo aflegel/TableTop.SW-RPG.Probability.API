@@ -10,7 +10,7 @@ namespace DataGenerator.Models
 	{
 		public OutcomeAnalysis(PoolResult positivePoolResult, PoolResult negativePoolResult)
 		{
-			Frequency = (ulong)positivePoolResult.Frequency * (ulong)negativePoolResult.Frequency;
+			Frequency = positivePoolResult.Frequency * negativePoolResult.Frequency;
 
 			//triumphs count as successes but advantages do not and despairs count as failures but threats do not
 			var SuccessQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success);
@@ -19,36 +19,21 @@ namespace DataGenerator.Models
 			var AdvantageQuantity = positivePoolResult.CountMatchingKeys(Symbol.Advantage);
 			var ThreatQuantity = negativePoolResult.CountMatchingKeys(Symbol.Threat);
 
-			var TriumphQuantity = positivePoolResult.CountMatchingKeys(Symbol.Triumph);
-			var DespairQuantity = negativePoolResult.CountMatchingKeys(Symbol.Despair);
+			TriumphNetQuantity = positivePoolResult.CountMatchingKeys(Symbol.Triumph);
+			DespairNetQuantity = negativePoolResult.CountMatchingKeys(Symbol.Despair);
 
-			var SuccessThreshold = SuccessQuantity + TriumphQuantity;
-			var FailureThreshold = FailureQuantity + DespairQuantity;
-
-			SuccessNetQuantity = SuccessThreshold - FailureThreshold;
+			SuccessNetQuantity = SuccessQuantity + TriumphNetQuantity - (FailureQuantity + DespairNetQuantity);
 			AdvantageNetQuantity = AdvantageQuantity - ThreatQuantity;
-
-			//adjust the triumph quantity by the difference between the success quantity and failure threshold
-			//if the difference is greater than 0, take 0 instead
-			//if it is not a success, no triumph can take place, adjust the triumph quantity to 0
-			var TriumphThreshold = TriumphQuantity + (IsSuccess ? Math.Min(SuccessQuantity - FailureThreshold, 0) : -TriumphQuantity);
-			var DespairThreshold = DespairQuantity + (!IsSuccess ? Math.Min(FailureQuantity - SuccessThreshold, 0) : -DespairQuantity);
-
-			if (TriumphThreshold > 0)
-				TriumphNetQuantity = TriumphThreshold;
-			else if (DespairThreshold > 0)
-				TriumphNetQuantity = -DespairThreshold;
-			else
-				TriumphNetQuantity = 0;
 		}
 
-		public ulong Frequency { get; private set; }
+		public decimal Frequency { get; private set; }
 
 		public int SuccessNetQuantity { get; private set; }
-		public int TriumphNetQuantity { get; private set; }
-		public int AdvantageNetQuantity { get; private set; }
-		private int DespairNetQuantity { get; set; }
 
-		private bool IsSuccess { get { return SuccessNetQuantity > 0; } }
+		public int TriumphNetQuantity { get; private set; }
+
+		public int AdvantageNetQuantity { get; private set; }
+
+		public int DespairNetQuantity { get; private set; }
 	}
 }

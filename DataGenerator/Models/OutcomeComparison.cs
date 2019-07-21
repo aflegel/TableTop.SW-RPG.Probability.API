@@ -17,8 +17,7 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Create the container and run the simulation
 		/// </summary>
-		/// <param name="positivePool"></param>
-		/// <param name="negativePool"></param>
+		/// <param name="poolCombination"></param>
 		public OutcomeComparison(PoolCombination poolCombination)
 		{
 			//print to console
@@ -40,30 +39,39 @@ namespace DataGenerator.Models
 					var analysis = new OutcomeAnalysis(positivePoolResult, negativePoolResult);
 
 					//add the net success quantity
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Success,
 						Quantity = analysis.SuccessNetQuantity,
-						Frequency = (long)analysis.Frequency,
+						Frequency = analysis.Frequency,
 						AlternateTotal = analysis.AdvantageNetQuantity
 					});
 
 					//add the net advantage quantity
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Advantage,
 						Quantity = analysis.AdvantageNetQuantity,
-						Frequency = (long)analysis.Frequency,
+						Frequency = analysis.Frequency,
 						AlternateTotal = analysis.SuccessNetQuantity
 					});
 
 					//add the net triumph
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic()
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
 					{
 						Symbol = Symbol.Triumph,
 						Quantity = analysis.TriumphNetQuantity,
-						Frequency = (long)analysis.Frequency,
-						AlternateTotal = 0
+						Frequency = analysis.Frequency,
+						AlternateTotal = analysis.DespairNetQuantity
+					});
+
+					//add the net despair
+					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
+					{
+						Symbol = Symbol.Despair,
+						Quantity = analysis.DespairNetQuantity,
+						Frequency = analysis.Frequency,
+						AlternateTotal = analysis.TriumphNetQuantity
 					});
 				}
 			}
@@ -72,22 +80,16 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Displays the Unique List of rolls
 		/// </summary>
-		/// <param name="outcomePool"></param>
+		/// <param name="poolCombination"></param>
 		protected void PrintConsoleLog(PoolCombination poolCombination)
 		{
-			PrintStartLog(poolCombination.PositivePool.Name + ", " + poolCombination.NegativePool.Name, (ulong)poolCombination.PositivePool.TotalOutcomes * (ulong)poolCombination.NegativePool.TotalOutcomes);
-			PrintFinishLog((ulong)poolCombination.PositivePool.UniqueOutcomes * (ulong)poolCombination.NegativePool.UniqueOutcomes);
+			PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
+			PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
 		}
 
-		public static void PrintStartLog(string poolText, ulong rollEstimation)
-		{
-			Console.Write(string.Format("{0,-80}|{1,29:n0}", poolText, rollEstimation));
-		}
+		public static void PrintStartLog(string poolText, decimal rollEstimation) => Console.Write($"{poolText,-80}|{rollEstimation,29:n0}");
 
-		public static void PrintFinishLog(ulong rollEstimation)
-		{
-			Console.Write(string.Format("  |{0,12:n0}\n", rollEstimation));
-		}
+		public static void PrintFinishLog(decimal rollEstimation) => Console.Write($"  |{rollEstimation,12:n0}\n");
 
 
 	}

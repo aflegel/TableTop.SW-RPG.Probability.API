@@ -2,45 +2,37 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using static DataFramework.Models.Die;
 
 namespace Visualizer.Models
 {
 	public class SearchViewModel
 	{
+		public IEnumerable<PoolStatisticViewModel> Statistics { get; set; }
+
+		public IEnumerable<DieViewModel> Dice { get; set; }
+
 		public SearchViewModel()
 		{
-
+			Statistics = new Collection<PoolStatisticViewModel>();
+			Dice = new Collection<DieViewModel>();
 		}
 
 		public SearchViewModel(PoolCombination searchPool)
 		{
-			PoolStatistics = new Collection<PoolCombinationStatisticViewModel>();
-
-			foreach (var stat in searchPool.PoolCombinationStatistics)
+			Statistics = searchPool.PoolCombinationStatistics.Select(stat => new PoolStatisticViewModel
 			{
-				PoolStatistics.Add(new PoolCombinationStatisticViewModel()
-				{
-					Symbol = stat.Symbol,
-					Quantity = stat.Quantity,
-					Frequency = (ulong)stat.Frequency,
-					AlternateTotal = stat.AlternateTotal
-				});
-			}
+				Symbol = stat.Symbol.ToString(),
+				Quantity = stat.Quantity,
+				Frequency = stat.Frequency,
+				AlternateTotal = stat.AlternateTotal
+			});
 
-			Dice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice);
+
+			Dice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice).Select(die => new DieViewModel
+			{
+				DieType = die.Die.Name,
+				Quantity = die.Quantity
+			});
 		}
-
-		public ICollection<PoolCombinationStatisticViewModel> PoolStatistics { get; set; }
-
-		public IEnumerable<PoolDie> Dice { get; set; }
-	}
-
-	public class PoolCombinationStatisticViewModel
-	{
-		public Symbol Symbol { get; set; }
-		public int Quantity { get; set; }
-		public ulong Frequency { get; set; }
-		public long AlternateTotal { get; set; }
 	}
 }

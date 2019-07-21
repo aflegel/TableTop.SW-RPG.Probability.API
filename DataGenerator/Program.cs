@@ -15,23 +15,23 @@ namespace DataGenerator
 {
 	class Program
 	{
-		const int ABILITY_LIMIT = 6;
-		const int UPGRADE_LIMIT = 6;
-		const int DIFFICULTY_LIMIT = 6;
-		const int CHALLENGE_LIMIT = 6;
-		const int BOOST_LIMIT = 4;
-		const int SETBACK_LIMIT = 4;
+		static readonly LimitConfiguration AbilityLimit =  new LimitConfiguration{ Start= 4, End = 6 };
+		static readonly LimitConfiguration UpgradeLimit = new LimitConfiguration { Start = 4, End = 6 };
+		static readonly LimitConfiguration DifficultyLimit = new LimitConfiguration { Start = 4, End = 6 };
+		static readonly LimitConfiguration ChallengeLimit = new LimitConfiguration { Start = 4, End = 6 };
+		static readonly LimitConfiguration BoostLimit = new LimitConfiguration { Start = 4, End = 6 };
+		static readonly LimitConfiguration SetbackLimit = new LimitConfiguration { Start = 4, End = 6 };
 
 		static void Main(string[] args)
 		{
 			var time = DateTime.Now;
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Startup", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Startup");
 
-			//ProcessProgram();
+			ProcessProgram();
 
-			Console.WriteLine(string.Format("Start time: {0:hh:mm.ss}", time));
-			Console.WriteLine(string.Format("Completion time: {0:hh:mm.ss}", DateTime.Now));
-			//Console.WriteLine(string.Format("Total Runtime: {0:hh:mm.ss}", DateTime.Now.Subtract(time)));
+			Console.WriteLine($"Start time: {time:hh:mm.ss}");
+			Console.WriteLine($"Completion time: {DateTime.Now:hh:mm.ss}");
+			//Console.WriteLine($"Total Runtime: {DateTime.Now.Subtract(time):hh:mm.ss}");
 			//prevent auto close
 			Console.ReadKey();
 		}
@@ -43,13 +43,13 @@ namespace DataGenerator
 		private static void InitializeDatabase(ProbabilityContext context)
 		{
 			//todo: wait for confirmation before deleting
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Database Initialization", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Database Initialization");
 
 			//delete and recreate the database
 			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Database Seeding", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Database Seeding");
 
 			ProbabilityContextSeed.SeedData(context);
 		}
@@ -82,9 +82,9 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void CommitData(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:hhh:mm.sss} Initialize Database Commit", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hhh:mm.sss} Initialize Database Commit");
 			context.SaveChanges();
-			Console.WriteLine(string.Format("{0:hhh:mm.sss} Completed Database Commit", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hhh:mm.sss} Completed Database Commit");
 		}
 
 		/// <summary>
@@ -93,10 +93,10 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void ProcessPartialPools(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Generation", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Initialize Pool Generation");
 			BuildPositivePool(context);
 			BuildNegativePool(context);
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Generation", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Completed Pool Generation");
 		}
 
 		/// <summary>
@@ -105,14 +105,14 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void ProcessPoolComparison(ProbabilityContext context)
 		{
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Initialize Pool Comparison", DateTime.Now));
-			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Ability.ToString() || a.Die.Name == Die.DieNames.Boost.ToString() || a.Die.Name == Die.DieNames.Proficiency.ToString()))
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Initialize Pool Comparison");
+			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == DieNames.Ability.ToString() || a.Die.Name == DieNames.Boost.ToString() || a.Die.Name == DieNames.Proficiency.ToString()))
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
 						.ThenInclude(tti => tti.PoolResultSymbols);
 
-			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == Die.DieNames.Difficulty.ToString() || a.Die.Name == Die.DieNames.SetBack.ToString() || a.Die.Name == Die.DieNames.Challenge.ToString()))
+			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == DieNames.Difficulty.ToString() || a.Die.Name == DieNames.Setback.ToString() || a.Die.Name == DieNames.Challenge.ToString()))
 				.Include(i => i.NegativePoolCombinations)
 					.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
@@ -123,10 +123,10 @@ namespace DataGenerator
 			{
 				foreach (var negativePool in negativePools)
 				{
-					new OutcomeComparison(new PoolCombination(positivePool, negativePool));
+					_ = new OutcomeComparison(new PoolCombination(positivePool, negativePool));
 				}
 			}
-			Console.WriteLine(string.Format("{0:hh:mm.ss} Completed Pool Comparison", DateTime.Now));
+			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Completed Pool Comparison");
 		}
 
 		/// <summary>
@@ -137,15 +137,15 @@ namespace DataGenerator
 		private static void BuildPositivePool(ProbabilityContext context)
 		{
 			//each ability level
-			for (int i = 1; i <= ABILITY_LIMIT; i++)
+			for (int i = AbilityLimit.Start; i <= AbilityLimit.End; i++)
 			{
 				//each skill level
 				//ensure the proficiency dice don't outweigh the ability dice
-				for (int j = 0; (j <= UPGRADE_LIMIT) && (j <= i); j++)
+				for (int j = UpgradeLimit.Start; (j <= UpgradeLimit.End) && (j <= i); j++)
 				{
-					for (int k = 0; k <= BOOST_LIMIT; k++)
+					for (int k = BoostLimit.Start; k <= BoostLimit.End; k++)
 					{
-						new OutcomeGenerator(BuildPoolDice(context, ability: i - j, proficiency: j, boost: k));
+						_ = new OutcomeGenerator(BuildPoolDice(context, i - j, j, boost: k));
 					}
 				}
 			}
@@ -159,14 +159,14 @@ namespace DataGenerator
 		private static void BuildNegativePool(ProbabilityContext context)
 		{
 			//each difficulty
-			for (int i = 1; i <= DIFFICULTY_LIMIT; i++)
+			for (int i = DifficultyLimit.Start; i <= DifficultyLimit.End; i++)
 			{
 				//ensure the challende dice don't outweigh the difficulty dice
-				for (int j = 0; (j <= CHALLENGE_LIMIT) && (j <= i); j++)
+				for (int j = ChallengeLimit.Start; (j <= ChallengeLimit.End) && (j <= i); j++)
 				{
-					for (int k = 0; k <= SETBACK_LIMIT; k++)
+					for (int k = SetbackLimit.Start; k <= SetbackLimit.End; k++)
 					{
-						new OutcomeGenerator(BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k));
+						_ = new OutcomeGenerator(BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k));
 					}
 				}
 			}
@@ -188,35 +188,24 @@ namespace DataGenerator
 			var pool = new Pool();
 
 			if (ability > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Ability), ability));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Ability), ability));
 			if (boost > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Boost), boost));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Boost), boost));
 			if (challenge > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Challenge), challenge));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Challenge), challenge));
 			if (difficulty > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Difficulty), difficulty));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Difficulty), difficulty));
 			if (proficiency > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.Proficiency), proficiency));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Proficiency), proficiency));
 			if (setback > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, Die.DieNames.SetBack), setback));
+				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Setback), setback));
 
-			pool.Name = pool.GetPoolText();
-			pool.TotalOutcomes = (long)pool.GetRollEstimation();
+			pool.Name = pool.PoolText;
+			pool.TotalOutcomes = pool.RollEstimation;
 
 			context.Pools.Add(pool);
 
 			return pool;
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="die"></param>
-		/// <returns></returns>
-		protected static Die GetDie(ProbabilityContext context, Die.DieNames die)
-		{
-			return context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
 		}
 	}
 }

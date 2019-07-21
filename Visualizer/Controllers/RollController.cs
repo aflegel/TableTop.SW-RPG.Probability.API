@@ -1,17 +1,17 @@
 ﻿using DataFramework.Context;
+using DataFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Visualizer.Models;
 using Visualizer.Framework;
-using DataFramework.Models;
+using Visualizer.Models;
 
 namespace Visualizer.Controllers
 {
 	[Produces("application/json")]
 	[Route("[controller]")]
-	public class SearchController : Controller
+	public class RollController : Controller
 	{
 		private readonly ProbabilityContext context = new ProbabilityContext();
 
@@ -21,11 +21,11 @@ namespace Visualizer.Controllers
 		/// <param name="dice"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public SearchViewModel Get([FromBody]List<DieViewModel> dice)
+		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice)
 		{
 			if (dice == null)
 			{
-				return new SearchViewModel();
+				return new SearchRollViewModel();
 			}
 
 			//separate positive and negative dice
@@ -35,19 +35,19 @@ namespace Visualizer.Controllers
 
 			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
-				var result = new SearchViewModel(GetPoolCombination(positiveId.Value, negativeId.Value));
+				var result = new SearchRollViewModel(GetPool(positiveId.Value), GetPool(negativeId.Value));
 				return result;
 			}
 			else
 			{
-				return new SearchViewModel();
+				return new SearchRollViewModel();
 			}
 		}
 
-		private PoolCombination GetPoolCombination(int positiveId, int negativeId)
+		private Pool GetPool(long poolId)
 		{
-			return context.PoolCombinations.Where(w => w.PositivePoolId == positiveId && w.NegativePoolId == negativeId)
-					.Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
+			return context.Pools.Where(w => w.PoolId == poolId)
+					.Include(i => i.PoolResults).ThenInclude(i => i.PoolResultSymbols).Include(i => i.PoolDice).FirstOrDefault();
 		}
 	}
 }
