@@ -5,16 +5,9 @@ namespace DataFramework.Models
 {
 	public class DieFace
 	{
-		public DieFace()
-		{
-			DieFaceSymbols = new HashSet<DieFaceSymbol>();
-		}
-
 		public DieFace(List<DieFaceSymbol> faces)
 		{
-			DieFaceSymbols = new HashSet<DieFaceSymbol>();
-
-			faces.ForEach(face => DieFaceSymbols.Add(face));
+			DieFaceSymbols = new HashSet<DieFaceSymbol>(faces);
 		}
 
 		public int DieFaceId { get; set; }

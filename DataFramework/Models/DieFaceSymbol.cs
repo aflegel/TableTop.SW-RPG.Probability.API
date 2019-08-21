@@ -5,8 +5,6 @@ namespace DataFramework.Models
 {
 	public class DieFaceSymbol
 	{
-		public DieFaceSymbol() { }
-
 		public DieFaceSymbol(Symbol symbol, int quantity)
 		{
 			Symbol = symbol;

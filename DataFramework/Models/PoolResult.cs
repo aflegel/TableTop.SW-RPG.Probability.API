@@ -10,19 +10,12 @@ namespace DataFramework.Models
 	{
 		public PoolResult()
 		{
-			//something like 8 million records
 			PoolResultSymbols = new HashSet<PoolResultSymbol>();
 		}
 
 		public PoolResult(List<PoolResultSymbol> poolResultSymbols)
 		{
-			//something like 8 million records
-			PoolResultSymbols = new HashSet<PoolResultSymbol>();
-
-			foreach (var resultSymbol in poolResultSymbols)
-			{
-				PoolResultSymbols.Add(resultSymbol);
-			}
+			PoolResultSymbols = new HashSet<PoolResultSymbol>(poolResultSymbols);
 		}
 
 		public int PoolResultId { get; set; }

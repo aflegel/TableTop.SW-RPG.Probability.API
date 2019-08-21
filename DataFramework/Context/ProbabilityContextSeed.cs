@@ -1,32 +1,31 @@
-﻿namespace DataFramework.Context
-{
-	using System.Collections.Generic;
-	using DataFramework.Models;
-	using static DataFramework.Models.Die;
+﻿using System.Collections.Generic;
+using DataFramework.Models;
+using static DataFramework.Models.Die;
 
+namespace DataFramework.Context
+{
 	public class ProbabilityContextSeed
 	{
 		public static void SeedData(ProbabilityContext context)
 		{
-			context.Dice.Add(BuildAdvantage());
-			context.Dice.Add(BuildBoost());
-			context.Dice.Add(BuildChallenge());
-			context.Dice.Add(BuildDifficulty());
-			context.Dice.Add(BuildForce());
-			context.Dice.Add(BuildProficiency());
-			context.Dice.Add(BuildSetBack());
+			context.Dice.AddRange(new List<Die>
+			{
+				AbilityDie,
+				BoostDie,
+				ChallengeDie,
+				DifficultyDie,
+				ForceDie,
+				ProficiencyDie,
+				SetbackDie
+			});
 
 			context.SaveChanges();
 		}
 
-		public static Die BuildAdvantage()
+		public static Die AbilityDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Ability.ToString()
-			};
-
-			var faceList = new List<DieFace>
+			Name = DieNames.Ability.ToString(),
+			DieFaces = new List<DieFace>
 			{
 				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
@@ -36,45 +35,27 @@
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1), new DieFaceSymbol(Symbol.Advantage, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 2) }),
-			};
+			}
+		};
 
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
-
-		public static Die BuildBoost()
+		public static Die BoostDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Boost.ToString()
-			};
+			Name = DieNames.Boost.ToString(),
+			DieFaces = new List<DieFace>
+				{
+					new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+					new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1), new DieFaceSymbol(Symbol.Advantage, 1) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 2) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 1) }),
+				}
+		};
 
-			var faceList = new List<DieFace>
-			{
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1), new DieFaceSymbol(Symbol.Advantage, 1) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 2) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 1) }),
-			};
-
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
-
-		public static Die BuildChallenge()
+		public static Die ChallengeDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Challenge.ToString()
-			};
-
-			var faceList = new List<DieFace>
+			Name = DieNames.Challenge.ToString(),
+			DieFaces = new List<DieFace>
 			{
 				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
@@ -88,47 +69,29 @@
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 2) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 2) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Despair, 1) }),
-			};
+			}
+		};
 
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
-
-		public static Die BuildDifficulty()
+		public static Die DifficultyDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Difficulty.ToString()
-			};
+			Name = DieNames.Difficulty.ToString(),
+			DieFaces = new List<DieFace>
+				{
+					new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 2) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 2) }),
+					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1), new DieFaceSymbol(Symbol.Threat, 1) })
+				}
+		};
 
-			var faceList = new List<DieFace>
-			{
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 2) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 2) }),
-				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1), new DieFaceSymbol(Symbol.Threat, 1) }),
-			};
-
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
-
-		protected static Die BuildForce()
+		public static Die ForceDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Force.ToString()
-			};
-
-			var faceList = new List<DieFace>
+			Name = DieNames.Force.ToString(),
+			DieFaces = new List<DieFace>
 			{
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Dark, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Dark, 1) }),
@@ -142,22 +105,13 @@
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Light, 2) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Light, 2) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Light, 2) }),
-			};
+			}
+		};
 
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
-
-		protected static Die BuildProficiency()
+		public static Die ProficiencyDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Proficiency.ToString()
-			};
-
-			var faceList = new List<DieFace>
+			Name = DieNames.Proficiency.ToString(),
+			DieFaces = new List<DieFace>
 			{
 				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
@@ -171,35 +125,21 @@
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 2) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 2) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Triumph, 1) }),
-			};
+			}
+		};
 
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
-
-		protected static Die BuildSetBack()
+		public static Die SetbackDie => new Die
 		{
-			var die = new Die
-			{
-				Name = DieNames.Setback.ToString()
-			};
-
-			var faceList = new List<DieFace>
-			{
+			Name = DieNames.Setback.ToString(),
+			DieFaces = new List<DieFace>
+				{
 				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
 				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
-			};
-
-			foreach (var face in faceList)
-				die.DieFaces.Add(face);
-
-			return die;
-		}
+			}
+		};
 	}
 }

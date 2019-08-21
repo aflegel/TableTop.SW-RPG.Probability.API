@@ -53,7 +53,7 @@ namespace DataFramework.Models
 	public static class DieExtension
 	{
 		/// <summary>
-		///
+		/// Returns a Die with it's faces and face symbols
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="die"></param>

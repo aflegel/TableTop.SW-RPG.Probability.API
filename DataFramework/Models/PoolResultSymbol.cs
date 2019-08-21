@@ -7,8 +7,6 @@ namespace DataFramework.Models
 {
 	public class PoolResultSymbol : IEquatable<PoolResultSymbol>
 	{
-		public PoolResultSymbol() { }
-
 		public PoolResultSymbol(Symbol symbol, int quantity)
 		{
 			Symbol = symbol;
@@ -24,31 +22,13 @@ namespace DataFramework.Models
 		[JsonIgnore]
 		public PoolResult PoolResult { get; set; }
 
-		public bool Equals(PoolResultSymbol other)
-		{
-			if (Symbol != other.Symbol)
-				return false;
-
-			if (Quantity != other.Quantity)
-				return false;
-
-			return true;
-		}
+		public bool Equals(PoolResultSymbol other) => Symbol != other.Symbol ? false : Quantity == other.Quantity;
 	}
 
 	public class PoolResultSymbolEqualityComparer : IEqualityComparer<PoolResultSymbol>
 	{
 		public bool Equals(PoolResultSymbol x, PoolResultSymbol y) => x.Equals(y);
 
-		public int GetHashCode(PoolResultSymbol obj)
-		{
-			unchecked
-			{
-				if (obj == null)
-					return 0;
-
-				return obj.Symbol.ToString().GetHashCode() + obj.Quantity;
-			}
-		}
+		public int GetHashCode(PoolResultSymbol obj) => obj == null ? 0 : unchecked(obj.Symbol.ToString().GetHashCode() + obj.Quantity);
 	}
 }

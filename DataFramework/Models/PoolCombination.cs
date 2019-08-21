@@ -1,19 +1,11 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataFramework.Models
 {
 	public class PoolCombination
 	{
-		public PoolCombination()
-		{
-			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
-		}
-
 		public PoolCombination(Pool positivePool, Pool negativePool)
 		{
 			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();

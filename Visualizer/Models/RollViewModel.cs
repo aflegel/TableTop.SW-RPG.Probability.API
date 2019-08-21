@@ -19,7 +19,11 @@ namespace Visualizer.Models
 
 		public RollViewModel(Pool pool)
 		{
-			Results = SetPool(pool);
+			Results = pool.PoolResults.Select(stat => new RollResultViewModel
+			{
+				Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
+				Frequency = stat.Frequency,
+			});
 
 			Dice = pool.PoolDice.Select(die => new DieViewModel
 			{
@@ -27,13 +31,5 @@ namespace Visualizer.Models
 				Quantity = die.Quantity
 			});
 		}
-
-		private IEnumerable<RollResultViewModel> SetPool(Pool results)
-			=> results.PoolResults.Select(stat =>
-				new RollResultViewModel
-				{
-					Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
-					Frequency = stat.Frequency,
-				});
 	}
 }

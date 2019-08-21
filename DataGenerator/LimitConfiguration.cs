@@ -1,5 +1,4 @@
-﻿using System;
-namespace DataGenerator
+﻿namespace DataGenerator
 {
 	public class LimitConfiguration
 	{

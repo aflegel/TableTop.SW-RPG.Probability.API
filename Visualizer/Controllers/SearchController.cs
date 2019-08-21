@@ -29,17 +29,12 @@ namespace Visualizer.Controllers
 			}
 
 			//separate positive and negative dice
-			var positiveId = Common.GetPositivePoolId(context, dice);
-			var negativeId = Common.GetNegativePoolId(context, dice);
+			var positiveId = context.GetPositivePoolId(dice);
+			var negativeId = context.GetNegativePoolId(dice);
 
-			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
-			{
-				return new SearchViewModel(GetPoolCombination(positiveId.Value, negativeId.Value));
-			}
-			else
-			{
-				return new SearchViewModel();
-			}
+			return (positiveId ?? 0) > 0 && (negativeId ?? 0) > 0
+				? new SearchViewModel(GetPoolCombination(positiveId.Value, negativeId.Value))
+				: new SearchViewModel();
 		}
 
 		private PoolCombination GetPoolCombination(int positiveId, int negativeId) => context.PoolCombinations.Where(w => w.PositivePoolId == positiveId && w.NegativePoolId == negativeId)

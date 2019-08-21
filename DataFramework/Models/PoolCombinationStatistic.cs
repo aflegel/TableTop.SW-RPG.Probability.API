@@ -22,30 +22,13 @@ namespace DataFramework.Models
 		[JsonIgnore]
 		public PoolCombination PoolCombination { get; set; }
 
-		public bool Equals(PoolCombinationStatistic other)
-		{
-			if (Symbol != other.Symbol)
-				return false;
-			if (Quantity != other.Quantity)
-				return false;
-
-			return true;
-		}
+		public bool Equals(PoolCombinationStatistic other) => Symbol != other.Symbol ? false : Quantity == other.Quantity;
 	}
 
 	public class PoolCombinationStatisticEqualityComparer : IEqualityComparer<PoolCombinationStatistic>
 	{
 		public bool Equals(PoolCombinationStatistic x, PoolCombinationStatistic y) => x.Equals(y);
 
-		public int GetHashCode(PoolCombinationStatistic obj)
-		{
-			unchecked
-			{
-				if (obj == null)
-					return 0;
-
-				return obj.Symbol.ToString().GetHashCode() + obj.Quantity;
-			}
-		}
+		public int GetHashCode(PoolCombinationStatistic obj) => obj == null ? 0 : unchecked(obj.Symbol.ToString().GetHashCode() + obj.Quantity);
 	}
 }

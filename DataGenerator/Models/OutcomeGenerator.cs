@@ -14,6 +14,24 @@ namespace DataGenerator.Models
 				ProcessDicePool(pool);
 		}
 
+		protected int GetPoolDiceCount(Collection<PoolDie> dice) => dice.Sum(die => die.Quantity);
+
+		/// <summary>
+		/// Returns a result for each face of a die
+		/// </summary>
+		/// <param name="die"></param>
+		/// <returns></returns>
+		protected Collection<PoolResult> GetDiePool(Die die) => new Collection<PoolResult>(
+			die.DieFaces.Select(face =>
+				new PoolResult()
+				{
+					Frequency = 1,
+					PoolResultSymbols = new Collection<PoolResultSymbol>(face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList())
+				}
+			).ToList());
+
+		protected Collection<PoolDie> CopyPoolDice(Pool pool) => new Collection<PoolDie>(pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity)).ToList());
+
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
 		/// </summary>
@@ -28,8 +46,6 @@ namespace DataGenerator.Models
 
 			OutcomeComparison.PrintFinishLog(pool.UniqueOutcomes);
 		}
-
-		protected Collection<PoolDie> CopyPoolDice(Pool pool) => new Collection<PoolDie>(pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity)).ToList());
 
 		protected Collection<PoolResult> RecursiveProcessing(Collection<PoolDie> dice)
 		{
@@ -139,21 +155,6 @@ namespace DataGenerator.Models
 		}
 
 		/// <summary>
-		/// Returns a result for each face of a die
-		/// </summary>
-		/// <param name="die"></param>
-		/// <returns></returns>
-		protected Collection<PoolResult> GetDiePool(Die die) => new Collection<PoolResult>(
-			die.DieFaces.Select(face =>
-				new PoolResult()
-				{
-					Frequency = 1,
-					PoolResultSymbols = new Collection<PoolResultSymbol>(face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList())
-				}
-			).ToList());
-
-
-		/// <summary>
 		/// Splits a pool of dice into two halves.  Remainder is in the bottom half.
 		/// </summary>
 		/// <param name="dice"></param>
@@ -190,7 +191,5 @@ namespace DataGenerator.Models
 
 			return indexDice;
 		}
-
-		protected int GetPoolDiceCount(Collection<PoolDie> dice) => dice.Sum(die => die.Quantity);
 	}
 }

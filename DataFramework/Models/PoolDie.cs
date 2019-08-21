@@ -4,8 +4,6 @@ namespace DataFramework.Models
 {
 	public class PoolDie
 	{
-		public PoolDie() { }
-
 		public PoolDie(Die die, int quantity)
 		{
 			Die = die;

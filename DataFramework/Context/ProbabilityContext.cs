@@ -1,10 +1,9 @@
-﻿namespace DataFramework.Context
-{
-	using System;
-	using System.Linq;
-	using DataFramework.Models;
-	using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
+using DataFramework.Models;
+using Microsoft.EntityFrameworkCore;
 
+namespace DataFramework.Context
+{
 	public class ProbabilityContext : DbContext
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(@"Server=ALEXANDER-HP-85;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
@@ -23,8 +22,6 @@
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-
-
 			modelBuilder.Entity<Die>().ToTable(nameof(Die));
 			modelBuilder.Entity<Pool>().ToTable(nameof(Pool));
 			modelBuilder.Entity<PoolCombination>().ToTable(nameof(PoolCombination));
@@ -80,13 +77,10 @@
 				.HasOne(e => e.Die)
 				.WithMany(c => c.DieFaces);
 
-			foreach (var property in modelBuilder.Model.GetEntityTypes()
+			modelBuilder.Model.GetEntityTypes()
 				.SelectMany(t => t.GetProperties())
-				.Where(p => p.ClrType == typeof(decimal)))
-			{
-				property.Relational().ColumnType = "decimal(24, 0)";// 100,000,000,000,000,000,000
-			}
-
+				.Where(p => p.ClrType == typeof(decimal))
+				.ToList().ForEach(property => property.Relational().ColumnType = "decimal(24, 0)");// 100,000,000,000,000,000,000
 		}
 	}
 }

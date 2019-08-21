@@ -45,9 +45,11 @@ namespace Visualizer.Framework
 			return resultList.FirstOrDefault();
 		}
 
-		public static int? GetPositivePoolId(ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, positiveDice));
+		public static int? GetPositivePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, positiveDice));
 
-		public static int? GetNegativePoolId(ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, negativeDice));
+		public static int? GetNegativePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, negativeDice));
+
+		private static List<int> GetDiePoolIds(this ProbabilityContext context, List<DieNames> dice) => dice.Select(s => context.GetDie(s).DieId).ToList();
 
 		/// <summary>
 		/// Removes either the positive or negative dice from the full pool to find the pool half
@@ -57,7 +59,7 @@ namespace Visualizer.Framework
 		/// <param name="filters"></param>
 		/// <returns></returns>
 		private static List<DieViewModel> FilterDice(ProbabilityContext context, List<DieViewModel> dice, List<DieNames> filters)
-			=> dice.Where(w => GetDiePool(context, filters)
+			=> dice.Where(w => context.GetDiePoolIds(filters)
 				.Contains(context.GetDie(w.DieType.GetName()).DieId)).ToList();
 
 		public static DieNames GetName(this string input)
@@ -66,7 +68,5 @@ namespace Visualizer.Framework
 
 			return dieType;
 		}
-
-		private static List<int> GetDiePool(ProbabilityContext context, List<DieNames> dice) => dice.Select(s => context.GetDie(s).DieId).ToList();
 	}
 }
