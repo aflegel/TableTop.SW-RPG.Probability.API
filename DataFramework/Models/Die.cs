@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataFramework.Context;
 using Microsoft.EntityFrameworkCore;
+using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
 {
@@ -50,13 +48,16 @@ namespace DataFramework.Models
 		public ICollection<DieFace> DieFaces { get; set; }
 
 		public ICollection<PoolDie> PoolDice { get; set; }
+	}
 
+	public static class DieExtension
+	{
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="die"></param>
 		/// <returns></returns>
-		public static Die GetDie(ProbabilityContext context, DieNames die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
+		public static Die GetDie(this ProbabilityContext context, DieNames die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
 	}
 }

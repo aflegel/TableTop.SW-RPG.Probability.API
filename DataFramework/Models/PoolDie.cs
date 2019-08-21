@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataFramework.Models
 {
@@ -11,10 +6,10 @@ namespace DataFramework.Models
 	{
 		public PoolDie() { }
 
-		public PoolDie(Die Die, int Quantity)
+		public PoolDie(Die die, int quantity)
 		{
-			this.Die = Die;
-			this.Quantity = Quantity;
+			Die = die;
+			Quantity = quantity;
 		}
 
 		public int DieId { get; set; }

@@ -43,19 +43,17 @@ namespace DataFramework.Models
 		/// <param name="poolCombinationStatistic"></param>
 		public void AddPoolCombinationStatistic(PoolCombinationStatistic poolCombinationStatistic)
 		{
-			foreach (var stat in PoolCombinationStatistics)
+			var match = PoolCombinationStatistics.FirstOrDefault(stat => stat.Symbol == poolCombinationStatistic.Symbol && poolCombinationStatistic.Quantity == stat.Quantity);
+
+			if (match != null)
 			{
-				if (poolCombinationStatistic.Symbol == stat.Symbol && poolCombinationStatistic.Quantity == stat.Quantity)
-				{
-					//update the running average.  A running total will result in numbers too large for Int64
-					stat.AlternateTotal += poolCombinationStatistic.AlternateTotal * poolCombinationStatistic.Frequency;
-
-					stat.Frequency += poolCombinationStatistic.Frequency;
-
-					return;
-				}
+				match.AlternateTotal += poolCombinationStatistic.AlternateTotal * poolCombinationStatistic.Frequency;
+				match.Frequency += poolCombinationStatistic.Frequency;
 			}
-			PoolCombinationStatistics.Add(poolCombinationStatistic);
+			else
+			{
+				PoolCombinationStatistics.Add(poolCombinationStatistic);
+			}
 		}
 	}
 }

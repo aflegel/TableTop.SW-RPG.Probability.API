@@ -29,13 +29,11 @@ namespace Visualizer.Models
 		}
 
 		private IEnumerable<RollResultViewModel> SetPool(Pool results)
-		{
-			return results.PoolResults.Select(stat =>
-			new RollResultViewModel
-			{
-				Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
-				Frequency = stat.Frequency,
-			});
-		}
+			=> results.PoolResults.Select(stat =>
+				new RollResultViewModel
+				{
+					Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
+					Frequency = stat.Frequency,
+				});
 	}
 }

@@ -32,11 +32,9 @@ namespace Visualizer.Controllers
 			var positiveId = Common.GetPositivePoolId(context, dice);
 			var negativeId = Common.GetNegativePoolId(context, dice);
 
-
 			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
-				var result = new SearchViewModel(GetPoolCombination(positiveId.Value, negativeId.Value));
-				return result;
+				return new SearchViewModel(GetPoolCombination(positiveId.Value, negativeId.Value));
 			}
 			else
 			{
@@ -44,10 +42,7 @@ namespace Visualizer.Controllers
 			}
 		}
 
-		private PoolCombination GetPoolCombination(int positiveId, int negativeId)
-		{
-			return context.PoolCombinations.Where(w => w.PositivePoolId == positiveId && w.NegativePoolId == negativeId)
+		private PoolCombination GetPoolCombination(int positiveId, int negativeId) => context.PoolCombinations.Where(w => w.PositivePoolId == positiveId && w.NegativePoolId == negativeId)
 					.Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
-		}
 	}
 }

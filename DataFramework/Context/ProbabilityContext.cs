@@ -1,4 +1,4 @@
-namespace DataFramework.Context
+﻿namespace DataFramework.Context
 {
 	using System;
 	using System.Linq;
@@ -7,11 +7,8 @@ namespace DataFramework.Context
 
 	public class ProbabilityContext : DbContext
 	{
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
-			optionsBuilder.UseNpgsql(@"Server=localhost;Port=5432;Database=TableTop.Utility.StarWarsRPGProbability;User Id=swrpg-probability;Password=force cream ear known");
-		}
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(@"Server=ALEXANDER-HP-85;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
+		//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
 
 		// Add a DbSet for each entity type that you want to include in your model. For more information
 		// on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.

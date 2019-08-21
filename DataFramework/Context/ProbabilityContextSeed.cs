@@ -1,10 +1,7 @@
 ﻿namespace DataFramework.Context
 {
-	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using DataFramework.Models;
-	using Microsoft.EntityFrameworkCore;
 	using static DataFramework.Models.Die;
 
 	public class ProbabilityContextSeed

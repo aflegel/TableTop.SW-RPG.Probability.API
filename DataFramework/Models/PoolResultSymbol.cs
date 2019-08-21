@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
@@ -12,10 +9,10 @@ namespace DataFramework.Models
 	{
 		public PoolResultSymbol() { }
 
-		public PoolResultSymbol(Symbol Symbol, int Quantity)
+		public PoolResultSymbol(Symbol symbol, int quantity)
 		{
-			this.Symbol = Symbol;
-			this.Quantity = Quantity;
+			Symbol = symbol;
+			Quantity = quantity;
 		}
 
 		public int PoolResultId { get; set; }

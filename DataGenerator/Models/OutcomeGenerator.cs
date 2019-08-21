@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using DataGenerator.Models;
 using System.Collections.ObjectModel;
-using DataFramework.Context;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DataGenerator.Models
 {
-	class OutcomeGenerator
+	internal class OutcomeGenerator
 	{
 		public OutcomeGenerator(Pool pool)
 		{
-			ProcessDicePool(pool);
+			if (pool.PoolDice.Any())
+				ProcessDicePool(pool);
 		}
 
 		/// <summary>
@@ -28,40 +22,25 @@ namespace DataGenerator.Models
 		{
 			OutcomeComparison.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
-			var indexDice = CopyPoolDice(pool);
-
-			foreach (var die in RecursiveProcessing(indexDice))
-				pool.PoolResults.Add(die);
+			RecursiveProcessing(CopyPoolDice(pool)).ToList().ForEach(die => pool.PoolResults.Add(die));
 
 			pool.UniqueOutcomes = pool.PoolResults.Count;
 
 			OutcomeComparison.PrintFinishLog(pool.UniqueOutcomes);
 		}
 
-		protected Collection<PoolDie> CopyPoolDice(Pool pool)
+		protected Collection<PoolDie> CopyPoolDice(Pool pool) => new Collection<PoolDie>(pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity)).ToList());
+
+		protected Collection<PoolResult> RecursiveProcessing(Collection<PoolDie> dice)
 		{
-			var indexDice = new Collection<PoolDie>();
-
-			foreach (var poolDie in pool.PoolDice)
-			{
-				indexDice.Add(new PoolDie(poolDie.Die, poolDie.Quantity));
-			}
-
-			return indexDice;
-		}
-
-		protected Collection<PoolResult> RecursiveProcessing(Collection<PoolDie> Dice)
-		{
-			var resultingList = new Collection<PoolResultSymbol>();
-
 			//if there are one or two dice left calculate their cross product and return the faces
-			if (GetPoolDiceCount(Dice) <= 2)
+			if (GetPoolDiceCount(dice) <= 2)
 			{
-				return BinaryRecursiveCrossProduct(Dice);
+				return BinaryRecursiveCrossProduct(dice);
 			}
 
 			//split the pool into two
-			var split = SplitPoolDice(Dice);
+			var split = SplitPoolDice(dice);
 
 			//merge the two cross products
 			return PoolCrossProduct(RecursiveProcessing(split[0]), RecursiveProcessing(split[1]));
@@ -70,16 +49,16 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Sorts the different use cases and passes the dice to the cross product calculator
 		/// </summary>
-		/// <param name="Dice"></param>
+		/// <param name="dice"></param>
 		/// <returns></returns>
-		protected Collection<PoolResult> BinaryRecursiveCrossProduct(Collection<PoolDie> Dice)
+		protected Collection<PoolResult> BinaryRecursiveCrossProduct(Collection<PoolDie> dice)
 		{
 			//if there is one element
-			if (Dice.Count == 1)
+			if (dice.Count == 1)
 			{
-				var partial = GetDiePool(Dice.FirstOrDefault().Die);
+				var partial = GetDiePool(dice.FirstOrDefault().Die);
 
-				if (GetPoolDiceCount(Dice) == 1)
+				if (GetPoolDiceCount(dice) == 1)
 				{
 					//there is only one die left
 					return PoolCrossProduct(partial, new Collection<PoolResult> { new PoolResult() });
@@ -93,23 +72,23 @@ namespace DataGenerator.Models
 			else
 			{
 				//there are two elements
-				return PoolCrossProduct(GetDiePool(Dice.FirstOrDefault().Die), GetDiePool(Dice.LastOrDefault().Die));
+				return PoolCrossProduct(GetDiePool(dice.FirstOrDefault().Die), GetDiePool(dice.LastOrDefault().Die));
 			}
 		}
 
 		/// <summary>
 		/// Processes a cross product of two different dice
 		/// </summary>
-		/// <param name="TopHalf"></param>
-		/// <param name="BottomHalf"></param>
+		/// <param name="topHalf"></param>
+		/// <param name="bottomHalf"></param>
 		/// <returns></returns>
-		protected Collection<PoolResult> PoolCrossProduct(Collection<PoolResult> TopHalf, Collection<PoolResult> BottomHalf)
+		protected Collection<PoolResult> PoolCrossProduct(Collection<PoolResult> topHalf, Collection<PoolResult> bottomHalf)
 		{
 			var result = new Collection<PoolResult>();
 
-			foreach (var topPool in TopHalf)
+			foreach (var topPool in topHalf)
 			{
-				foreach (var bottomPool in BottomHalf)
+				foreach (var bottomPool in bottomHalf)
 				{
 					var mergedPool = new PoolResult(MergePoolSymbols(topPool.PoolResultSymbols, bottomPool.PoolResultSymbols))
 					{
@@ -117,7 +96,7 @@ namespace DataGenerator.Models
 						Frequency = topPool.Frequency * (bottomPool.Frequency != 0 ? bottomPool.Frequency : 1)
 					};
 
-					int? match = EntryExists(result, mergedPool);
+					var match = EntryExists(result, mergedPool);
 
 					//if the new merged pool exists, up the quantity
 					if (match.HasValue)
@@ -157,20 +136,20 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Merges two symbol pools for a single combined and reduced pool
 		/// </summary>
-		/// <param name="TopHalf"></param>
-		/// <param name="BottomHalf"></param>
+		/// <param name="topHalf"></param>
+		/// <param name="bottomHalf"></param>
 		/// <returns></returns>
-		protected List<PoolResultSymbol> MergePoolSymbols(ICollection<PoolResultSymbol> TopHalf, ICollection<PoolResultSymbol> BottomHalf)
+		protected List<PoolResultSymbol> MergePoolSymbols(ICollection<PoolResultSymbol> topHalf, ICollection<PoolResultSymbol> bottomHalf)
 		{
 			var result = new List<PoolResultSymbol>();
 
 			//prime the result with the top half
-			foreach (var key in TopHalf)
+			foreach (var key in topHalf)
 			{
 				result.Add(new PoolResultSymbol(key.Symbol, key.Quantity));
 			}
 
-			foreach (var key in BottomHalf)
+			foreach (var key in bottomHalf)
 			{
 				var topKey = result.FirstOrDefault(w => w.Symbol == key.Symbol);
 
@@ -187,13 +166,13 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Returns a result for each face of a die
 		/// </summary>
-		/// <param name="Die"></param>
+		/// <param name="die"></param>
 		/// <returns></returns>
-		protected Collection<PoolResult> GetDiePool(Die Die)
+		protected Collection<PoolResult> GetDiePool(Die die)
 		{
 			var resultingList = new Collection<PoolResult>();
 
-			foreach (var face in Die.DieFaces)
+			foreach (var face in die.DieFaces)
 			{
 				var poolResult = new PoolResult()
 				{
@@ -214,40 +193,41 @@ namespace DataGenerator.Models
 		/// <summary>
 		/// Splits a pool of dice into two halves.  Remainder is in the bottom half.
 		/// </summary>
-		/// <param name="Dice"></param>
+		/// <param name="dice"></param>
 		/// <returns></returns>
-		protected Collection<Collection<PoolDie>> SplitPoolDice(Collection<PoolDie> Dice)
+		protected Collection<Collection<PoolDie>> SplitPoolDice(Collection<PoolDie> dice)
 		{
-			var indexDice = new Collection<Collection<PoolDie>>(){
+			var indexDice = new Collection<Collection<PoolDie>>
+			{
 				new Collection<PoolDie>(),
 				new Collection<PoolDie>()
 			};
 
 			//pop the top half of dice
-			var target = GetPoolDiceCount(Dice) / 2;
+			var target = GetPoolDiceCount(dice) / 2;
 
 			while (GetPoolDiceCount(indexDice[0]) < target)
 			{
 				//the die quantity is too large, copy the die and reduce it's quantity by target
-				if (Dice[0].Quantity > target)
+				if (dice[0].Quantity > target)
 				{
 					var take = target - GetPoolDiceCount(indexDice[0]);
-					indexDice[0].Add(new PoolDie(Dice[0].Die, take));
-					Dice[0].Quantity -= take;
+					indexDice[0].Add(new PoolDie(dice[0].Die, take));
+					dice[0].Quantity -= take;
 				}
 				else
 				{
 					//pop the die off and add it to the new list
-					indexDice[0].Add(new PoolDie(Dice[0].Die, Dice[0].Quantity));
-					Dice.RemoveAt(0);
+					indexDice[0].Add(new PoolDie(dice[0].Die, dice[0].Quantity));
+					dice.RemoveAt(0);
 				}
 			}
 
-			indexDice[1] = Dice;
+			indexDice[1] = dice;
 
 			return indexDice;
 		}
 
-		protected int GetPoolDiceCount(Collection<PoolDie> Dice) => Dice.Sum(die => die.Quantity);
+		protected int GetPoolDiceCount(Collection<PoolDie> dice) => dice.Sum(die => die.Quantity);
 	}
 }

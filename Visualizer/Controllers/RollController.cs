@@ -32,7 +32,6 @@ namespace Visualizer.Controllers
 			var positiveId = Common.GetPositivePoolId(context, dice);
 			var negativeId = Common.GetNegativePoolId(context, dice);
 
-
 			if ((positiveId ?? 0) > 0 && (negativeId ?? 0) > 0)
 			{
 				var result = new SearchRollViewModel(GetPool(positiveId.Value), GetPool(negativeId.Value));
@@ -44,10 +43,7 @@ namespace Visualizer.Controllers
 			}
 		}
 
-		private Pool GetPool(long poolId)
-		{
-			return context.Pools.Where(w => w.PoolId == poolId)
+		private Pool GetPool(long poolId) => context.Pools.Where(w => w.PoolId == poolId)
 					.Include(i => i.PoolResults).ThenInclude(i => i.PoolResultSymbols).Include(i => i.PoolDice).FirstOrDefault();
-		}
 	}
 }

@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using DataGenerator.Models;
 using static DataFramework.Models.Die;
 using DataFramework.Models;
-using DataFramework.Context;
 
 namespace DataGenerator.Models
 {
-	class OutcomeComparison
+	internal class OutcomeComparison
 	{
 
 		/// <summary>

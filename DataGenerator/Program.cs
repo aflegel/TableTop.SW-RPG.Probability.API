@@ -13,16 +13,16 @@ using static DataFramework.Models.Die;
 
 namespace DataGenerator
 {
-	class Program
+	internal class Program
 	{
-		static readonly LimitConfiguration AbilityLimit =  new LimitConfiguration{ Start= 4, End = 6 };
-		static readonly LimitConfiguration UpgradeLimit = new LimitConfiguration { Start = 4, End = 6 };
-		static readonly LimitConfiguration DifficultyLimit = new LimitConfiguration { Start = 4, End = 6 };
-		static readonly LimitConfiguration ChallengeLimit = new LimitConfiguration { Start = 4, End = 6 };
-		static readonly LimitConfiguration BoostLimit = new LimitConfiguration { Start = 4, End = 6 };
-		static readonly LimitConfiguration SetbackLimit = new LimitConfiguration { Start = 4, End = 6 };
+		private static readonly LimitConfiguration abilityLimit = new LimitConfiguration { Start = 0, End = 3 };
+		private static readonly LimitConfiguration upgradeLimit = new LimitConfiguration { Start = 0, End = 3 };
+		private static readonly LimitConfiguration difficultyLimit = new LimitConfiguration { Start = 0, End = 3 };
+		private static readonly LimitConfiguration challengeLimit = new LimitConfiguration { Start = 0, End = 3 };
+		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, End = 3 };
+		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, End = 3 };
 
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			var time = DateTime.Now;
 			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Startup");
@@ -137,13 +137,13 @@ namespace DataGenerator
 		private static void BuildPositivePool(ProbabilityContext context)
 		{
 			//each ability level
-			for (int i = AbilityLimit.Start; i <= AbilityLimit.End; i++)
+			for (var i = abilityLimit.Start; i <= abilityLimit.End; i++)
 			{
 				//each skill level
 				//ensure the proficiency dice don't outweigh the ability dice
-				for (int j = UpgradeLimit.Start; (j <= UpgradeLimit.End) && (j <= i); j++)
+				for (var j = upgradeLimit.Start; (j <= upgradeLimit.End) && (j <= i); j++)
 				{
-					for (int k = BoostLimit.Start; k <= BoostLimit.End; k++)
+					for (var k = boostLimit.Start; k <= boostLimit.End; k++)
 					{
 						_ = new OutcomeGenerator(BuildPoolDice(context, i - j, j, boost: k));
 					}
@@ -159,12 +159,12 @@ namespace DataGenerator
 		private static void BuildNegativePool(ProbabilityContext context)
 		{
 			//each difficulty
-			for (int i = DifficultyLimit.Start; i <= DifficultyLimit.End; i++)
+			for (var i = difficultyLimit.Start; i <= difficultyLimit.End; i++)
 			{
 				//ensure the challende dice don't outweigh the difficulty dice
-				for (int j = ChallengeLimit.Start; (j <= ChallengeLimit.End) && (j <= i); j++)
+				for (var j = challengeLimit.Start; (j <= challengeLimit.End) && (j <= i); j++)
 				{
-					for (int k = SetbackLimit.Start; k <= SetbackLimit.End; k++)
+					for (var k = setbackLimit.Start; k <= setbackLimit.End; k++)
 					{
 						_ = new OutcomeGenerator(BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k));
 					}
@@ -188,17 +188,17 @@ namespace DataGenerator
 			var pool = new Pool();
 
 			if (ability > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Ability), ability));
+				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Ability), ability));
 			if (boost > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Boost), boost));
+				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Boost), boost));
 			if (challenge > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Challenge), challenge));
+				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Challenge), challenge));
 			if (difficulty > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Difficulty), difficulty));
+				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Difficulty), difficulty));
 			if (proficiency > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Proficiency), proficiency));
+				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Proficiency), proficiency));
 			if (setback > 0)
-				pool.PoolDice.Add(new PoolDie(GetDie(context, DieNames.Setback), setback));
+				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Setback), setback));
 
 			pool.Name = pool.PoolText;
 			pool.TotalOutcomes = pool.RollEstimation;

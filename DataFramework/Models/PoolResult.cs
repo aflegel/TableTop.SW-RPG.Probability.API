@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
@@ -16,14 +13,14 @@ namespace DataFramework.Models
 			PoolResultSymbols = new HashSet<PoolResultSymbol>();
 		}
 
-		public PoolResult(List<PoolResultSymbol> PoolResultSymbols)
+		public PoolResult(List<PoolResultSymbol> poolResultSymbols)
 		{
 			//something like 8 million records
-			this.PoolResultSymbols = new HashSet<PoolResultSymbol>();
+			PoolResultSymbols = new HashSet<PoolResultSymbol>();
 
-			foreach (var resultSymbol in PoolResultSymbols)
+			foreach (var resultSymbol in poolResultSymbols)
 			{
-				this.PoolResultSymbols.Add(resultSymbol);
+				PoolResultSymbols.Add(resultSymbol);
 			}
 		}
 
