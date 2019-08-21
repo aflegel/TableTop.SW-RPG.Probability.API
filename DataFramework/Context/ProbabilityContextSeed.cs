@@ -19,7 +19,7 @@
 			context.SaveChanges();
 		}
 
-		protected static Die BuildAdvantage()
+		public static Die BuildAdvantage()
 		{
 			var die = new Die
 			{
@@ -44,7 +44,7 @@
 			return die;
 		}
 
-		protected static Die BuildBoost()
+		public static Die BuildBoost()
 		{
 			var die = new Die
 			{
@@ -67,7 +67,7 @@
 			return die;
 		}
 
-		protected static Die BuildChallenge()
+		public static Die BuildChallenge()
 		{
 			var die = new Die
 			{
@@ -96,7 +96,7 @@
 			return die;
 		}
 
-		protected static Die BuildDifficulty()
+		public static Die BuildDifficulty()
 		{
 			var die = new Die
 			{

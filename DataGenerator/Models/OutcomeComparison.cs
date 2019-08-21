@@ -4,7 +4,7 @@ using DataFramework.Models;
 
 namespace DataGenerator.Models
 {
-	internal class OutcomeComparison
+	public class OutcomeComparison
 	{
 
 		/// <summary>

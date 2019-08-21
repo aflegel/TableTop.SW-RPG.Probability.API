@@ -1,7 +1,4 @@
 ﻿using DataFramework.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static DataFramework.Models.Die;
 
 namespace DataGenerator.Models

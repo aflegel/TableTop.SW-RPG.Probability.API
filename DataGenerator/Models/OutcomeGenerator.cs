@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DataGenerator.Models
 {
-	internal class OutcomeGenerator
+	public class OutcomeGenerator
 	{
 		public OutcomeGenerator(Pool pool)
 		{
@@ -96,12 +96,12 @@ namespace DataGenerator.Models
 						Frequency = topPool.Frequency * (bottomPool.Frequency != 0 ? bottomPool.Frequency : 1)
 					};
 
-					var match = EntryExists(result, mergedPool);
+					var match = result.GetMatch(mergedPool);
 
 					//if the new merged pool exists, up the quantity
-					if (match.HasValue)
+					if (match != null)
 					{
-						result[match.Value].Frequency += mergedPool.Frequency;
+						match.Frequency += mergedPool.Frequency;
 					}
 					else
 					{
@@ -114,25 +114,6 @@ namespace DataGenerator.Models
 			return result;
 		}
 
-		private int? EntryExists(Collection<PoolResult> result, PoolResult mergedPool)
-		{
-			foreach (var existing in result)
-			{
-				if (existing.PoolResultSymbols.Count != mergedPool.PoolResultSymbols.Count)
-					continue;
-
-				var comparer = new PoolResultSymbolEqualityComparer();
-
-				var notA = existing.PoolResultSymbols.Except(mergedPool.PoolResultSymbols, comparer);
-				var notB = mergedPool.PoolResultSymbols.Except(existing.PoolResultSymbols, comparer);
-
-				if (!notA.Any() && !notB.Any())
-					return result.IndexOf(existing);
-			}
-
-			return null;
-		}
-
 		/// <summary>
 		/// Merges two symbol pools for a single combined and reduced pool
 		/// </summary>
@@ -141,13 +122,7 @@ namespace DataGenerator.Models
 		/// <returns></returns>
 		protected List<PoolResultSymbol> MergePoolSymbols(ICollection<PoolResultSymbol> topHalf, ICollection<PoolResultSymbol> bottomHalf)
 		{
-			var result = new List<PoolResultSymbol>();
-
-			//prime the result with the top half
-			foreach (var key in topHalf)
-			{
-				result.Add(new PoolResultSymbol(key.Symbol, key.Quantity));
-			}
+			var result = topHalf.Select(key => new PoolResultSymbol(key.Symbol, key.Quantity)).ToList();
 
 			foreach (var key in bottomHalf)
 			{
@@ -168,26 +143,14 @@ namespace DataGenerator.Models
 		/// </summary>
 		/// <param name="die"></param>
 		/// <returns></returns>
-		protected Collection<PoolResult> GetDiePool(Die die)
-		{
-			var resultingList = new Collection<PoolResult>();
-
-			foreach (var face in die.DieFaces)
-			{
-				var poolResult = new PoolResult()
+		protected Collection<PoolResult> GetDiePool(Die die) => new Collection<PoolResult>(
+			die.DieFaces.Select(face =>
+				new PoolResult()
 				{
-					Frequency = 1
-				};
-
-				foreach (var facesymbol in face.DieFaceSymbols)
-				{
-					poolResult.PoolResultSymbols.Add(new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity));
+					Frequency = 1,
+					PoolResultSymbols = new Collection<PoolResultSymbol>(face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList())
 				}
-
-				resultingList.Add(poolResult);
-			}
-			return resultingList;
-		}
+			).ToList());
 
 
 		/// <summary>
