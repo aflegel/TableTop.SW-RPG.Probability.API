@@ -23,24 +23,16 @@ namespace Visualizer.Tests
 		{
 			var pool = AbilityTwo.BuildOutcomes();
 
-			//There should be 15 unique results
-			Assert.True(15 == pool.PoolResults.Count);
-
-			//Total outcomes should be 64
-			Assert.True(64 == pool.RollEstimation);
+			Assert.True(15 == pool.PoolResults.Count, $"The number of results did not equal 15. Result was {pool.PoolResults.Count}");
+			Assert.True(64 == pool.RollEstimation, $"The total outcomes did not equal 64. Result was {pool.PoolResults.Count}");
 		}
 
 		[Fact]
 		public void DieComparisonBasic()
 		{
-			var positivePool = AbilityTwo.BuildOutcomes();
-			var negativePool = DifficultyTwo.BuildOutcomes();
+			var pool = new PoolCombination(AbilityTwo.BuildOutcomes(), DifficultyTwo.BuildOutcomes()).CompareOutcomes();
 
-			var pool = new PoolCombination(positivePool, negativePool).CompareOutcomes();
-
-			//There should be 20 unique results
-			Assert.True(20 == pool.PoolCombinationStatistics.Count);
-
+			Assert.True(20 == pool.PoolCombinationStatistics.Count, $"The number of results did not equal 15. Result was {pool.PoolCombinationStatistics.Count}");
 			Assert.True(9 == pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Count());
 
 			var successAtOne = pool.PoolCombinationStatistics.First(w => w.Symbol == Symbol.Success && w.Quantity == 1);
@@ -52,18 +44,10 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonAdvanced()
 		{
-			var positivePool = ProficiencyThreeBoostTwo.BuildOutcomes();
-			var negativePool = ChallengeThreeSetbackTwo.BuildOutcomes();
+			var pool = new PoolCombination(ProficiencyThreeBoostTwo.BuildOutcomes(), ChallengeThreeSetbackTwo.BuildOutcomes()).CompareOutcomes();
 
-			var pool = new PoolCombination(positivePool, negativePool).CompareOutcomes();
-
-			//var match = result.GetMatch(mergedPool);
-			var test = positivePool.PoolResults.GetMatch(new PoolResult() { PoolResultSymbols = SuccessThreeAdvantageFour });
-
-			Assert.True(3194 == test.Frequency, "Frequency does not match");
-
+			Assert.True(3194 == pool.PositivePool.PoolResults.GetMatch(new PoolResult() { PoolResultSymbols = SuccessThreeAdvantageFour }).Frequency, "Frequency of Success(3) Advantage(4) did not equal 3194");
 			Assert.True(44 == pool.PoolCombinationStatistics.Count);
-
 			Assert.True(17 == pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Count());
 
 			var successAtOne = pool.PoolCombinationStatistics.First(w => w.Symbol == Symbol.Success && w.Quantity == 1);
