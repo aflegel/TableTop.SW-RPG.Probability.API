@@ -28,7 +28,7 @@ namespace DataFramework.Models
 		public Die Die { get; set; }
 	}
 
-	public static class PoolDieExtension
+	public static class PoolDieExtensions
 	{
 		public static int SumQuantity(this ICollection<PoolDie> dice) => dice.Sum(die => die.Quantity);
 	}

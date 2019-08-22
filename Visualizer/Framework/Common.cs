@@ -11,18 +11,6 @@ namespace Visualizer.Framework
 {
 	public static class Common
 	{
-		private static readonly List<DieNames> negativeDice = new List<DieNames> {
-				DieNames.Challenge,
-				DieNames.Difficulty,
-				DieNames.Setback
-		};
-
-		private static readonly List<DieNames> positiveDice = new List<DieNames> {
-				DieNames.Ability,
-				DieNames.Proficiency,
-				DieNames.Boost
-		};
-
 		/// <summary>
 		/// Returns the id for the pool with the matching dice
 		/// </summary>
@@ -45,9 +33,9 @@ namespace Visualizer.Framework
 			return resultList.FirstOrDefault();
 		}
 
-		public static int? GetPositivePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, positiveDice));
+		public static int? GetPositivePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, DieExtensions.PositiveDice));
 
-		public static int? GetNegativePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, negativeDice));
+		public static int? GetNegativePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, DieExtensions.NegativeDice));
 
 		private static List<int> GetDiePoolIds(this ProbabilityContext context, List<DieNames> dice) => dice.Select(s => context.GetDie(s).DieId).ToList();
 
@@ -61,12 +49,5 @@ namespace Visualizer.Framework
 		private static List<DieViewModel> FilterDice(ProbabilityContext context, List<DieViewModel> dice, List<DieNames> filters)
 			=> dice.Where(w => context.GetDiePoolIds(filters)
 				.Contains(context.GetDie(w.DieType.GetName()).DieId)).ToList();
-
-		public static DieNames GetName(this string input)
-		{
-			Enum.TryParse(input, true, out DieNames dieType);
-
-			return dieType;
-		}
 	}
 }

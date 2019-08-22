@@ -46,7 +46,7 @@ namespace DataGenerator
 
 			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Database Seeding");
 
-			ProbabilityContextSeed.SeedData(context);
+			context.SeedData();
 		}
 
 		/// <summary>
@@ -101,13 +101,13 @@ namespace DataGenerator
 		private static void ProcessPoolComparison(ProbabilityContext context)
 		{
 			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Initialize Pool Comparison");
-			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == DieNames.Ability.ToString() || a.Die.Name == DieNames.Boost.ToString() || a.Die.Name == DieNames.Proficiency.ToString()))
+			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => DieExtensions.PositiveDice.Contains(a.Die.Name.GetName())))
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
 						.ThenInclude(tti => tti.PoolResultSymbols);
 
-			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => a.Die.Name == DieNames.Difficulty.ToString() || a.Die.Name == DieNames.Setback.ToString() || a.Die.Name == DieNames.Challenge.ToString()))
+			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => DieExtensions.NegativeDice.Contains(a.Die.Name.GetName())))
 				.Include(i => i.NegativePoolCombinations)
 					.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
@@ -140,7 +140,7 @@ namespace DataGenerator
 				{
 					for (var k = boostLimit.Start; k <= boostLimit.End; k++)
 					{
-						BuildPoolDice(context, i - j, j, boost: k).BuildOutcomes();
+						_ = BuildPoolDice(context, i - j, j, boost: k).BuildOutcomes();
 					}
 				}
 			}
@@ -161,7 +161,7 @@ namespace DataGenerator
 				{
 					for (var k = setbackLimit.Start; k <= setbackLimit.End; k++)
 					{
-						BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k).BuildOutcomes();
+						_ = BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k).BuildOutcomes();
 					}
 				}
 			}

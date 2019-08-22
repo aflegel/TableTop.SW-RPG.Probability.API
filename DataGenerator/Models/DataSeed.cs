@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using DataFramework.Context;
 using DataFramework.Models;
 using static DataFramework.Models.Die;
 
-namespace DataFramework.Context
+namespace DataGenerator.Models
 {
-	public class ProbabilityContextSeed
+	public static class DataSeed
 	{
-		public static void SeedData(ProbabilityContext context)
+		public static void SeedData(this ProbabilityContext context)
 		{
 			context.Dice.AddRange(new List<Die>
 			{

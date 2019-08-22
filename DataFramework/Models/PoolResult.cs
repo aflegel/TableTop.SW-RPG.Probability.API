@@ -37,7 +37,7 @@ namespace DataFramework.Models
 		public int CountMatchingKeys(Symbol key) => PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
 	}
 
-	public static class PoolResultExtension
+	public static class PoolResultExtensions
 	{
 		private static readonly PoolResultSymbolEqualityComparer comparer = new PoolResultSymbolEqualityComparer();
 

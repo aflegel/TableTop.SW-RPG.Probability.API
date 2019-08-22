@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Context;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +51,7 @@ namespace DataFramework.Models
 		public ICollection<PoolDie> PoolDice { get; set; }
 	}
 
-	public static class DieExtension
+	public static class DieExtensions
 	{
 		/// <summary>
 		/// Returns a Die with it's faces and face symbols
@@ -71,8 +71,19 @@ namespace DataFramework.Models
 				new PoolResult()
 				{
 					Frequency = 1,
-					PoolResultSymbols = new Collection<PoolResultSymbol>(face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList())
+					PoolResultSymbols = face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList()
 				}
 			).ToList();
+
+		public static DieNames GetName(this string input)
+		{
+			Enum.TryParse(input, true, out DieNames dieType);
+
+			return dieType;
+		}
+
+		public static List<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback };
+
+		public static List<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost };
 	}
 }

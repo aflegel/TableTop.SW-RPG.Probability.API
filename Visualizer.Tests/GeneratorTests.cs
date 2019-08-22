@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using DataFramework.Context;
 using DataFramework.Models;
 using DataGenerator.Models;
 using Xunit;
@@ -10,11 +9,11 @@ namespace Visualizer.Tests
 {
 	public class GeneratorTests
 	{
-		private static Pool AbilityTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(ProbabilityContextSeed.AbilityDie, 2) } };
-		private static Pool DifficultyTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(ProbabilityContextSeed.DifficultyDie, 2) } };
+		private static Pool AbilityTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DataSeed.AbilityDie, 2) } };
+		private static Pool DifficultyTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DataSeed.DifficultyDie, 2) } };
 
-		private static Pool ProficiencyThreeBoostTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(ProbabilityContextSeed.ProficiencyDie, 3), new PoolDie(ProbabilityContextSeed.BoostDie, 2) } };
-		private static Pool ChallengeThreeSetbackTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(ProbabilityContextSeed.ChallengeDie, 3), new PoolDie(ProbabilityContextSeed.SetbackDie, 2) } };
+		private static Pool ProficiencyThreeBoostTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DataSeed.ProficiencyDie, 3), new PoolDie(DataSeed.BoostDie, 2) } };
+		private static Pool ChallengeThreeSetbackTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DataSeed.ChallengeDie, 3), new PoolDie(DataSeed.SetbackDie, 2) } };
 
 		private static Collection<PoolResultSymbol> SuccessThreeAdvantageFour => new Collection<PoolResultSymbol> { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
 
