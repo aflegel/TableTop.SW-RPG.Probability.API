@@ -5,6 +5,11 @@ namespace DataFramework.Models
 {
 	public class DieFace
 	{
+		public DieFace()
+		{
+			DieFaceSymbols = new HashSet<DieFaceSymbol>();
+		}
+
 		public DieFace(List<DieFaceSymbol> faces)
 		{
 			DieFaceSymbols = new HashSet<DieFaceSymbol>(faces);

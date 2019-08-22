@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace DataFramework.Models
@@ -30,10 +31,15 @@ namespace DataFramework.Models
 
 		public ICollection<PoolCombination> NegativePoolCombinations { get; set; }
 
-		protected int PoolDiceCount => PoolDice.Sum(die => die.Quantity);
+		protected int PoolDiceCount => PoolDice.SumQuantity();
 
 		public string PoolText => string.Join(", ", PoolDice.Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
 
 		public decimal RollEstimation => PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
+	}
+
+	public static class PoolExtensions
+	{
+		public static ICollection<PoolDie> CopyPoolDice(this Pool pool) => pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity)).ToList();
 	}
 }

@@ -4,26 +4,16 @@ using DataFramework.Models;
 
 namespace DataGenerator.Models
 {
-	public class OutcomeComparison
+	public static class OutcomeComparison
 	{
-
 		/// <summary>
-		/// Create the container and run the simulation
+		/// Compares the outcome of each pool's combined rolls
 		/// </summary>
-		/// <param name="poolCombination"></param>
-		public OutcomeComparison(PoolCombination poolCombination)
+		public static PoolCombination CompareOutcomes(this PoolCombination poolCombination)
 		{
 			//print to console
 			PrintConsoleLog(poolCombination);
 
-			ProcessRollComparison(poolCombination);
-		}
-
-		/// <summary>
-		/// Compares the outcome of each pool's combined rolls
-		/// </summary>
-		private void ProcessRollComparison(PoolCombination poolCombination)
-		{
 			foreach (var positivePoolResult in poolCombination.PositivePool.PoolResults)
 			{
 				//loop through the simple pool to find matches
@@ -68,13 +58,15 @@ namespace DataGenerator.Models
 					});
 				}
 			}
+
+			return poolCombination;
 		}
 
 		/// <summary>
 		/// Displays the Unique List of rolls
 		/// </summary>
 		/// <param name="poolCombination"></param>
-		protected void PrintConsoleLog(PoolCombination poolCombination)
+		private static void PrintConsoleLog(PoolCombination poolCombination)
 		{
 			PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
 			PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);

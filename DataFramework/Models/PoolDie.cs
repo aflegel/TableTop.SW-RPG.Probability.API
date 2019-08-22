@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace DataFramework.Models
 {
 	public class PoolDie
 	{
+		public PoolDie() { }
+
 		public PoolDie(Die die, int quantity)
 		{
 			Die = die;
@@ -22,5 +26,10 @@ namespace DataFramework.Models
 
 		[JsonIgnore]
 		public Die Die { get; set; }
+	}
+
+	public static class PoolDieExtension
+	{
+		public static int SumQuantity(this ICollection<PoolDie> dice) => dice.Sum(die => die.Quantity);
 	}
 }

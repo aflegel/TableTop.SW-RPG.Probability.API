@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DataFramework.Context;
 using Microsoft.EntityFrameworkCore;
@@ -59,5 +60,19 @@ namespace DataFramework.Models
 		/// <param name="die"></param>
 		/// <returns></returns>
 		public static Die GetDie(this ProbabilityContext context, DieNames die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
+
+		/// <summary>
+		/// Returns a result for each face of a die
+		/// </summary>
+		/// <param name="die"></param>
+		/// <returns></returns>
+		public static ICollection<PoolResult> GetDiePool(this Die die) =>
+			die.DieFaces.Select(face =>
+				new PoolResult()
+				{
+					Frequency = 1,
+					PoolResultSymbols = new Collection<PoolResultSymbol>(face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList())
+				}
+			).ToList();
 	}
 }

@@ -41,7 +41,7 @@ namespace DataFramework.Models
 	{
 		private static readonly PoolResultSymbolEqualityComparer comparer = new PoolResultSymbolEqualityComparer();
 
-		public static PoolResult GetMatch(this Collection<PoolResult> result, PoolResult mergedPool)
+		public static PoolResult GetMatch(this ICollection<PoolResult> result, PoolResult mergedPool)
 			=> result.FirstOrDefault(existing => existing.PoolResultSymbols.Count == mergedPool.PoolResultSymbols.Count
 				&& !existing.PoolResultSymbols.Except(mergedPool.PoolResultSymbols, comparer).Any()
 				&& !mergedPool.PoolResultSymbols.Except(existing.PoolResultSymbols, comparer).Any());

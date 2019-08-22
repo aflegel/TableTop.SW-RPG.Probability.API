@@ -118,7 +118,7 @@ namespace DataGenerator
 			{
 				foreach (var negativePool in negativePools)
 				{
-					_ = new OutcomeComparison(new PoolCombination(positivePool, negativePool));
+					_ = new PoolCombination(positivePool, negativePool).CompareOutcomes();
 				}
 			}
 			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Completed Pool Comparison");
@@ -140,7 +140,7 @@ namespace DataGenerator
 				{
 					for (var k = boostLimit.Start; k <= boostLimit.End; k++)
 					{
-						_ = new OutcomeGenerator(BuildPoolDice(context, i - j, j, boost: k));
+						BuildPoolDice(context, i - j, j, boost: k).BuildOutcomes();
 					}
 				}
 			}
@@ -161,7 +161,7 @@ namespace DataGenerator
 				{
 					for (var k = setbackLimit.Start; k <= setbackLimit.End; k++)
 					{
-						_ = new OutcomeGenerator(BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k));
+						BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k).BuildOutcomes();
 					}
 				}
 			}
