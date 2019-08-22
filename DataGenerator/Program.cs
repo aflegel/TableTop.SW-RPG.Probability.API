@@ -17,18 +17,17 @@ namespace DataGenerator
 		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, End = 3 };
 		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, End = 3 };
 
+		private static void LogLine(string message) => Console.WriteLine($"{DateTime.Now:hh:mm.ss} {message}");
+
 		private static void Main(string[] args)
 		{
 			var time = DateTime.Now;
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Startup");
+			LogLine("Startup");
 
 			ProcessProgram();
 
 			Console.WriteLine($"Start time: {time:hh:mm.ss}");
 			Console.WriteLine($"Completion time: {DateTime.Now:hh:mm.ss}");
-			//Console.WriteLine($"Total Runtime: {DateTime.Now.Subtract(time):hh:mm.ss}");
-			//prevent auto close
-			Console.ReadKey();
 		}
 
 		/// <summary>
@@ -38,13 +37,13 @@ namespace DataGenerator
 		private static void InitializeDatabase(ProbabilityContext context)
 		{
 			//todo: wait for confirmation before deleting
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Database Initialization");
+			LogLine("Database Initialization");
 
 			//delete and recreate the database
 			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Database Seeding");
+			LogLine("Database Seeding");
 
 			context.SeedData();
 		}
@@ -77,9 +76,9 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void CommitData(ProbabilityContext context)
 		{
-			Console.WriteLine($"{DateTime.Now:hhh:mm.sss} Initialize Database Commit");
+			LogLine("Initialize Database Commit");
 			context.SaveChanges();
-			Console.WriteLine($"{DateTime.Now:hhh:mm.sss} Completed Database Commit");
+			LogLine("Completed Database Commit");
 		}
 
 		/// <summary>
@@ -88,10 +87,10 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void ProcessPartialPools(ProbabilityContext context)
 		{
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Initialize Pool Generation");
+			LogLine("Initialize Pool Generation");
 			BuildPositivePool(context);
 			BuildNegativePool(context);
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Completed Pool Generation");
+			LogLine("Completed Pool Generation");
 		}
 
 		/// <summary>
@@ -100,28 +99,22 @@ namespace DataGenerator
 		/// <param name="context"></param>
 		private static void ProcessPoolComparison(ProbabilityContext context)
 		{
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Initialize Pool Comparison");
-			var positivePools = context.Pools.Where(w => w.PoolDice.Any(a => DieExtensions.PositiveDice.Contains(a.Die.Name.GetName())))
+			LogLine("Initialize Pool Comparison");
+			var positivePools = context.Pools.Where(pool => pool.PoolDice.Any(die => PositiveDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
 						.ThenInclude(tti => tti.PoolResultSymbols);
 
-			var negativePools = context.Pools.Where(w => w.PoolDice.Any(a => DieExtensions.NegativeDice.Contains(a.Die.Name.GetName())))
+			var negativePools = context.Pools.Where(pool => pool.PoolDice.Any(die => NegativeDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.NegativePoolCombinations)
 					.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
 					.ThenInclude(tti => tti.PoolResultSymbols);
 
+			_ = positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).CompareOutcomes());
 
-			foreach (var positivePool in positivePools)
-			{
-				foreach (var negativePool in negativePools)
-				{
-					_ = new PoolCombination(positivePool, negativePool).CompareOutcomes();
-				}
-			}
-			Console.WriteLine($"{DateTime.Now:hh:mm.ss} Completed Pool Comparison");
+			LogLine("Completed Pool Comparison");
 		}
 
 		/// <summary>

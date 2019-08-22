@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Context;
 using DataFramework.Models;
@@ -16,28 +15,15 @@ namespace Visualizer.Framework
 		/// </summary>
 		/// <param name="searchForPool"></param>
 		/// <returns></returns>
-		public static int? GetPoolId(ProbabilityContext context, List<DieViewModel> searchForPool)
-		{
-			//fetch results for each type of die and
-			var resultList = new List<int>();
-			var initialized = false;
-			foreach (var die in searchForPool)
-			{
-				var dieSearch = context.PoolDice.Where(w => w.DieId == context.GetDie(die.DieType.GetName()).DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count).Select(s => s.PoolId).ToList();
-				resultList = !initialized ? dieSearch : resultList.Intersect(dieSearch).ToList();
+		public static int? GetPoolId(ProbabilityContext context, List<DieViewModel> searchForPool) =>
+			searchForPool.Select(die => context.PoolDice.Where(w => w.DieId == context.GetDie(die.DieType).DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count)
+			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefault();
 
-				//increase the count and ensure the count is greater than 0 so an empty result will not be skipped
-				initialized = true;
-			}
+		public static int? GetPositivePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, PositiveDice));
 
-			return resultList.FirstOrDefault();
-		}
+		public static int? GetNegativePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, NegativeDice));
 
-		public static int? GetPositivePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, DieExtensions.PositiveDice));
-
-		public static int? GetNegativePoolId(this ProbabilityContext context, List<DieViewModel> dice) => GetPoolId(context, FilterDice(context, dice, DieExtensions.NegativeDice));
-
-		private static List<int> GetDiePoolIds(this ProbabilityContext context, List<DieNames> dice) => dice.Select(s => context.GetDie(s).DieId).ToList();
+		private static List<int> GetDiePoolIds(this ProbabilityContext context, List<DieNames> dice) => dice.Select(die => context.GetDie(die).DieId).ToList();
 
 		/// <summary>
 		/// Removes either the positive or negative dice from the full pool to find the pool half
@@ -48,6 +34,6 @@ namespace Visualizer.Framework
 		/// <returns></returns>
 		private static List<DieViewModel> FilterDice(ProbabilityContext context, List<DieViewModel> dice, List<DieNames> filters)
 			=> dice.Where(w => context.GetDiePoolIds(filters)
-				.Contains(context.GetDie(w.DieType.GetName()).DieId)).ToList();
+				.Contains(context.GetDie(w.DieType).DieId)).ToList();
 	}
 }

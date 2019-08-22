@@ -9,6 +9,10 @@ namespace DataFramework.Models
 {
 	public class Die
 	{
+		public static List<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback };
+
+		public static List<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost };
+
 		/// <summary>
 		/// An Enum to capture the different kind of faces
 		/// </summary>
@@ -59,7 +63,9 @@ namespace DataFramework.Models
 		/// <param name="context"></param>
 		/// <param name="die"></param>
 		/// <returns></returns>
-		public static Die GetDie(this ProbabilityContext context, DieNames die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
+		public static Die GetDie(this ProbabilityContext context, DieNames die) => context.GetDie(die.ToString());
+
+		public static Die GetDie(this ProbabilityContext context, string die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
 
 		/// <summary>
 		/// Returns a result for each face of a die
@@ -81,9 +87,5 @@ namespace DataFramework.Models
 
 			return dieType;
 		}
-
-		public static List<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback };
-
-		public static List<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost };
 	}
 }

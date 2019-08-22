@@ -38,6 +38,9 @@ namespace Visualizer.Controllers
 		}
 
 		private PoolCombination GetPoolCombination(int positiveId, int negativeId) => context.PoolCombinations.Where(w => w.PositivePoolId == positiveId && w.NegativePoolId == negativeId)
-					.Include(i => i.PoolCombinationStatistics).Include(i => i.PositivePool.PoolDice).Include(i => i.NegativePool.PoolDice).FirstOrDefault();
+			.Include(i => i.PoolCombinationStatistics)
+			.Include(i => i.PositivePool.PoolDice)
+			.Include(i => i.NegativePool.PoolDice)
+			.FirstOrDefault();
 	}
 }
