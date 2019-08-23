@@ -4,25 +4,25 @@ using System.Collections.ObjectModel;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace DataGenerator.Models
+namespace DataFramework.Context.Seed
 {
-	public static class OutcomeGenerator
+	public static class SeedPoolResults
 	{
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
 		/// </summary>
 		/// <returns></returns>
-		public static Pool BuildOutcomes(this Pool pool)
+		public static Pool BuildPoolResults(this Pool pool)
 		{
 			if (pool.PoolDice.Any())
 			{
-				OutcomeComparison.PrintStartLog(pool.Name, pool.TotalOutcomes);
+				SeedPoolStatistic.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
 				RecursiveProcessing(pool.CopyPoolDice()).ToList().ForEach(die => pool.PoolResults.Add(die));
 
 				pool.UniqueOutcomes = pool.PoolResults.Count;
 
-				OutcomeComparison.PrintFinishLog(pool.UniqueOutcomes);
+				SeedPoolStatistic.PrintFinishLog(pool.UniqueOutcomes);
 			}
 
 			return pool;

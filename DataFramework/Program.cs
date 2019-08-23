@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using DataGenerator.Models;
 using DataFramework.Context;
 using DataFramework.Models;
 using static DataFramework.Models.Die;
+using DataFramework.Context.Seed;
 
-namespace DataGenerator
+namespace DataFramework
 {
 	internal class Program
 	{
-		private static readonly LimitConfiguration abilityLimit = new LimitConfiguration { Start = 0, End = 3 };
-		private static readonly LimitConfiguration upgradeLimit = new LimitConfiguration { Start = 0, End = 3 };
-		private static readonly LimitConfiguration difficultyLimit = new LimitConfiguration { Start = 0, End = 3 };
-		private static readonly LimitConfiguration challengeLimit = new LimitConfiguration { Start = 0, End = 3 };
-		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, End = 3 };
-		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, End = 3 };
+		private static readonly LimitConfiguration abilityLimit = new LimitConfiguration { Start = 0, Count = 4 };
+		private static readonly LimitConfiguration upgradeLimit = new LimitConfiguration { Start = 0, Count = 4 };
+		private static readonly LimitConfiguration difficultyLimit = new LimitConfiguration { Start = 0, Count = 4 };
+		private static readonly LimitConfiguration challengeLimit = new LimitConfiguration { Start = 0, Count = 4 };
+		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, Count = 4 };
+		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, Count = 4 };
 
 		private static void LogLine(string message) => Console.WriteLine($"{DateTime.Now:hh:mm.ss} {message}");
 
@@ -24,7 +24,7 @@ namespace DataGenerator
 			var time = DateTime.Now;
 			LogLine("Startup");
 
-			ProcessProgram();
+			// ProcessProgram();
 
 			Console.WriteLine($"Start time: {time:hh:mm.ss}");
 			Console.WriteLine($"Completion time: {DateTime.Now:hh:mm.ss}");
@@ -45,7 +45,7 @@ namespace DataGenerator
 
 			LogLine("Database Seeding");
 
-			context.SeedData();
+			context.BuildDice();
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace DataGenerator
 				.Include(i => i.PoolResults)
 					.ThenInclude(tti => tti.PoolResultSymbols);
 
-			_ = positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).CompareOutcomes());
+			_ = positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).BuildPoolStatistics());
 
 			LogLine("Completed Pool Comparison");
 		}
@@ -122,43 +122,18 @@ namespace DataGenerator
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		private static void BuildPositivePool(ProbabilityContext context)
-		{
-			//each ability level
-			for (var i = abilityLimit.Start; i <= abilityLimit.End; i++)
-			{
-				//each skill level
-				//ensure the proficiency dice don't outweigh the ability dice
-				for (var j = upgradeLimit.Start; (j <= upgradeLimit.End) && (j <= i); j++)
-				{
-					for (var k = boostLimit.Start; k <= boostLimit.End; k++)
-					{
-						_ = BuildPoolDice(context, i - j, j, boost: k).BuildOutcomes();
-					}
-				}
-			}
-		}
+		private static void BuildPositivePool(ProbabilityContext context) =>
+			_ = abilityLimit.Range.SelectMany(ability => upgradeLimit.Range.Where(upgrade => upgrade <= ability), (ability, upgrade) => new Tuple<int, int>(ability, upgrade))
+				.SelectMany(tuple => boostLimit.Range, (tuple, boost) => BuildPoolDice(context, tuple.Item1 - tuple.Item2, tuple.Item2, boost: boost).BuildPoolResults());
 
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		private static void BuildNegativePool(ProbabilityContext context)
-		{
-			//each difficulty
-			for (var i = difficultyLimit.Start; i <= difficultyLimit.End; i++)
-			{
-				//ensure the challende dice don't outweigh the difficulty dice
-				for (var j = challengeLimit.Start; (j <= challengeLimit.End) && (j <= i); j++)
-				{
-					for (var k = setbackLimit.Start; k <= setbackLimit.End; k++)
-					{
-						_ = BuildPoolDice(context, difficulty: i - j, challenge: j, setback: k).BuildOutcomes();
-					}
-				}
-			}
-		}
+		private static void BuildNegativePool(ProbabilityContext context) =>
+			_ = difficultyLimit.Range.SelectMany(difficulty => challengeLimit.Range.Where(challenge => challenge <= difficulty), (difficulty, challenge) => new Tuple<int, int>(difficulty, challenge))
+				.SelectMany(tuple => setbackLimit.Range, (tuple, setback) => BuildPoolDice(context, tuple.Item1 - tuple.Item2, tuple.Item2, boost: setback).BuildPoolResults());
 
 		/// <summary>
 		///

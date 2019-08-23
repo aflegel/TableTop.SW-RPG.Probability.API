@@ -1,7 +1,7 @@
 ﻿using DataFramework.Models;
 using static DataFramework.Models.Die;
 
-namespace DataGenerator.Models
+namespace DataFramework.Context.Seed
 {
 	internal class OutcomeAnalysis
 	{

@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataFramework\DataFramework.csproj" />
-    <ProjectReference Include="..\DataGenerator\DataGenerator.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,14 +2,14 @@
 using static DataFramework.Models.Die;
 using DataFramework.Models;
 
-namespace DataGenerator.Models
+namespace DataFramework.Context.Seed
 {
-	public static class OutcomeComparison
+	public static class SeedPoolStatistic
 	{
 		/// <summary>
 		/// Compares the outcome of each pool's combined rolls
 		/// </summary>
-		public static PoolCombination CompareOutcomes(this PoolCombination poolCombination)
+		public static PoolCombination BuildPoolStatistics(this PoolCombination poolCombination)
 		{
 			//print to console
 			PrintConsoleLog(poolCombination);

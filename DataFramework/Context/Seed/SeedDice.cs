@@ -3,11 +3,11 @@ using DataFramework.Context;
 using DataFramework.Models;
 using static DataFramework.Models.Die;
 
-namespace DataGenerator.Models
+namespace DataFramework.Context.Seed
 {
-	public static class DataSeed
+	public static class SeedDice
 	{
-		public static void SeedData(this ProbabilityContext context)
+		public static void BuildDice(this ProbabilityContext context)
 		{
 			context.Dice.AddRange(new List<Die>
 			{
@@ -28,7 +28,7 @@ namespace DataGenerator.Models
 			Name = DieNames.Ability.ToString(),
 			DieFaces = new List<DieFace>
 			{
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+				new DieFace(new List<DieFaceSymbol> { }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 2) }),
@@ -44,8 +44,8 @@ namespace DataGenerator.Models
 			Name = DieNames.Boost.ToString(),
 			DieFaces = new List<DieFace>
 				{
-					new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
-					new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+					new DieFace(new List<DieFaceSymbol> { }),
+					new DieFace(new List<DieFaceSymbol> { }),
 					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
 					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1), new DieFaceSymbol(Symbol.Advantage, 1) }),
 					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Advantage, 2) }),
@@ -58,7 +58,7 @@ namespace DataGenerator.Models
 			Name = DieNames.Challenge.ToString(),
 			DieFaces = new List<DieFace>
 			{
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+				new DieFace(new List<DieFaceSymbol> { }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 2) }),
@@ -78,7 +78,7 @@ namespace DataGenerator.Models
 			Name = DieNames.Difficulty.ToString(),
 			DieFaces = new List<DieFace>
 				{
-					new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+					new DieFace(new List<DieFaceSymbol> { }),
 					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 2) }),
 					new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
@@ -114,7 +114,7 @@ namespace DataGenerator.Models
 			Name = DieNames.Proficiency.ToString(),
 			DieFaces = new List<DieFace>
 			{
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+				new DieFace(new List<DieFaceSymbol> { }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Success, 2) }),
@@ -134,8 +134,8 @@ namespace DataGenerator.Models
 			Name = DieNames.Setback.ToString(),
 			DieFaces = new List<DieFace>
 				{
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
-				new DieFace(new List<DieFaceSymbol>() /*{ new DieFaceSymbol(Symbol.Blank, 1) }*/),
+				new DieFace(new List<DieFaceSymbol> { }),
+				new DieFace(new List<DieFaceSymbol> { }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Failure, 1) }),
 				new DieFace(new List<DieFaceSymbol> { new DieFaceSymbol(Symbol.Threat, 1) }),
