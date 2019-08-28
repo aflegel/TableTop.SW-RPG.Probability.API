@@ -30,6 +30,6 @@ namespace DataFramework.Models
 
 	public static class PoolDieExtensions
 	{
-		public static int SumQuantity(this ICollection<PoolDie> dice) => dice.Sum(die => die.Quantity);
+		public static int SumQuantity(this IEnumerable<PoolDie> dice) => dice.Sum(die => die.Quantity);
 	}
 }

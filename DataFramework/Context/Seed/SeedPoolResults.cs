@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
+using System;
 
 namespace DataFramework.Context.Seed
 {
@@ -12,14 +13,13 @@ namespace DataFramework.Context.Seed
 		/// Builds a set of unique outcomes for each pool of dice
 		/// </summary>
 		/// <returns></returns>
-		public static Pool BuildPoolResults(this Pool pool)
+		public static Pool SeedPool(this Pool pool)
 		{
 			if (pool.PoolDice.Any())
 			{
 				SeedPoolStatistic.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
-				RecursiveProcessing(pool.CopyPoolDice()).ToList().ForEach(die => pool.PoolResults.Add(die));
-
+				RecursiveProcessing(pool.CopyPoolDice()).ToList().ForEach(result => pool.PoolResults.Add(result));
 				pool.UniqueOutcomes = pool.PoolResults.Count;
 
 				SeedPoolStatistic.PrintFinishLog(pool.UniqueOutcomes);
@@ -28,7 +28,7 @@ namespace DataFramework.Context.Seed
 			return pool;
 		}
 
-		private static Collection<PoolResult> RecursiveProcessing(ICollection<PoolDie> dice)
+		private static IEnumerable<PoolResult> RecursiveProcessing(IEnumerable<PoolDie> dice)
 		{
 			//if there are one or two dice left calculate their cross product and return the faces
 			if (dice.SumQuantity() <= 2)
@@ -40,7 +40,7 @@ namespace DataFramework.Context.Seed
 			var split = SplitPoolDice(dice);
 
 			//merge the two cross products
-			return PoolCrossProduct(RecursiveProcessing(split[0]), RecursiveProcessing(split[1]));
+			return PoolCrossProduct(RecursiveProcessing(split.Item1), RecursiveProcessing(split.Item2));
 		}
 
 		/// <summary>
@@ -48,10 +48,10 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static Collection<PoolResult> BinaryRecursiveCrossProduct(ICollection<PoolDie> dice)
+		private static IEnumerable<PoolResult> BinaryRecursiveCrossProduct(IEnumerable<PoolDie> dice)
 		{
 			//if there is one element
-			if (dice.Count == 1)
+			if (dice.Count() == 1)
 			{
 				var partial = dice.FirstOrDefault().Die.GetDiePool();
 
@@ -79,7 +79,7 @@ namespace DataFramework.Context.Seed
 		/// <param name="topHalf"></param>
 		/// <param name="bottomHalf"></param>
 		/// <returns></returns>
-		private static Collection<PoolResult> PoolCrossProduct(ICollection<PoolResult> topHalf, ICollection<PoolResult> bottomHalf)
+		private static IEnumerable<PoolResult> PoolCrossProduct(IEnumerable<PoolResult> topHalf, IEnumerable<PoolResult> bottomHalf)
 		{
 			var result = new Collection<PoolResult>();
 
@@ -87,7 +87,7 @@ namespace DataFramework.Context.Seed
 			{
 				foreach (var bottomPool in bottomHalf)
 				{
-					var mergedPool = new PoolResult(MergePoolSymbols(topPool.PoolResultSymbols, bottomPool.PoolResultSymbols))
+					var mergedPool = new PoolResult(MergePoolSymbols(topPool.PoolResultSymbols, bottomPool.PoolResultSymbols).ToList())
 					{
 						//cross the quantity
 						Frequency = topPool.Frequency * (bottomPool.Frequency != 0 ? bottomPool.Frequency : 1)
@@ -117,7 +117,7 @@ namespace DataFramework.Context.Seed
 		/// <param name="topHalf"></param>
 		/// <param name="bottomHalf"></param>
 		/// <returns></returns>
-		private static List<PoolResultSymbol> MergePoolSymbols(ICollection<PoolResultSymbol> topHalf, ICollection<PoolResultSymbol> bottomHalf)
+		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(IEnumerable<PoolResultSymbol> topHalf, IEnumerable<PoolResultSymbol> bottomHalf)
 		{
 			var result = topHalf.Select(key => new PoolResultSymbol(key.Symbol, key.Quantity)).ToList();
 
@@ -140,36 +140,30 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static Collection<ICollection<PoolDie>> SplitPoolDice(ICollection<PoolDie> dice)
+		private static Tuple<List<PoolDie>, List<PoolDie>> SplitPoolDice(IEnumerable<PoolDie> dice)
 		{
-			var indexDice = new Collection<ICollection<PoolDie>>
-			{
-				new Collection<PoolDie>(),
-				new Collection<PoolDie>()
-			};
+			var indexDice = new Tuple<List<PoolDie>, List<PoolDie>>(new List<PoolDie>(), dice.ToList());
 
 			//pop the top half of dice
-			var target = dice.SumQuantity() / 2;
+			var target = indexDice.Item2.SumQuantity() / 2;
 
-			while (indexDice[0].SumQuantity() < target)
+			while (indexDice.Item1.SumQuantity() < target)
 			{
-				var die = dice.First();
+				var die = indexDice.Item2.First();
 				//the die quantity is too large, copy the die and reduce it's quantity by target
 				if (die.Quantity > target)
 				{
-					var take = target - indexDice[0].SumQuantity();
-					indexDice[0].Add(new PoolDie(die.Die, take));
+					var take = target - indexDice.Item1.SumQuantity();
+					indexDice.Item1.Add(new PoolDie(die.Die, take));
 					die.Quantity -= take;
 				}
 				else
 				{
 					//pop the die off and add it to the new list
-					indexDice[0].Add(new PoolDie(die.Die, die.Quantity));
-					dice.Remove(die);
+					indexDice.Item1.Add(new PoolDie(die.Die, die.Quantity));
+					indexDice.Item2.Remove(die);
 				}
 			}
-
-			indexDice[1] = dice;
 
 			return indexDice;
 		}

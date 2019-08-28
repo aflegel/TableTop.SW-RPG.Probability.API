@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using Visualizer.Models;
-using Visualizer.Framework;
 using DataFramework.Models;
 
 namespace Visualizer.Controllers
@@ -28,12 +27,10 @@ namespace Visualizer.Controllers
 				return new SearchViewModel();
 			}
 
-			//separate positive and negative dice
-			var positiveId = context.GetPositivePoolId(dice);
-			var negativeId = context.GetNegativePoolId(dice);
+			var combinedPool = dice.ToPool(context);
 
-			return (positiveId ?? 0) > 0 && (negativeId ?? 0) > 0
-				? new SearchViewModel(GetPoolCombination(positiveId.Value, negativeId.Value))
+			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
+				? new SearchViewModel(GetPoolCombination(combinedPool.Item1.PoolId, combinedPool.Item2.PoolId))
 				: new SearchViewModel();
 		}
 

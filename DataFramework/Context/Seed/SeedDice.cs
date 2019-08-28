@@ -1,27 +1,22 @@
 ﻿using System.Collections.Generic;
-using DataFramework.Context;
 using DataFramework.Models;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Context.Seed
 {
-	public static class SeedDice
+	public static class DiceSeed
 	{
-		public static void BuildDice(this ProbabilityContext context)
-		{
-			context.Dice.AddRange(new List<Die>
-			{
-				AbilityDie,
-				BoostDie,
-				ChallengeDie,
-				DifficultyDie,
-				ForceDie,
-				ProficiencyDie,
-				SetbackDie
-			});
-
-			context.SaveChanges();
-		}
+		public static void SeedDice(this ProbabilityContext context)
+			=> context.Dice.AddRange(new List<Die>
+				{
+					AbilityDie,
+					BoostDie,
+					ChallengeDie,
+					DifficultyDie,
+					ForceDie,
+					ProficiencyDie,
+					SetbackDie
+				});
 
 		public static Die AbilityDie => new Die
 		{

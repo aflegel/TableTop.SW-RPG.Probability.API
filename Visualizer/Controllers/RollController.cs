@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Visualizer.Framework;
 using Visualizer.Models;
 
 namespace Visualizer.Controllers
@@ -28,12 +27,10 @@ namespace Visualizer.Controllers
 				return new SearchRollViewModel();
 			}
 
-			//separate positive and negative dice
-			var positiveId = context.GetPositivePoolId(dice);
-			var negativeId = context.GetNegativePoolId(dice);
+			var combinedPool = dice.ToPool(context);
 
-			return (positiveId ?? 0) > 0 && (negativeId ?? 0) > 0
-				? new SearchRollViewModel(GetPool(positiveId.Value), GetPool(negativeId.Value))
+			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
+				? new SearchRollViewModel(GetPool(combinedPool.Item1.PoolId), GetPool(combinedPool.Item2.PoolId))
 				: new SearchRollViewModel();
 		}
 

@@ -5,6 +5,7 @@ using DataFramework.Context;
 using DataFramework.Models;
 using static DataFramework.Models.Die;
 using DataFramework.Context.Seed;
+using System.Collections.Generic;
 
 namespace DataFramework
 {
@@ -19,12 +20,12 @@ namespace DataFramework
 
 		private static void LogLine(string message) => Console.WriteLine($"{DateTime.Now:hh:mm.ss} {message}");
 
-		private static void Main(string[] args)
+		private static void Main()
 		{
 			var time = DateTime.Now;
 			LogLine("Startup");
 
-			// ProcessProgram();
+			ProcessProgram();
 
 			Console.WriteLine($"Start time: {time:hh:mm.ss}");
 			Console.WriteLine($"Completion time: {DateTime.Now:hh:mm.ss}");
@@ -45,28 +46,23 @@ namespace DataFramework
 
 			LogLine("Database Seeding");
 
-			context.BuildDice();
+			context.SeedDice();
+
+			CommitData(context, "Dice Seeding");
 		}
 
-		/// <summary>
-		///
-		/// </summary>
 		private static void ProcessProgram()
 		{
 			using (var context = new ProbabilityContext())
 			{
+				// Deletes and creates the database and seeds the Dice
 				InitializeDatabase(context);
 
-				//partial pools are each half of a roll
-				ProcessPartialPools(context);
+				// Seeds the pool dice and results
+				ProcessPools(context);
 
-				//save the pools before generating the full comparison
-				CommitData(context);
-
-				ProcessPoolComparison(context);
-
-				//save the outcome results
-				CommitData(context);
+				// Seeds the statistics from pool combinations
+				ProcessComparisons(context);
 			}
 		}
 
@@ -74,47 +70,56 @@ namespace DataFramework
 		/// Prints start and stop timestamps while saving the current context state
 		/// </summary>
 		/// <param name="context"></param>
-		private static void CommitData(ProbabilityContext context)
+		private static void CommitData(ProbabilityContext context, string message = "")
 		{
-			LogLine("Initialize Database Commit");
+			LogLine($"Initialize {message} Database Commit");
 			context.SaveChanges();
-			LogLine("Completed Database Commit");
+			LogLine($"Completed {message} Database Commit");
 		}
 
 		/// <summary>
 		/// Prints start and stop timestamps while building the complete outcome map for a set of dice
 		/// </summary>
 		/// <param name="context"></param>
-		private static void ProcessPartialPools(ProbabilityContext context)
+		private static void ProcessPools(ProbabilityContext context)
 		{
 			LogLine("Initialize Pool Generation");
-			BuildPositivePool(context);
-			BuildNegativePool(context);
+
+			//.ToList() triggers the ienumerable execution
+			BuildPositivePool(context).ToList();
+			BuildNegativePool(context).ToList();
+
 			LogLine("Completed Pool Generation");
+
+			//save the pools before generating the full comparison
+			CommitData(context, "PoolDice Seeding");
 		}
 
 		/// <summary>
 		/// Processes the comparison of positive and negative pools
 		/// </summary>
 		/// <param name="context"></param>
-		private static void ProcessPoolComparison(ProbabilityContext context)
+		private static void ProcessComparisons(ProbabilityContext context)
 		{
 			LogLine("Initialize Pool Comparison");
 			var positivePools = context.Pools.Where(pool => pool.PoolDice.Any(die => PositiveDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
-						.ThenInclude(tti => tti.PoolResultSymbols);
+						.ThenInclude(tti => tti.PoolResultSymbols).ToList();
 
 			var negativePools = context.Pools.Where(pool => pool.PoolDice.Any(die => NegativeDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.NegativePoolCombinations)
 					.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
-					.ThenInclude(tti => tti.PoolResultSymbols);
+					.ThenInclude(tti => tti.PoolResultSymbols).ToList();
 
-			_ = positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).BuildPoolStatistics());
+			_ = positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).SeedStatistics()).ToList();
 
 			LogLine("Completed Pool Comparison");
+
+			//save the outcome results
+			CommitData(context, "Pool Result Seeding");
 		}
 
 		/// <summary>
@@ -122,18 +127,19 @@ namespace DataFramework
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		private static void BuildPositivePool(ProbabilityContext context) =>
-			_ = abilityLimit.Range.SelectMany(ability => upgradeLimit.Range.Where(upgrade => upgrade <= ability), (ability, upgrade) => new Tuple<int, int>(ability, upgrade))
-				.SelectMany(tuple => boostLimit.Range, (tuple, boost) => BuildPoolDice(context, tuple.Item1 - tuple.Item2, tuple.Item2, boost: boost).BuildPoolResults());
+		private static IEnumerable<Pool> BuildPositivePool(ProbabilityContext context) =>
+			abilityLimit.Range.SelectMany(ability => upgradeLimit.Range.Where(upgrade => upgrade <= ability), (ability, upgrade) => new Tuple<int, int>(ability, upgrade))
+				.SelectMany(tuple => boostLimit.Range, (tuple, boost) =>
+				BuildPoolDice(context, ability: tuple.Item1 - tuple.Item2, proficiency: tuple.Item2, boost: boost).SeedPool());
 
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		private static void BuildNegativePool(ProbabilityContext context) =>
-			_ = difficultyLimit.Range.SelectMany(difficulty => challengeLimit.Range.Where(challenge => challenge <= difficulty), (difficulty, challenge) => new Tuple<int, int>(difficulty, challenge))
-				.SelectMany(tuple => setbackLimit.Range, (tuple, setback) => BuildPoolDice(context, tuple.Item1 - tuple.Item2, tuple.Item2, boost: setback).BuildPoolResults());
+		private static IEnumerable<Pool> BuildNegativePool(ProbabilityContext context) =>
+			difficultyLimit.Range.SelectMany(difficulty => challengeLimit.Range.Where(challenge => challenge <= difficulty), (difficulty, challenge) => new Tuple<int, int>(difficulty, challenge))
+				.SelectMany(tuple => setbackLimit.Range, (tuple, setback) => BuildPoolDice(context, difficulty: tuple.Item1 - tuple.Item2, challenge: tuple.Item2, setback: setback).SeedPool());
 
 		/// <summary>
 		///

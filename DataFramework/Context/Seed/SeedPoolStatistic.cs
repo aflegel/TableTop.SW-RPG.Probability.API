@@ -9,7 +9,7 @@ namespace DataFramework.Context.Seed
 		/// <summary>
 		/// Compares the outcome of each pool's combined rolls
 		/// </summary>
-		public static PoolCombination BuildPoolStatistics(this PoolCombination poolCombination)
+		public static PoolCombination SeedStatistics(this PoolCombination poolCombination)
 		{
 			//print to console
 			PrintConsoleLog(poolCombination);
