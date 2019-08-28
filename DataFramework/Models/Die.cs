@@ -72,14 +72,14 @@ namespace DataFramework.Models
 		/// </summary>
 		/// <param name="die"></param>
 		/// <returns></returns>
-		public static ICollection<PoolResult> GetDiePool(this Die die) =>
+		public static IEnumerable<PoolResult> GetDiePool(this Die die) =>
 			die.DieFaces.Select(face =>
 				new PoolResult()
 				{
 					Frequency = 1,
 					PoolResultSymbols = face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList()
 				}
-			).ToList();
+			);
 
 		public static DieNames GetName(this string input)
 		{

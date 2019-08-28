@@ -55,7 +55,7 @@ namespace Visualizer.Tests
 		{
 			var pool = new PoolCombination(ProficiencyThreeBoostTwo.SeedPool(), ChallengeThreeSetbackTwo.SeedPool()).SeedStatistics();
 
-			Assert.True(3194 == pool.PositivePool.PoolResults.GetMatch(new PoolResult() { PoolResultSymbols = SuccessThreeAdvantageFour }).Frequency, "Frequency of Success(3) Advantage(4) did not equal 3194");
+			Assert.True(3194 == pool.PositivePool.PoolResults.First(w => w.GetHashCode() == new PoolResult() { PoolResultSymbols = SuccessThreeAdvantageFour }.GetHashCode()).Frequency, "Frequency of Success(3) Advantage(4) did not equal 3194");
 			Assert.True(44 == pool.PoolCombinationStatistics.Count);
 			Assert.True(17 == pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Count());
 
