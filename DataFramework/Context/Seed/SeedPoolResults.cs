@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
-using System;
 
 namespace DataFramework.Context.Seed
 {
@@ -19,7 +18,7 @@ namespace DataFramework.Context.Seed
 			{
 				SeedPoolStatistic.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
-				pool.PoolResults = pool.CopyPoolDice().RecursiveProcessing().ToList();
+				pool.PoolResults = pool.CopyPoolDice().ExplodeDice().RecursiveProcessing().ToList();
 				pool.UniqueOutcomes = pool.PoolResults.Count;
 
 				SeedPoolStatistic.PrintFinishLog(pool.UniqueOutcomes);
@@ -28,29 +27,26 @@ namespace DataFramework.Context.Seed
 			return pool;
 		}
 
+		/// <summary>
+		/// Uses binary recursion to create the cross products
+		/// </summary>
+		/// <param name="dice"></param>
+		/// <returns></returns>
 		private static IEnumerable<PoolResult> RecursiveProcessing(this IEnumerable<PoolDie> dice)
 		{
 			//if there are one or two dice left calculate their cross product and return the faces
 			if (dice.SumQuantity() <= 2)
 			{
-				return dice.BinaryRecursiveCrossProduct();
+				//if there is one element/quantity run a cross product against an empty set
+				return PoolCrossProduct(dice.First().Die.GetDiePool(), dice.SumQuantity() == 1 ? new Collection<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
 			}
 
 			//split the pool into two
 			var split = dice.SplitPoolDice();
 
 			//merge the two cross products
-			return PoolCrossProduct(split.Item1.RecursiveProcessing(), split.Item2.RecursiveProcessing());
+			return PoolCrossProduct(split.First().RecursiveProcessing(), split.Last().RecursiveProcessing());
 		}
-
-		/// <summary>
-		/// Sorts the different use cases and passes the dice to the cross product calculator
-		/// </summary>
-		/// <param name="dice"></param>
-		/// <returns></returns>
-		private static IEnumerable<PoolResult> BinaryRecursiveCrossProduct(this IEnumerable<PoolDie> dice) =>
-				//if there is one element/quantity run a cross product against an empty set
-				PoolCrossProduct(dice.First().Die.GetDiePool(), dice.SumQuantity() == 1 ? new Collection<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
 
 		/// <summary>
 		/// Processes a cross product of two different dice
@@ -59,11 +55,14 @@ namespace DataFramework.Context.Seed
 		/// <param name="bottomHalf"></param>
 		/// <returns></returns>
 		private static IEnumerable<PoolResult> PoolCrossProduct(IEnumerable<PoolResult> topHalf, IEnumerable<PoolResult> bottomHalf)
-			=> topHalf.SelectMany(first => bottomHalf, (first, second) => new PoolResult()
+			//run a full cross product
+			=> topHalf.SelectMany(first => bottomHalf, (first, second) => new PoolResult
 			{
 				PoolResultSymbols = first.PoolResultSymbols.MergePoolSymbols(second.PoolResultSymbols).ToList(),
 				Frequency = first.Frequency * (second.Frequency != 0 ? second.Frequency : 1)
-			}).GroupBy(g => g.GetHashCode()).Select(s => new PoolResult()
+			})
+			// merge all identical results
+			.GroupBy(g => g.GetHashCode()).Select(s => new PoolResult
 			{
 				PoolResultSymbols = s.First().PoolResultSymbols,
 				Frequency = s.Sum(sum => sum.Frequency)
@@ -83,32 +82,15 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static Tuple<List<PoolDie>, List<PoolDie>> SplitPoolDice(this IEnumerable<PoolDie> dice)
-		{
-			var indexDice = new Tuple<List<PoolDie>, List<PoolDie>>(new List<PoolDie>(), dice.ToList());
+		private static IEnumerable<IEnumerable<PoolDie>> SplitPoolDice(this IEnumerable<PoolDie> dice)
+			=> new List<IEnumerable<PoolDie>> { dice.Take(dice.Count() / 2), dice.Skip(dice.Count() / 2) };
 
-			//pop the top half of dice
-			var target = indexDice.Item2.SumQuantity() / 2;
-
-			while (indexDice.Item1.SumQuantity() < target)
-			{
-				var die = indexDice.Item2.First();
-				//the die quantity is too large, copy the die and reduce it's quantity by target
-				if (die.Quantity > target)
-				{
-					var take = target - indexDice.Item1.SumQuantity();
-					indexDice.Item1.Add(new PoolDie(die.Die, take));
-					die.Quantity -= take;
-				}
-				else
-				{
-					//pop the die off and add it to the new list
-					indexDice.Item1.Add(new PoolDie(die.Die, die.Quantity));
-					indexDice.Item2.Remove(die);
-				}
-			}
-
-			return indexDice;
-		}
+		/// <summary>
+		/// Explodes the items into individual 1 quantity pools
+		/// </summary>
+		/// <param name="dice"></param>
+		/// <returns></returns>
+		private static IEnumerable<PoolDie> ExplodeDice(this IEnumerable<PoolDie> dice)
+			=> dice.SelectMany(e => Enumerable.Range(0, e.Quantity).Select(f => new PoolDie { Die = e.Die, Quantity = 1 }));
 	}
 }

@@ -41,6 +41,11 @@ namespace DataFramework.Models
 
 	public static class PoolExtensions
 	{
+		/// <summary>
+		/// Clones a copy of the the dice from a pool
+		/// </summary>
+		/// <param name="pool"></param>
+		/// <returns></returns>
 		public static ICollection<PoolDie> CopyPoolDice(this Pool pool) => pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity)).ToList();
 
 		/// <summary>
