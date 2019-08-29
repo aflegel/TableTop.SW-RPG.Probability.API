@@ -132,7 +132,7 @@ namespace DataFramework
 		private static IEnumerable<Pool> BuildPositivePool(ProbabilityContext context) =>
 			abilityLimit.Range.SelectMany(ability => upgradeLimit.Range.Where(upgrade => upgrade <= ability), (ability, upgrade) => new Tuple<int, int>(ability, upgrade))
 				.SelectMany(tuple => boostLimit.Range, (tuple, boost) =>
-				BuildPoolDice(context, ability: tuple.Item1 - tuple.Item2, proficiency: tuple.Item2, boost: boost).SeedPool());
+				context.SeedPool( ability: tuple.Item1 - tuple.Item2, proficiency: tuple.Item2, boost: boost).SeedPoolResults());
 
 		/// <summary>
 		///
@@ -141,43 +141,8 @@ namespace DataFramework
 		/// <returns></returns>
 		private static IEnumerable<Pool> BuildNegativePool(ProbabilityContext context) =>
 			difficultyLimit.Range.SelectMany(difficulty => challengeLimit.Range.Where(challenge => challenge <= difficulty), (difficulty, challenge) => new Tuple<int, int>(difficulty, challenge))
-				.SelectMany(tuple => setbackLimit.Range, (tuple, setback) => BuildPoolDice(context, difficulty: tuple.Item1 - tuple.Item2, challenge: tuple.Item2, setback: setback).SeedPool());
+				.SelectMany(tuple => setbackLimit.Range, (tuple, setback) =>
+				context.SeedPool(difficulty: tuple.Item1 - tuple.Item2, challenge: tuple.Item2, setback: setback).SeedPoolResults());
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="ability"></param>
-		/// <param name="proficiency"></param>
-		/// <param name="difficulty"></param>
-		/// <param name="challenge"></param>
-		/// <param name="boost"></param>
-		/// <param name="setback"></param>
-		/// <returns></returns>
-		protected static Pool BuildPoolDice(ProbabilityContext context, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
-		{
-			var pool = new Pool();
-
-			if (ability > 0)
-				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Ability), ability));
-			if (boost > 0)
-				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Boost), boost));
-			if (challenge > 0)
-				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Challenge), challenge));
-			if (difficulty > 0)
-				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Difficulty), difficulty));
-			if (proficiency > 0)
-				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Proficiency), proficiency));
-			if (setback > 0)
-				pool.PoolDice.Add(new PoolDie(context.GetDie(DieNames.Setback), setback));
-
-			pool.Name = pool.PoolText;
-			pool.TotalOutcomes = pool.RollEstimation;
-
-			if(pool.PoolDice.Any())
-				context.Pools.Add(pool);
-
-			return pool;
-		}
 	}
 }

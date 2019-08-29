@@ -1,18 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.ObjectModel;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
+using static DataFramework.Models.Die;
 
 namespace DataFramework.Context.Seed
 {
-	public static class SeedPoolResults
+	public static class PoolResultsSeed
 	{
+		public static Pool SeedPool(this ProbabilityContext context, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
+		{
+			var poolDice = new List<PoolDie>
+			{
+				new PoolDie(context.GetDie(DieNames.Ability), ability),
+				new PoolDie(context.GetDie(DieNames.Boost), boost),
+				new PoolDie(context.GetDie(DieNames.Challenge), challenge),
+				new PoolDie(context.GetDie(DieNames.Difficulty), difficulty),
+				new PoolDie(context.GetDie(DieNames.Proficiency), proficiency),
+				new PoolDie(context.GetDie(DieNames.Setback), setback)
+			};
+
+			var pool = new Pool()
+			{
+				PoolDice = poolDice.Where(w => w.Quantity > 0).ToList(),
+			};
+
+			pool.Name = pool.PoolText;
+			pool.TotalOutcomes = pool.RollEstimation;
+
+			if (pool.PoolDice.Any())
+				context.Pools.Add(pool);
+
+			return pool;
+		}
+
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
 		/// </summary>
 		/// <returns></returns>
-		public static Pool SeedPool(this Pool pool)
+		public static Pool SeedPoolResults(this Pool pool)
 		{
 			if (pool.PoolDice.Any())
 			{

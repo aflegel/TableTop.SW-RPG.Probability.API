@@ -20,7 +20,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonGenerator()
 		{
-			var pool = AbilityTwo.SeedPool();
+			var pool = AbilityTwo.SeedPoolResults();
 
 			Assert.True(15 == pool.PoolResults.Count, $"The number of results did not equal 15. Result was {pool.PoolResults.Count}");
 			Assert.True(64 == pool.RollEstimation, $"The total outcomes did not equal 64. Result was {pool.PoolResults.Count}");
@@ -29,7 +29,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DiePoolHashCode()
 		{
-			var pool = AbilityTwo.SeedPool();
+			var pool = AbilityTwo.SeedPoolResults();
 
 			Assert.True(pool.PoolText == "Ability 2", $"The text did not equal `Ability 2`. Result was {pool.PoolText}");
 		}
@@ -38,7 +38,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonBasic()
 		{
-			var pool = new PoolCombination(AbilityTwo.SeedPool(), DifficultyTwo.SeedPool()).SeedStatistics();
+			var pool = new PoolCombination(AbilityTwo.SeedPoolResults(), DifficultyTwo.SeedPoolResults()).SeedStatistics();
 
 			Assert.True(20 == pool.PoolCombinationStatistics.Count, $"The number of results did not equal 15. Result was {pool.PoolCombinationStatistics.Count}");
 			Assert.True(9 == pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Count());
@@ -52,7 +52,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonAdvanced()
 		{
-			var pool = new PoolCombination(ProficiencyThreeBoostTwo.SeedPool(), ChallengeThreeSetbackTwo.SeedPool()).SeedStatistics();
+			var pool = new PoolCombination(ProficiencyThreeBoostTwo.SeedPoolResults(), ChallengeThreeSetbackTwo.SeedPoolResults()).SeedStatistics();
 
 			Assert.True(3194 == pool.PositivePool.PoolResults.First(w => w.GetHashCode() == new PoolResult() { PoolResultSymbols = SuccessThreeAdvantageFour }.GetHashCode()).Frequency, "Frequency of Success(3) Advantage(4) did not equal 3194");
 			Assert.True(44 == pool.PoolCombinationStatistics.Count);
