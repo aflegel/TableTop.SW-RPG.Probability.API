@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DataFramework.Models
 {
@@ -33,24 +32,5 @@ namespace DataFramework.Models
 		public Pool NegativePool { get; set; }
 
 		public ICollection<PoolCombinationStatistic> PoolCombinationStatistics { get; set; }
-
-		/// <summary>
-		/// Adds or Merges a new CombinationStatistic
-		/// </summary>
-		/// <param name="poolCombinationStatistic"></param>
-		public void AddPoolCombinationStatistic(PoolCombinationStatistic poolCombinationStatistic)
-		{
-			var match = PoolCombinationStatistics.FirstOrDefault(stat => stat.Symbol == poolCombinationStatistic.Symbol && poolCombinationStatistic.Quantity == stat.Quantity);
-
-			if (match != null)
-			{
-				match.AlternateTotal += poolCombinationStatistic.AlternateTotal * poolCombinationStatistic.Frequency;
-				match.Frequency += poolCombinationStatistic.Frequency;
-			}
-			else
-			{
-				PoolCombinationStatistics.Add(poolCombinationStatistic);
-			}
-		}
 	}
 }

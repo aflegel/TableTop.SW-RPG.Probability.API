@@ -106,13 +106,13 @@ namespace DataFramework
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
-						.ThenInclude(tti => tti.PoolResultSymbols).ToList();
+						.ThenInclude(tti => tti.PoolResultSymbols);
 
 			var negativePools = context.Pools.Where(pool => pool.PoolDice.Any(die => NegativeDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.NegativePoolCombinations)
 					.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)
-					.ThenInclude(tti => tti.PoolResultSymbols).ToList();
+					.ThenInclude(tti => tti.PoolResultSymbols);
 
 			_ = positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).SeedStatistics()).ToList();
 
@@ -172,7 +172,8 @@ namespace DataFramework
 			pool.Name = pool.PoolText;
 			pool.TotalOutcomes = pool.RollEstimation;
 
-			context.Pools.Add(pool);
+			if(pool.PoolDice.Any())
+				context.Pools.Add(pool);
 
 			return pool;
 		}

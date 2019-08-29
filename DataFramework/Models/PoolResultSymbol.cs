@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
@@ -23,12 +22,5 @@ namespace DataFramework.Models
 		public PoolResult PoolResult { get; set; }
 
 		public bool Equals(PoolResultSymbol other) => Symbol != other.Symbol ? false : Quantity == other.Quantity;
-	}
-
-	public class PoolResultSymbolEqualityComparer : IEqualityComparer<PoolResultSymbol>
-	{
-		public bool Equals(PoolResultSymbol x, PoolResultSymbol y) => x.Equals(y);
-
-		public int GetHashCode(PoolResultSymbol obj) => obj == null ? 0 : unchecked(obj.Symbol.ToString().GetHashCode() + obj.Quantity);
 	}
 }

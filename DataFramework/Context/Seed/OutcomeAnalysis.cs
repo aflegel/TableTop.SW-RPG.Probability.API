@@ -1,4 +1,5 @@
-﻿using DataFramework.Models;
+﻿using System.Collections.Generic;
+using DataFramework.Models;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Context.Seed
@@ -23,14 +24,52 @@ namespace DataFramework.Context.Seed
 			AdvantageNetQuantity = advantageQuantity - threatQuantity;
 		}
 
-		public decimal Frequency { get; private set; }
+		private decimal Frequency { get; set; }
 
-		public int SuccessNetQuantity { get; private set; }
+		private int SuccessNetQuantity { get; set; }
 
-		public int TriumphNetQuantity { get; private set; }
+		private int TriumphNetQuantity { get; set; }
 
-		public int AdvantageNetQuantity { get; private set; }
+		private int AdvantageNetQuantity { get; set; }
 
-		public int DespairNetQuantity { get; private set; }
+		private int DespairNetQuantity { get; set; }
+
+		public IEnumerable<PoolCombinationStatistic> ToStatistics() => new List<PoolCombinationStatistic>
+		{
+			new PoolCombinationStatistic
+			{
+				Symbol = Symbol.Success,
+				Quantity = SuccessNetQuantity,
+				Frequency = Frequency,
+				AlternateTotal = AdvantageNetQuantity
+			},
+
+			//add the net advantage quantity
+			new PoolCombinationStatistic
+			{
+				Symbol = Symbol.Advantage,
+				Quantity = AdvantageNetQuantity,
+				Frequency = Frequency,
+				AlternateTotal = SuccessNetQuantity
+			},
+
+			//add the net triumph
+			new PoolCombinationStatistic
+			{
+				Symbol = Symbol.Triumph,
+				Quantity = TriumphNetQuantity,
+				Frequency = Frequency,
+				AlternateTotal = DespairNetQuantity
+			},
+
+			//add the net despair
+			new PoolCombinationStatistic
+			{
+				Symbol = Symbol.Despair,
+				Quantity = DespairNetQuantity,
+				Frequency = Frequency,
+				AlternateTotal = TriumphNetQuantity
+			}
+		};
 	}
 }

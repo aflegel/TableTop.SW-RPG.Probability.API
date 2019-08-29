@@ -1,6 +1,7 @@
 ﻿using System;
-using static DataFramework.Models.Die;
 using DataFramework.Models;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace DataFramework.Context.Seed
 {
@@ -11,56 +12,22 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		public static PoolCombination SeedStatistics(this PoolCombination poolCombination)
 		{
-			//print to console
 			PrintConsoleLog(poolCombination);
 
-			foreach (var positivePoolResult in poolCombination.PositivePool.PoolResults)
-			{
-				//loop through the simple pool to find matches
-				foreach (var negativePoolResult in poolCombination.NegativePool.PoolResults)
-				{
-					var analysis = new OutcomeAnalysis(positivePoolResult, negativePoolResult);
-
-					//add the net success quantity
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
-					{
-						Symbol = Symbol.Success,
-						Quantity = analysis.SuccessNetQuantity,
-						Frequency = analysis.Frequency,
-						AlternateTotal = analysis.AdvantageNetQuantity
-					});
-
-					//add the net advantage quantity
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
-					{
-						Symbol = Symbol.Advantage,
-						Quantity = analysis.AdvantageNetQuantity,
-						Frequency = analysis.Frequency,
-						AlternateTotal = analysis.SuccessNetQuantity
-					});
-
-					//add the net triumph
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
-					{
-						Symbol = Symbol.Triumph,
-						Quantity = analysis.TriumphNetQuantity,
-						Frequency = analysis.Frequency,
-						AlternateTotal = analysis.DespairNetQuantity
-					});
-
-					//add the net despair
-					poolCombination.AddPoolCombinationStatistic(new PoolCombinationStatistic
-					{
-						Symbol = Symbol.Despair,
-						Quantity = analysis.DespairNetQuantity,
-						Frequency = analysis.Frequency,
-						AlternateTotal = analysis.TriumphNetQuantity
-					});
-				}
-			}
+			poolCombination.PoolCombinationStatistics = poolCombination.PositivePool.ResultCrossProduct(poolCombination.NegativePool).ToList();
 
 			return poolCombination;
 		}
+
+		private static IEnumerable<PoolCombinationStatistic> ResultCrossProduct(this Pool positivePool, Pool negativePool) =>
+			positivePool.PoolResults.SelectMany(positive => negativePool.PoolResults, (positive, negative) => new OutcomeAnalysis(positive, negative)).SelectMany(f => f.ToStatistics())
+				.GroupBy(g => g.GetHashCode()).Select(s => new PoolCombinationStatistic
+				{
+					Symbol = s.First().Symbol,
+					Quantity = s.First().Quantity,
+					AlternateTotal = s.Sum(sum => sum.AlternateTotal * sum.Frequency),
+					Frequency = s.Sum(sum => sum.Frequency)
+				});
 
 		/// <summary>
 		/// Displays the Unique List of rolls

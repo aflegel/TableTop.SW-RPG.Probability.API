@@ -38,14 +38,14 @@ namespace DataFramework.Context.Seed
 			if (dice.SumQuantity() <= 2)
 			{
 				//if there is one element/quantity run a cross product against an empty set
-				return PoolCrossProduct(dice.First().Die.GetDiePool(), dice.SumQuantity() == 1 ? new Collection<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
+				return dice.First().Die.GetDiePool().PoolCrossProduct(dice.SumQuantity() == 1 ? new Collection<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
 			}
 
 			//split the pool into two
 			var split = dice.SplitPoolDice();
 
 			//merge the two cross products
-			return PoolCrossProduct(split.First().RecursiveProcessing(), split.Last().RecursiveProcessing());
+			return split.First().RecursiveProcessing().PoolCrossProduct(split.Last().RecursiveProcessing());
 		}
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace DataFramework.Context.Seed
 		/// <param name="topHalf"></param>
 		/// <param name="bottomHalf"></param>
 		/// <returns></returns>
-		private static IEnumerable<PoolResult> PoolCrossProduct(IEnumerable<PoolResult> topHalf, IEnumerable<PoolResult> bottomHalf)
+		private static IEnumerable<PoolResult> PoolCrossProduct(this IEnumerable<PoolResult> topHalf, IEnumerable<PoolResult> bottomHalf)
 			//run a full cross product
 			=> topHalf.SelectMany(first => bottomHalf, (first, second) => new PoolResult
 			{

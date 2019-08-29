@@ -46,7 +46,7 @@ namespace DataFramework.Models
 		/// </summary>
 		/// <param name="pool"></param>
 		/// <returns></returns>
-		public static ICollection<PoolDie> CopyPoolDice(this Pool pool) => pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity)).ToList();
+		public static IEnumerable<PoolDie> CopyPoolDice(this Pool pool) => pool.PoolDice.Select(poolDie => new PoolDie(poolDie.Die, poolDie.Quantity));
 
 		/// <summary>
 		/// Removes either the positive or negative dice from the full pool to find the pool half
