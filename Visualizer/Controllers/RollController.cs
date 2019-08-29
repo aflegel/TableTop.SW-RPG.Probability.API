@@ -12,7 +12,12 @@ namespace Visualizer.Controllers
 	[Route("[controller]")]
 	public class RollController : Controller
 	{
-		private readonly ProbabilityContext context = new ProbabilityContext();
+		private readonly ProbabilityContext context;
+
+		public RollController(ProbabilityContext context)
+		{
+			this.context = context;
+		}
 
 		/// <summary>
 		/// Returns the corresponding cached statistics for a given pool of dice

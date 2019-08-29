@@ -35,10 +35,10 @@ namespace DataFramework.Context.Seed
 		private static IEnumerable<PoolResult> RecursiveProcessing(this IEnumerable<PoolDie> dice)
 		{
 			//if there are one or two dice left calculate their cross product and return the faces
-			if (dice.SumQuantity() <= 2)
+			if (dice.Count() <= 2)
 			{
 				//if there is one element/quantity run a cross product against an empty set
-				return dice.First().Die.GetDiePool().PoolCrossProduct(dice.SumQuantity() == 1 ? new Collection<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
+				return dice.First().Die.GetDiePool().PoolCrossProduct(dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
 			}
 
 			//split the pool into two

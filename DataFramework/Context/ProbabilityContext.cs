@@ -6,11 +6,7 @@ namespace DataFramework.Context
 {
 	public class ProbabilityContext : DbContext
 	{
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(@"Server=ALEXANDER-HP-85;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
-		//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
-
-		// Add a DbSet for each entity type that you want to include in your model. For more information
-		// on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.
+		public ProbabilityContext(DbContextOptions<ProbabilityContext> options) : base(options) { }
 
 		public virtual DbSet<Die> Dice { get; set; }
 		public virtual DbSet<Pool> Pools { get; set; }

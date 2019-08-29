@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Linq;
 using DataFramework.Models;
 using Xunit;
 using static DataFramework.Models.Die;
 using DataFramework.Context.Seed;
+using System.Collections.Generic;
 
 namespace Visualizer.Tests
 {
-	public class GeneratorTests
+	public class SeedingTests
 	{
-		private static Pool AbilityTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DiceSeed.AbilityDie, 2) } };
-		private static Pool DifficultyTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DiceSeed.DifficultyDie, 2) } };
+		private static Pool AbilityTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.AbilityDie, 2) } };
+		private static Pool DifficultyTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.DifficultyDie, 2) } };
 
-		private static Pool ProficiencyThreeBoostTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DiceSeed.ProficiencyDie, 3), new PoolDie(DiceSeed.BoostDie, 2) } };
-		private static Pool ChallengeThreeSetbackTwo => new Pool() { PoolDice = new Collection<PoolDie> { new PoolDie(DiceSeed.ChallengeDie, 3), new PoolDie(DiceSeed.SetbackDie, 2) } };
+		private static Pool ProficiencyThreeBoostTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.ProficiencyDie, 3), new PoolDie(DiceSeed.BoostDie, 2) } };
+		private static Pool ChallengeThreeSetbackTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.ChallengeDie, 3), new PoolDie(DiceSeed.SetbackDie, 2) } };
 
-		private static Collection<PoolResultSymbol> SuccessThreeAdvantageFour => new Collection<PoolResultSymbol> { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
+		private static List<PoolResultSymbol> SuccessThreeAdvantageFour => new List<PoolResultSymbol> { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
 
 		[Fact]
 		public void DieComparisonGenerator()

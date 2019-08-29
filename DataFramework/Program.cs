@@ -53,7 +53,9 @@ namespace DataFramework
 
 		private static void ProcessProgram()
 		{
-			using (var context = new ProbabilityContext())
+			var options = new DbContextOptionsBuilder<ProbabilityContext>().UseSqlServer(@"Server=ALEXANDER-HP-85;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
+
+			using (var context = new ProbabilityContext(options.Options))
 			{
 				// Deletes and creates the database and seeds the Dice
 				InitializeDatabase(context);

@@ -4,7 +4,7 @@ using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
 {
-	public class PoolCombinationStatistic : IEquatable<PoolCombinationStatistic>
+	public class PoolCombinationStatistic
 	{
 		public int PositivePoolId { get; set; }
 
@@ -20,8 +20,6 @@ namespace DataFramework.Models
 
 		[JsonIgnore]
 		public PoolCombination PoolCombination { get; set; }
-
-		public bool Equals(PoolCombinationStatistic other) => Symbol != other.Symbol ? false : Quantity == other.Quantity;
 
 		public override int GetHashCode() => unchecked(Symbol.ToString().GetHashCode() + Quantity);
 	}

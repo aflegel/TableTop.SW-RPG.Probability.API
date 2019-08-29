@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
 {
-	public class PoolResultSymbol : IEquatable<PoolResultSymbol>
+	public class PoolResultSymbol
 	{
 		public PoolResultSymbol(Symbol symbol, int quantity)
 		{
@@ -20,7 +19,5 @@ namespace DataFramework.Models
 
 		[JsonIgnore]
 		public PoolResult PoolResult { get; set; }
-
-		public bool Equals(PoolResultSymbol other) => Symbol != other.Symbol ? false : Quantity == other.Quantity;
 	}
 }
