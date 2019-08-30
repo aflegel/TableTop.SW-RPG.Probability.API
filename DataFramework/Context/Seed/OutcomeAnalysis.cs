@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DataFramework.Models;
-using static DataFramework.Models.Die;
 
 namespace DataFramework.Context.Seed
 {

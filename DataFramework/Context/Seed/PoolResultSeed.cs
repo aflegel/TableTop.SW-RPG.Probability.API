@@ -2,7 +2,6 @@
 using System.Linq;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
-using static DataFramework.Models.Die;
 
 namespace DataFramework.Context.Seed
 {
