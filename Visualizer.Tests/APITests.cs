@@ -26,18 +26,9 @@ namespace Visualizer.Tests
 			//prevents initialization doubling
 			if (!context.Dice.Any(w => w.Name == "Ability"))
 			{
-				var ab1 = AbilityTwo.SeedPoolResults();
-				ab1.Name = ab1.PoolText;
-				ab1.TotalOutcomes = ab1.RollEstimation;
-
-				var dif2 = DifficultyTwo.SeedPoolResults();
-				dif2.Name = dif2.PoolText;
-				dif2.TotalOutcomes = dif2.RollEstimation;
-
-				context.Pools.AddRange(new List<Pool> { ab1, dif2 });
+				context.SeedDice();
 				context.SaveChanges();
-
-				var pool = new PoolCombination(ab1, dif2).SeedStatistics();
+				var pool = new PoolCombination(context.SeedPool(2).SeedPoolResults(), context.SeedPool(difficulty: 2).SeedPoolResults()).SeedStatistics();
 				context.PoolCombinations.Add(pool);
 
 				context.SaveChanges();
@@ -49,7 +40,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DbTest()
 		{
-			Assert.True(context.Dice.Count() == 2, $"Too many dice present: {context.Dice.Count()}");
+			Assert.True(context.Dice.Count() == 7, $"Too many dice present: {context.Dice.Count()}");
 			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "die name not set");
 			Assert.True(context.PoolCombinationStatistics.Count() == 20, "Too many statistics present");
 		}

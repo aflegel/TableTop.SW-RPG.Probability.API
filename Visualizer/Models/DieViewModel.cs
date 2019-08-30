@@ -15,7 +15,7 @@ namespace Visualizer.Models
 
 	public static class DieViewModelExtensions
 	{
-		public static Tuple<Pool, Pool> ToPool(this List<DieViewModel> searchForPool, ProbabilityContext context)
-			=> new Pool { PoolDice = searchForPool.Select(die => new PoolDie { Die = context.GetDie(die.DieType), Quantity = die.Quantity }).ToList() }.SplitPoolByDice(context);
+		public static Pool ToPool(this List<DieViewModel> searchForPool)
+			=> new Pool { PoolDice = searchForPool.Select(die => new PoolDie { Die = new Die { Name = die.DieType }, Quantity = die.Quantity }).ToList() };
 	}
 }

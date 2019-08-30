@@ -25,8 +25,8 @@ namespace DataFramework.Context.Seed
 				PoolDice = poolDice.Where(w => w.Quantity > 0).ToList(),
 			};
 
-			pool.Name = pool.PoolText;
-			pool.TotalOutcomes = pool.RollEstimation;
+			pool.Name = pool.ToString();
+			pool.TotalOutcomes = pool.RollEstimation();
 
 			if (pool.PoolDice.Any())
 				context.Pools.Add(pool);
@@ -64,7 +64,7 @@ namespace DataFramework.Context.Seed
 			if (dice.Count() <= 2)
 			{
 				//if there is one element/quantity run a cross product against an empty set
-				return dice.First().Die.GetDiePool().PoolCrossProduct(dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.GetDiePool());
+				return dice.First().Die.ToPool().PoolCrossProduct(dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.ToPool());
 			}
 
 			//split the pool into two

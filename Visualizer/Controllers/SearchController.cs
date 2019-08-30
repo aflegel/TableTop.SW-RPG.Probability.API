@@ -1,10 +1,7 @@
 ﻿using DataFramework.Context;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using Visualizer.Models;
-using DataFramework.Models;
 
 namespace Visualizer.Controllers
 {
@@ -32,17 +29,11 @@ namespace Visualizer.Controllers
 				return new SearchViewModel();
 			}
 
-			var combinedPool = dice.ToPool(context);
+			var combinedPool = context.SplitPoolByDice(dice.ToPool());
 
 			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
-				? new SearchViewModel(GetPoolCombination(combinedPool.Item1.PoolId, combinedPool.Item2.PoolId))
+				? new SearchViewModel(context.GetPoolCombination(combinedPool.Item1.PoolId, combinedPool.Item2.PoolId))
 				: new SearchViewModel();
 		}
-
-		private PoolCombination GetPoolCombination(int positiveId, int negativeId) => context.PoolCombinations.Where(w => w.PositivePoolId == positiveId && w.NegativePoolId == negativeId)
-			.Include(i => i.PoolCombinationStatistics)
-			.Include(i => i.PositivePool.PoolDice)
-			.Include(i => i.NegativePool.PoolDice)
-			.FirstOrDefault();
 	}
 }

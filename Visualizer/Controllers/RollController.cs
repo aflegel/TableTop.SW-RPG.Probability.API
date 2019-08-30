@@ -32,17 +32,11 @@ namespace Visualizer.Controllers
 				return new SearchRollViewModel();
 			}
 
-			var combinedPool = dice.ToPool(context);
+			var combinedPool = context.SplitPoolByDice(dice.ToPool());
 
 			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
-				? new SearchRollViewModel(GetPool(combinedPool.Item1.PoolId), GetPool(combinedPool.Item2.PoolId))
+				? new SearchRollViewModel(context.GetPool(combinedPool.Item1.PoolId), context.GetPool(combinedPool.Item2.PoolId))
 				: new SearchRollViewModel();
 		}
-
-		private Pool GetPool(long poolId) => context.Pools.Where(w => w.PoolId == poolId)
-			.Include(i => i.PoolResults)
-				.ThenInclude(i => i.PoolResultSymbols)
-			.Include(i => i.PoolDice)
-			.FirstOrDefault();
 	}
 }

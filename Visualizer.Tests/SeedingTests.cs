@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using DataFramework.Models;
 using Xunit;
-using static DataFramework.Models.Die;
 using DataFramework.Context.Seed;
 using System.Collections.Generic;
 
@@ -23,7 +22,7 @@ namespace Visualizer.Tests
 			var pool = AbilityTwo.SeedPoolResults();
 
 			Assert.True(15 == pool.PoolResults.Count, $"The number of results did not equal 15. Result was {pool.PoolResults.Count}");
-			Assert.True(64 == pool.RollEstimation, $"The total outcomes did not equal 64. Result was {pool.PoolResults.Count}");
+			Assert.True(64 == pool.RollEstimation(), $"The total outcomes did not equal 64. Result was {pool.PoolResults.Count}");
 		}
 
 		[Fact]
@@ -31,7 +30,7 @@ namespace Visualizer.Tests
 		{
 			var pool = AbilityTwo.SeedPoolResults();
 
-			Assert.True(pool.PoolText == "Ability 2", $"The text did not equal `Ability 2`. Result was {pool.PoolText}");
+			Assert.True(pool.ToString() == "Ability 2", $"The text did not equal `Ability 2`. Result was {pool.ToString()}");
 		}
 
 

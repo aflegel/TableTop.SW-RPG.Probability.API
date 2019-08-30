@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore;
-using static DataFramework.Models.Die;
+using static DataFramework.Models.DieExtensions;
 
 namespace DataFramework.Context.Seed
 {
 	public static class PoolSeed
 	{
-
 		/// <summary>
 		///
 		/// </summary>

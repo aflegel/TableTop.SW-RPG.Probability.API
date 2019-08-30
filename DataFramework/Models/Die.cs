@@ -1,45 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DataFramework.Context;
-using Microsoft.EntityFrameworkCore;
-using static DataFramework.Models.Die;
+﻿using System.Collections.Generic;
 
 namespace DataFramework.Models
 {
 	public class Die
 	{
-		public static List<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback };
-
-		public static List<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost };
-
-		/// <summary>
-		/// An Enum to capture the different kind of faces
-		/// </summary>
-		public enum Symbol
-		{
-			Blank,
-			Success,
-			Failure,
-			Advantage,
-			Threat,
-			Triumph,
-			Despair,
-			Light,
-			Dark
-		}
-
-		public enum DieNames
-		{
-			Ability,
-			Boost,
-			Challenge,
-			Difficulty,
-			Force,
-			Proficiency,
-			Setback
-		}
-
 		public Die()
 		{
 			DieFaces = new HashSet<DieFace>();
@@ -53,39 +17,5 @@ namespace DataFramework.Models
 		public ICollection<DieFace> DieFaces { get; set; }
 
 		public ICollection<PoolDie> PoolDice { get; set; }
-	}
-
-	public static class DieExtensions
-	{
-		/// <summary>
-		/// Returns a Die with it's faces and face symbols
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="die"></param>
-		/// <returns></returns>
-		public static Die GetDie(this ProbabilityContext context, DieNames die) => context.GetDie(die.ToString());
-
-		public static Die GetDie(this ProbabilityContext context, string die) => context.Dice.Where(w => w.Name == die.ToString()).Include(i => i.DieFaces).ThenInclude(t => t.DieFaceSymbols).FirstOrDefault();
-
-		/// <summary>
-		/// Returns a result for each face of a die
-		/// </summary>
-		/// <param name="die"></param>
-		/// <returns></returns>
-		public static IEnumerable<PoolResult> GetDiePool(this Die die) =>
-			die.DieFaces.Select(face =>
-				new PoolResult()
-				{
-					Frequency = 1,
-					PoolResultSymbols = face.DieFaceSymbols.Select(facesymbol => new PoolResultSymbol(facesymbol.Symbol, facesymbol.Quantity)).ToList()
-				}
-			);
-
-		public static DieNames GetName(this string input)
-		{
-			Enum.TryParse(input, true, out DieNames dieType);
-
-			return dieType;
-		}
 	}
 }
