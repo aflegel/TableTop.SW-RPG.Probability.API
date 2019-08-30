@@ -1,6 +1,5 @@
 ﻿using DataFramework.Models;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Visualizer.Models
@@ -13,8 +12,8 @@ namespace Visualizer.Models
 
 		public RollViewModel()
 		{
-			Results = new Collection<RollResultViewModel>();
-			Dice = new Collection<DieViewModel>();
+			Results = new List<RollResultViewModel>();
+			Dice = new List<DieViewModel>();
 		}
 
 		public RollViewModel(Pool pool)

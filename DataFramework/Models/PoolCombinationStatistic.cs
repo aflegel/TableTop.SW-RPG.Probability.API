@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace DataFramework.Models
+﻿namespace DataFramework.Models
 {
 	public class PoolCombinationStatistic
 	{
@@ -16,7 +14,6 @@ namespace DataFramework.Models
 
 		public decimal AlternateTotal { get; set; }
 
-		[JsonIgnore]
 		public PoolCombination PoolCombination { get; set; }
 
 		public override int GetHashCode() => (Symbol, Quantity).GetHashCode();

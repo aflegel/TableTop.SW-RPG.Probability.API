@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace DataFramework.Models
 {
@@ -25,10 +24,8 @@ namespace DataFramework.Models
 
 		public int NegativePoolId { get; set; }
 
-		[JsonIgnore]
 		public Pool PositivePool { get; set; }
 
-		[JsonIgnore]
 		public Pool NegativePool { get; set; }
 
 		public ICollection<PoolCombinationStatistic> PoolCombinationStatistics { get; set; }

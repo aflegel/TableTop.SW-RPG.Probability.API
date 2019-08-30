@@ -32,7 +32,7 @@ namespace Visualizer.Controllers
 			var combinedPool = context.SplitPoolByDice(dice.ToPool());
 
 			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
-				? new SearchViewModel(context.GetPoolCombination(combinedPool.Item1.PoolId, combinedPool.Item2.PoolId))
+				? new SearchViewModel(context.GetPoolCombination(combinedPool.Item1, combinedPool.Item2))
 				: new SearchViewModel();
 		}
 	}

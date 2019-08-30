@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace DataFramework.Models
@@ -17,7 +16,6 @@ namespace DataFramework.Models
 
 		public decimal Frequency { get; set; }
 
-		[JsonIgnore]
 		public Pool Pool { get; set; }
 
 		public ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
