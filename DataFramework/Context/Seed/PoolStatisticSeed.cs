@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace DataFramework.Context.Seed
 {
-	public static class SeedPoolStatistic
+	public static class PoolStatisticSeed
 	{
 		/// <summary>
 		/// Compares the outcome of each pool's combined rolls
@@ -18,6 +18,9 @@ namespace DataFramework.Context.Seed
 
 			return poolCombination;
 		}
+
+		public static IEnumerable<PoolCombination> CrossProduct(this IEnumerable<Pool> positivePools, IEnumerable<Pool> negativePools) =>
+			positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).SeedStatistics());
 
 		private static IEnumerable<PoolCombinationStatistic> ResultCrossProduct(this Pool positivePool, Pool negativePool) =>
 			positivePool.PoolResults.SelectMany(positive => negativePool.PoolResults, (positive, negative) => new OutcomeAnalysis(positive, negative)).SelectMany(f => f.ToStatistics())

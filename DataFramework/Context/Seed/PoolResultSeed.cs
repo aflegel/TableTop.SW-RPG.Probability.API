@@ -6,7 +6,7 @@ using static DataFramework.Models.Die;
 
 namespace DataFramework.Context.Seed
 {
-	public static class PoolResultsSeed
+	public static class PoolResultSeed
 	{
 		public static Pool SeedPool(this ProbabilityContext context, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
 		{
@@ -42,12 +42,12 @@ namespace DataFramework.Context.Seed
 		{
 			if (pool.PoolDice.Any())
 			{
-				SeedPoolStatistic.PrintStartLog(pool.Name, pool.TotalOutcomes);
+				PoolStatisticSeed.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
 				pool.PoolResults = pool.CopyPoolDice().ExplodeDice().RecursiveProcessing().ToList();
 				pool.UniqueOutcomes = pool.PoolResults.Count;
 
-				SeedPoolStatistic.PrintFinishLog(pool.UniqueOutcomes);
+				PoolStatisticSeed.PrintFinishLog(pool.UniqueOutcomes);
 			}
 
 			return pool;
