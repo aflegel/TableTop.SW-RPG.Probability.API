@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using static DataFramework.Models.Die;
 
@@ -31,6 +30,6 @@ namespace DataFramework.Models
 		/// <returns></returns>
 		public int CountMatchingKeys(Symbol key) => PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
 
-		public override int GetHashCode() => string.Join("", PoolResultSymbols.OrderBy(o => o.Symbol).Select(s => $"{s.Symbol}{s.Quantity}").ToList()).GetHashCode();
+		public override int GetHashCode() => PoolResultSymbols.Select(s => s.GetHashCode()).Aggregate(1, (a, b) => unchecked(a * b));
 	}
 }

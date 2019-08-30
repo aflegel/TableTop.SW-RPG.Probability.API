@@ -23,34 +23,36 @@ namespace Visualizer.Tests
 
 			var context = new ProbabilityContext(builder.Options);
 
-			var ab1 = AbilityTwo.SeedPoolResults();
-			ab1.Name = ab1.PoolText;
-			ab1.TotalOutcomes = ab1.RollEstimation;
+			//prevents initialization doubling
+			if (!context.Dice.Any(w => w.Name == "Ability"))
+			{
+				var ab1 = AbilityTwo.SeedPoolResults();
+				ab1.Name = ab1.PoolText;
+				ab1.TotalOutcomes = ab1.RollEstimation;
 
-			var dif2 = DifficultyTwo.SeedPoolResults();
-			dif2.Name = dif2.PoolText;
-			dif2.TotalOutcomes = dif2.RollEstimation;
+				var dif2 = DifficultyTwo.SeedPoolResults();
+				dif2.Name = dif2.PoolText;
+				dif2.TotalOutcomes = dif2.RollEstimation;
 
-			context.Pools.AddRange(new List<Pool> { ab1, dif2 });
-			context.SaveChanges();
+				context.Pools.AddRange(new List<Pool> { ab1, dif2 });
+				context.SaveChanges();
 
-			var pool = new PoolCombination(ab1, dif2).SeedStatistics();
-			context.PoolCombinations.Add(pool);
+				var pool = new PoolCombination(ab1, dif2).SeedStatistics();
+				context.PoolCombinations.Add(pool);
 
-			context.SaveChanges();
+				context.SaveChanges();
+			}
 
 			this.context = context;
 		}
 
-
 		[Fact]
 		public void DbTest()
 		{
-			Assert.True(context.Dice.Count() == 2, "Too many dice present");
+			Assert.True(context.Dice.Count() == 2, $"Too many dice present: {context.Dice.Count()}");
 			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "die name not set");
 			Assert.True(context.PoolCombinationStatistics.Count() == 20, "Too many statistics present");
 		}
-
 
 		[Fact]
 		public void SearchTest()
@@ -68,7 +70,14 @@ namespace Visualizer.Tests
 		[Fact]
 		public void ResultsTest()
 		{
+			var controller = new RollController(context);
 
+			var model = new SearchViewModel(new PoolCombination(AbilityTwo, DifficultyTwo));
+
+			var result = controller.Get(model.Dice.ToList());
+			Assert.True(15 == result.PositiveRolls.Results.Count(), $"Die statistics did not equal 15.  Count was {result.PositiveRolls.Results.Count()}");
+
+			controller.Dispose();
 		}
 	}
 }

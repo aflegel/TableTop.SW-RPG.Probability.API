@@ -72,7 +72,7 @@ namespace DataFramework
 		/// Prints start and stop timestamps while saving the current context state
 		/// </summary>
 		/// <param name="context"></param>
-		private static void CommitData(ProbabilityContext context, string message = "")
+		private static void CommitData(ProbabilityContext context, string message)
 		{
 			LogLine($"Initialize {message} Database Commit");
 			context.SaveChanges();

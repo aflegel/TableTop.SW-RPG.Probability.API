@@ -19,5 +19,7 @@ namespace DataFramework.Models
 
 		[JsonIgnore]
 		public PoolResult PoolResult { get; set; }
+
+		public override int GetHashCode() => (Symbol, Quantity).GetHashCode();
 	}
 }

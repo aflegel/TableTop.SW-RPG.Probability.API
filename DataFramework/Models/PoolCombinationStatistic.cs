@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
@@ -21,6 +20,6 @@ namespace DataFramework.Models
 		[JsonIgnore]
 		public PoolCombination PoolCombination { get; set; }
 
-		public override int GetHashCode() => unchecked(Symbol.ToString().GetHashCode() + Quantity);
+		public override int GetHashCode() => (Symbol, Quantity).GetHashCode();
 	}
 }
