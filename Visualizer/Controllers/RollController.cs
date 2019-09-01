@@ -1,9 +1,7 @@
 ﻿using DataFramework.Context;
 using DataFramework.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using Visualizer.Models;
 
 namespace Visualizer.Controllers
@@ -25,18 +23,9 @@ namespace Visualizer.Controllers
 		/// <param name="dice"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice)
-		{
-			if (dice == null)
-			{
-				return new SearchRollViewModel();
-			}
-
-			var combinedPool = context.SplitPoolByDice(dice.ToPool());
-
-			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
-				? new SearchRollViewModel(context.GetPool(combinedPool.Item1.PoolId), context.GetPool(combinedPool.Item2.PoolId))
+		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
+			context.TrySplitPool(dice.ToPool(), out var poolIds)
+				? new SearchRollViewModel(context.GetPool(poolIds.Item1), context.GetPool(poolIds.Item2))
 				: new SearchRollViewModel();
-		}
 	}
 }

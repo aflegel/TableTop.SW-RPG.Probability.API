@@ -9,18 +9,12 @@ namespace DataFramework.Context.Seed
 		{
 			Frequency = positivePoolResult.Frequency * negativePoolResult.Frequency;
 
-			//triumphs count as successes but advantages do not and despairs count as failures but threats do not
-			var successQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success);
-			var failureQuantity = negativePoolResult.CountMatchingKeys(Symbol.Failure);
-
-			var advantageQuantity = positivePoolResult.CountMatchingKeys(Symbol.Advantage);
-			var threatQuantity = negativePoolResult.CountMatchingKeys(Symbol.Threat);
-
 			TriumphNetQuantity = positivePoolResult.CountMatchingKeys(Symbol.Triumph);
 			DespairNetQuantity = negativePoolResult.CountMatchingKeys(Symbol.Despair);
 
-			SuccessNetQuantity = successQuantity + TriumphNetQuantity - (failureQuantity + DespairNetQuantity);
-			AdvantageNetQuantity = advantageQuantity - threatQuantity;
+			//triumphs count as successes but advantages do not and despairs count as failures but threats do not
+			SuccessNetQuantity = positivePoolResult.CountMatchingKeys(Symbol.Success) + TriumphNetQuantity - (negativePoolResult.CountMatchingKeys(Symbol.Failure) + DespairNetQuantity);
+			AdvantageNetQuantity = positivePoolResult.CountMatchingKeys(Symbol.Advantage) - negativePoolResult.CountMatchingKeys(Symbol.Threat);
 		}
 
 		private decimal Frequency { get; set; }
@@ -33,6 +27,10 @@ namespace DataFramework.Context.Seed
 
 		private int DespairNetQuantity { get; set; }
 
+		/// <summary>
+		/// Creates a list of 4 statistics: Success, Advantage, Triumph, and Despair
+		/// </summary>
+		/// <returns></returns>
 		public IEnumerable<PoolCombinationStatistic> ToStatistics() => new List<PoolCombinationStatistic>
 		{
 			new PoolCombinationStatistic
@@ -42,8 +40,6 @@ namespace DataFramework.Context.Seed
 				Frequency = Frequency,
 				AlternateTotal = AdvantageNetQuantity
 			},
-
-			//add the net advantage quantity
 			new PoolCombinationStatistic
 			{
 				Symbol = Symbol.Advantage,
@@ -51,8 +47,6 @@ namespace DataFramework.Context.Seed
 				Frequency = Frequency,
 				AlternateTotal = SuccessNetQuantity
 			},
-
-			//add the net triumph
 			new PoolCombinationStatistic
 			{
 				Symbol = Symbol.Triumph,
@@ -60,8 +54,6 @@ namespace DataFramework.Context.Seed
 				Frequency = Frequency,
 				AlternateTotal = DespairNetQuantity
 			},
-
-			//add the net despair
 			new PoolCombinationStatistic
 			{
 				Symbol = Symbol.Despair,

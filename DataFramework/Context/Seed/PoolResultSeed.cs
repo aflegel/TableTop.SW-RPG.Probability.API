@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -43,6 +44,7 @@ namespace DataFramework.Context.Seed
 			{
 				PoolStatisticSeed.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
+				//clone the pool to avoid contamination. Exploding makes the recursion easier
 				pool.PoolResults = pool.CopyPoolDice().ExplodeDice().RecursiveProcessing().ToList();
 				pool.UniqueOutcomes = pool.PoolResults.Count;
 
@@ -57,31 +59,38 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static IEnumerable<PoolResult> RecursiveProcessing(this IEnumerable<PoolDie> dice)
-		{
-			//if there are one or two dice left calculate their cross product and return the faces
-			if (dice.Count() <= 2)
-			{
-				//if there is one element/quantity run a cross product against an empty set
-				return dice.First().Die.ToPool().PoolCrossProduct(dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.ToPool());
-			}
-
-			//split the pool into two
-			var split = dice.SplitPoolDice();
-
+		private static IEnumerable<PoolResult> RecursiveProcessing(this IEnumerable<PoolDie> dice) =>
+			//if there are one or two dice left their results are their faces
+			(dice.Count() <= 2 ? dice.ToTuple() : dice.Split().RecurseTuple())
 			//merge the two cross products
-			return split.First().RecursiveProcessing().PoolCrossProduct(split.Last().RecursiveProcessing());
-		}
+			.PoolCrossProduct();
+
+		/// <summary>
+		/// Runs recursion on the two halves of the die pool
+		/// </summary>
+		/// <param name="splitPools"></param>
+		/// <returns></returns>
+		private static Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>> RecurseTuple(this Tuple<IEnumerable<PoolDie>, IEnumerable<PoolDie>> splitPools)
+			=> new Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>>(splitPools.Item1.RecursiveProcessing(), splitPools.Item2.RecursiveProcessing());
+
+		/// <summary>
+		/// Creates a tuple from the one or two remaining dice
+		/// </summary>
+		/// <param name="dice"></param>
+		/// <returns></returns>
+		private static Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>> ToTuple(this IEnumerable<PoolDie> dice)
+			//if there is one element/quantity run a cross product against an empty set
+			=> new Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>>(dice.First().Die.ToPool(), dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.ToPool());
 
 		/// <summary>
 		/// Processes a cross product of two different dice
 		/// </summary>
-		/// <param name="topHalf"></param>
-		/// <param name="bottomHalf"></param>
+		/// <param name="firstHalf"></param>
+		/// <param name="secondHalf"></param>
 		/// <returns></returns>
-		private static IEnumerable<PoolResult> PoolCrossProduct(this IEnumerable<PoolResult> topHalf, IEnumerable<PoolResult> bottomHalf)
+		private static IEnumerable<PoolResult> PoolCrossProduct(this Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>> splitPools)
 			//run a full cross product
-			=> topHalf.SelectMany(first => bottomHalf, (first, second) => new PoolResult
+			=> splitPools.Item1.SelectMany(first => splitPools.Item2, (first, second) => new PoolResult
 			{
 				PoolResultSymbols = first.PoolResultSymbols.MergePoolSymbols(second.PoolResultSymbols).ToList(),
 				Frequency = first.Frequency * (second.Frequency != 0 ? second.Frequency : 1)
@@ -96,19 +105,19 @@ namespace DataFramework.Context.Seed
 		/// <summary>
 		/// Merges two symbol pools for a single combined and reduced pool
 		/// </summary>
-		/// <param name="topHalf"></param>
-		/// <param name="bottomHalf"></param>
+		/// <param name="firstHalf"></param>
+		/// <param name="secondHalf"></param>
 		/// <returns></returns>
-		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(this IEnumerable<PoolResultSymbol> topHalf, IEnumerable<PoolResultSymbol> bottomHalf)
-			=> topHalf.Concat(bottomHalf).GroupBy(g => g.Symbol).Select(s => new PoolResultSymbol(s.Key, s.Sum(sum => sum.Quantity)));
+		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(this IEnumerable<PoolResultSymbol> firstHalf, IEnumerable<PoolResultSymbol> secondHalf)
+			=> firstHalf.Concat(secondHalf).GroupBy(g => g.Symbol).Select(s => new PoolResultSymbol(s.Key, s.Sum(sum => sum.Quantity)));
 
 		/// <summary>
 		/// Splits a pool of dice into two halves.  Remainder is in the bottom half.
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static IEnumerable<IEnumerable<PoolDie>> SplitPoolDice(this IEnumerable<PoolDie> dice)
-			=> new List<IEnumerable<PoolDie>> { dice.Take(dice.Count() / 2), dice.Skip(dice.Count() / 2) };
+		private static Tuple<IEnumerable<PoolDie>, IEnumerable<PoolDie>> Split(this IEnumerable<PoolDie> dice)
+			=> new Tuple<IEnumerable<PoolDie>, IEnumerable<PoolDie>>(dice.Take(dice.Count() / 2), dice.Skip(dice.Count() / 2));
 
 		/// <summary>
 		/// Explodes the items into individual 1 quantity pools

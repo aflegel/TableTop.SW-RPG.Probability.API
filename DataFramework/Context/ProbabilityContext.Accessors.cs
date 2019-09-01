@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,15 @@ namespace DataFramework.Context
 				.ThenInclude(t => t.DieFaceSymbols)
 			.FirstOrDefault();
 
+		/// <summary>
+		/// Returns the id for the pool with the matching dice
+		/// </summary>
+		/// <param name="searchForPool"></param>
+		/// <returns></returns>
+		public static int? GetPoolId(ProbabilityContext context, List<PoolDie> searchForPool) =>
+			searchForPool.Select(die => context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count())
+			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefault();
+
 		public static Pool GetPoolByName(this ProbabilityContext context, string poolName) => context.Pools.FirstOrDefault(w => w.Name == poolName);
 
 		public static Pool GetPool(this ProbabilityContext context, long poolId) => context.Pools.Where(w => w.PoolId == poolId)
@@ -29,10 +39,16 @@ namespace DataFramework.Context
 			.Include(i => i.PoolDice)
 			.FirstOrDefault();
 
-		public static Tuple<Pool, Pool> SplitPoolByDice(this ProbabilityContext context, Pool pool)
-			=> new Tuple<Pool, Pool>(context.GetPoolByName(pool.FilterDice(PositiveDice).ToString()), context.GetPoolByName(pool.FilterDice(NegativeDice).ToString()));
+		public static bool TrySplitPool(this ProbabilityContext context, Pool pool, out Tuple<int, int> poolIds)
+		{
+			poolIds = new Tuple<int, int>(
+				context.GetPoolByName(pool.FilterDice(PositiveDice).ToString())?.PoolId ?? 0,
+				context.GetPoolByName(pool.FilterDice(NegativeDice).ToString())?.PoolId ?? 0);
 
-		public static PoolCombination GetPoolCombination(this ProbabilityContext context, Pool positivePool, Pool negativePool) => context.PoolCombinations.Where(w => w.PositivePool == positivePool && w.NegativePool == negativePool)
+			return poolIds.Item1 > 0 && poolIds.Item2 > 0;
+		}
+
+		public static PoolCombination GetPoolCombination(this ProbabilityContext context, Tuple<int, int> poolIds) => context.PoolCombinations.Where(w => w.PositivePoolId == poolIds.Item1 && w.NegativePoolId == poolIds.Item2)
 			.Include(i => i.PoolCombinationStatistics)
 			.Include(i => i.PositivePool.PoolDice)
 			.Include(i => i.NegativePool.PoolDice)

@@ -22,18 +22,9 @@ namespace Visualizer.Controllers
 		/// <param name="dice"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public SearchViewModel Get([FromBody]List<DieViewModel> dice)
-		{
-			if (dice == null)
-			{
-				return new SearchViewModel();
-			}
-
-			var combinedPool = context.SplitPoolByDice(dice.ToPool());
-
-			return (combinedPool.Item1 != null && combinedPool.Item2 != null)
-				? new SearchViewModel(context.GetPoolCombination(combinedPool.Item1, combinedPool.Item2))
+		public SearchViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
+			context.TrySplitPool(dice.ToPool(), out var poolIds)
+				? new SearchViewModel(context.GetPoolCombination(poolIds))
 				: new SearchViewModel();
-		}
 	}
 }
