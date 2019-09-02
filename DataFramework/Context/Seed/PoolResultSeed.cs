@@ -97,7 +97,7 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static (IEnumerable<PoolResult> first, IEnumerable<PoolResult> second) ToTuple(this IEnumerable<PoolDie> dice)
+		private static (IEnumerable<PoolResult>, IEnumerable<PoolResult>) ToTuple(this IEnumerable<PoolDie> dice)
 			//if there is one element/quantity run a cross product against an empty set
 			=> (dice.First().Die.ToPool(), dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.ToPool());
 
@@ -124,8 +124,7 @@ namespace DataFramework.Context.Seed
 		/// <summary>
 		/// Merges two symbol pools for a single combined and reduced pool
 		/// </summary>
-		/// <param name="firstHalf"></param>
-		/// <param name="secondHalf"></param>
+		/// <param name="symbols"></param>
 		/// <returns></returns>
 		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(this (IEnumerable<PoolResultSymbol> firstHalf, IEnumerable<PoolResultSymbol> secondHalf) symbols)
 			=> symbols.firstHalf.Concat(symbols.secondHalf).GroupBy(g => g.Symbol).Select(s => new PoolResultSymbol(s.Key, s.Sum(sum => sum.Quantity)));

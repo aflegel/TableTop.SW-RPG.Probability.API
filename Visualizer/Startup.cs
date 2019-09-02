@@ -25,7 +25,7 @@ namespace Visualizer
 
 			services.AddDbContext<ProbabilityContext>(options =>
 			{
-				options.UseSqlServer(@"Server=ALEXANDER-HP-85;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
+				options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"));
 				//options.UseNpgsql(Configuration.GetConnectionString("AuthenticationPostgresContext"));
 			});
 			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");

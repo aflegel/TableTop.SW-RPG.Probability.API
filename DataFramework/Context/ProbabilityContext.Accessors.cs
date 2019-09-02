@@ -102,7 +102,9 @@ namespace DataFramework.Context
 		public static PoolCombination GetPoolCombination(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) => context.PoolCombinations.Where(w => w.PositivePoolId == poolIds.positiveId && w.NegativePoolId == poolIds.negativeId)
 			.Include(i => i.PoolCombinationStatistics)
 			.Include(i => i.PositivePool.PoolDice)
+				.ThenInclude(ii => ii.Die)
 			.Include(i => i.NegativePool.PoolDice)
+				.ThenInclude(ii => ii.Die)
 			.FirstOrDefault();
 	}
 }
