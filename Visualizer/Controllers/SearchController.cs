@@ -23,7 +23,7 @@ namespace Visualizer.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		public SearchViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
-			context.TrySplitPool(dice.ToPool(), out var poolIds)
+			context.TryGetPoolIds(dice.ToPool(), out var poolIds)
 				? new SearchViewModel(context.GetPoolCombination(poolIds))
 				: new SearchViewModel();
 	}

@@ -24,7 +24,7 @@ namespace Visualizer.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
-			context.TrySplitPool(dice.ToPool(), out var poolIds)
+			context.TryGetPoolIds(dice.ToPool(), out var poolIds)
 				? new SearchRollViewModel(context.GetPool(poolIds.positiveId), context.GetPool(poolIds.negativeId))
 				: new SearchRollViewModel();
 	}

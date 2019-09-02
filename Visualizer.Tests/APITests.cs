@@ -42,33 +42,66 @@ namespace Visualizer.Tests
 		{
 			Assert.True(context.Dice.Count() == 7, $"Incorrect dice present: {context.Dice.Count()}");
 			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "Die Name not set");
-			Assert.True(context.PoolCombinationStatistics.Count() == 20, $"Incorrect statistics present: {context.PoolCombinationStatistics.Count()}");
 
-			Assert.True(context.GetPositivePools().Count() == 1, $"Incorrect pool selection: {context.GetPositivePools().Count()}");
+			var statistics = context.PoolCombinationStatistics;
+			Assert.True(statistics.Count() == 20, $"Incorrect statistics present: {statistics.Count()}");
+
+			var pools = context.GetPositivePools();
+			Assert.True(pools.Count() == 1, $"Incorrect pool selection: {pools.Count()}");
 		}
 
 		[Fact]
-		public void SearchTest()
+		public void SearchPositive()
 		{
 			var controller = new SearchController(context);
 
 			var model = new SearchViewModel(new PoolCombination(AbilityTwo, DifficultyTwo));
 
 			var result = controller.Get(model.Dice.ToList());
-			Assert.True(20 == result.Statistics.Count(), $"Die statistics did not equal 20.  Count was {result.Statistics.Count()}");
+			Assert.True(20 == result.Statistics.Count(), $"Die statistics count incorrect.  Count was {result.Statistics.Count()}");
+			Assert.True(2 == result.Dice.Count(), $"Die count Incorrect.  Count was {result.Statistics.Count()}");
 
 			controller.Dispose();
 		}
 
 		[Fact]
-		public void ResultsTest()
+		public void SearchNegative()
+		{
+			var controller = new SearchController(context);
+
+			var model = new SearchViewModel(new PoolCombination(AbilityTwo, new Pool()));
+
+			var result = controller.Get(model.Dice.ToList());
+			Assert.True(0 == result.Statistics.Count(), $"Statistics count incorrect.  Count was {result.Statistics.Count()}");
+			Assert.True(0 == result.Dice.Count(), $"Die count Incorrect.  Count was {result.Statistics.Count()}");
+
+			controller.Dispose();
+		}
+
+		[Fact]
+		public void ResultsPositive()
 		{
 			var controller = new RollController(context);
 
 			var model = new SearchViewModel(new PoolCombination(AbilityTwo, DifficultyTwo));
 
 			var result = controller.Get(model.Dice.ToList());
-			Assert.True(15 == result.PositiveRolls.Results.Count(), $"Die statistics did not equal 15.  Count was {result.PositiveRolls.Results.Count()}");
+			Assert.True(15 == result.PositiveRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.PositiveRolls.Results.Count()}");
+			Assert.True(15 == result.NegativeRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.PositiveRolls.Results.Count()}");
+
+			controller.Dispose();
+		}
+
+		[Fact]
+		public void ResultsNegative()
+		{
+			var controller = new RollController(context);
+
+			var model = new SearchViewModel(new PoolCombination(AbilityTwo, new Pool()));
+
+			var result = controller.Get(model.Dice.ToList());
+			Assert.True(0 == result.PositiveRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.PositiveRolls.Results.Count()}");
+			Assert.True(0 == result.NegativeRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.NegativeRolls.Results.Count()}");
 
 			controller.Dispose();
 		}

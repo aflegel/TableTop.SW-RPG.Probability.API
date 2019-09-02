@@ -34,7 +34,7 @@ namespace DataFramework.Context.Seed
 		}
 
 		/// <summary>
-		///
+		/// Takes the cross product of all three ranges to build the dice pool
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
@@ -44,7 +44,7 @@ namespace DataFramework.Context.Seed
 				context.SeedPool(ability: tuple.ability - tuple.upgrade, proficiency: tuple.upgrade, boost: boost).SeedPoolResults());
 
 		/// <summary>
-		///
+		/// Takes the cross product of all three ranges to build the dice pool
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
