@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using DataFramework.Context;
-using static DataFramework.Models.DieExtensions;
 
 namespace DataFramework.Models
 {
@@ -22,7 +19,6 @@ namespace DataFramework.Models
 		/// <param name="dice"></param>
 		/// <param name="filters"></param>
 		/// <returns></returns>
-		public static Pool FilterDice(this Pool pool, List<DieNames> filters)
-			=> new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() };
+		public static Pool FilterDice(this Pool pool, List<DieNames> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() };
 	}
 }

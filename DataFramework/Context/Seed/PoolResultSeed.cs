@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -33,6 +32,26 @@ namespace DataFramework.Context.Seed
 
 			return pool;
 		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public static IEnumerable<Pool> BuildPositivePool(this ProbabilityContext context, IEnumerable<int> abilityRange, IEnumerable<int> proficiencyRange, IEnumerable<int> boostRange) =>
+			abilityRange.SelectMany(ability => proficiencyRange.Where(upgrade => upgrade <= ability), (ability, upgrade) => (ability, upgrade))
+				.SelectMany(tuple => boostRange, (tuple, boost) =>
+				context.SeedPool(ability: tuple.ability - tuple.upgrade, proficiency: tuple.upgrade, boost: boost).SeedPoolResults());
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public static IEnumerable<Pool> BuildNegativePool(this ProbabilityContext context, IEnumerable<int> difficultyRange, IEnumerable<int> challengeRange, IEnumerable<int> setbackRange) =>
+			difficultyRange.SelectMany(difficulty => challengeRange.Where(challenge => challenge <= difficulty), (difficulty, challenge) => (difficulty, challenge))
+				.SelectMany(tuple => setbackRange, (tuple, setback) =>
+				context.SeedPool(difficulty: tuple.difficulty - tuple.challenge, challenge: tuple.challenge, setback: setback).SeedPoolResults());
 
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
@@ -70,17 +89,17 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="splitPools"></param>
 		/// <returns></returns>
-		private static Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>> RecurseTuple(this Tuple<IEnumerable<PoolDie>, IEnumerable<PoolDie>> splitPools)
-			=> new Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>>(splitPools.Item1.RecursiveProcessing(), splitPools.Item2.RecursiveProcessing());
+		private static (IEnumerable<PoolResult>, IEnumerable<PoolResult>) RecurseTuple(this (IEnumerable<PoolDie>, IEnumerable<PoolDie>) splitPools)
+			=> (splitPools.Item1.RecursiveProcessing(), splitPools.Item2.RecursiveProcessing());
 
 		/// <summary>
 		/// Creates a tuple from the one or two remaining dice
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>> ToTuple(this IEnumerable<PoolDie> dice)
+		private static (IEnumerable<PoolResult> first, IEnumerable<PoolResult> second) ToTuple(this IEnumerable<PoolDie> dice)
 			//if there is one element/quantity run a cross product against an empty set
-			=> new Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>>(dice.First().Die.ToPool(), dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.ToPool());
+			=> (dice.First().Die.ToPool(), dice.Count() == 1 ? new List<PoolResult> { new PoolResult() } : dice.Last().Die.ToPool());
 
 		/// <summary>
 		/// Processes a cross product of two different dice
@@ -88,11 +107,11 @@ namespace DataFramework.Context.Seed
 		/// <param name="firstHalf"></param>
 		/// <param name="secondHalf"></param>
 		/// <returns></returns>
-		private static IEnumerable<PoolResult> PoolCrossProduct(this Tuple<IEnumerable<PoolResult>, IEnumerable<PoolResult>> splitPools)
+		private static IEnumerable<PoolResult> PoolCrossProduct(this (IEnumerable<PoolResult> firstHalf, IEnumerable<PoolResult> secondHalf) splitPools)
 			//run a full cross product
-			=> splitPools.Item1.SelectMany(first => splitPools.Item2, (first, second) => new PoolResult
+			=> splitPools.firstHalf.SelectMany(first => splitPools.secondHalf, (first, second) => new PoolResult
 			{
-				PoolResultSymbols = first.PoolResultSymbols.MergePoolSymbols(second.PoolResultSymbols).ToList(),
+				PoolResultSymbols = (first.PoolResultSymbols, second.PoolResultSymbols).MergePoolSymbols().ToList(),
 				Frequency = first.Frequency * (second.Frequency != 0 ? second.Frequency : 1)
 			})
 			// merge all identical results
@@ -108,16 +127,16 @@ namespace DataFramework.Context.Seed
 		/// <param name="firstHalf"></param>
 		/// <param name="secondHalf"></param>
 		/// <returns></returns>
-		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(this IEnumerable<PoolResultSymbol> firstHalf, IEnumerable<PoolResultSymbol> secondHalf)
-			=> firstHalf.Concat(secondHalf).GroupBy(g => g.Symbol).Select(s => new PoolResultSymbol(s.Key, s.Sum(sum => sum.Quantity)));
+		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(this (IEnumerable<PoolResultSymbol> firstHalf, IEnumerable<PoolResultSymbol> secondHalf) symbols)
+			=> symbols.firstHalf.Concat(symbols.secondHalf).GroupBy(g => g.Symbol).Select(s => new PoolResultSymbol(s.Key, s.Sum(sum => sum.Quantity)));
 
 		/// <summary>
 		/// Splits a pool of dice into two halves.  Remainder is in the bottom half.
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		private static Tuple<IEnumerable<PoolDie>, IEnumerable<PoolDie>> Split(this IEnumerable<PoolDie> dice)
-			=> new Tuple<IEnumerable<PoolDie>, IEnumerable<PoolDie>>(dice.Take(dice.Count() / 2), dice.Skip(dice.Count() / 2));
+		private static (IEnumerable<PoolDie>, IEnumerable<PoolDie>) Split(this IEnumerable<PoolDie> dice)
+			=> (dice.Take(dice.Count() / 2), dice.Skip(dice.Count() / 2));
 
 		/// <summary>
 		/// Explodes the items into individual 1 quantity pools

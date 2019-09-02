@@ -8,22 +8,33 @@ namespace DataFramework.Context.Seed
 	public static class PoolStatisticSeed
 	{
 		/// <summary>
+		/// Takes the cross product of the pools and seeds their statistics
+		/// </summary>
+		/// <param name="positivePools"></param>
+		/// <param name="negativePools"></param>
+		/// <returns></returns>
+		public static IEnumerable<PoolCombination> CrossProduct(this (IEnumerable<Pool>, IEnumerable<Pool>) pools) =>
+			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).SeedStatistics());
+
+		/// <summary>
 		/// Compares the outcome of each pool's combined rolls
 		/// </summary>
 		public static PoolCombination SeedStatistics(this PoolCombination poolCombination)
 		{
 			PrintConsoleLog(poolCombination);
 
-			poolCombination.PoolCombinationStatistics = poolCombination.PositivePool.ResultCrossProduct(poolCombination.NegativePool).ToList();
+			poolCombination.PoolCombinationStatistics = (poolCombination.PositivePool.PoolResults, poolCombination.NegativePool.PoolResults).ResultCrossProduct().ToList();
 
 			return poolCombination;
 		}
 
-		public static IEnumerable<PoolCombination> CrossProduct(this IEnumerable<Pool> positivePools, IEnumerable<Pool> negativePools) =>
-			positivePools.SelectMany(positivePool => negativePools, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).SeedStatistics());
-
-		private static IEnumerable<PoolCombinationStatistic> ResultCrossProduct(this Pool positivePool, Pool negativePool) =>
-			positivePool.PoolResults.SelectMany(positive => negativePool.PoolResults, (positive, negative) => new OutcomeAnalysis(positive, negative)).SelectMany(f => f.ToStatistics())
+		/// <summary>
+		/// Takes the cross product of the result lists and sums their frequency and totals
+		/// </summary>
+		/// <param name="results"></param>
+		/// <returns></returns>
+		private static IEnumerable<PoolCombinationStatistic> ResultCrossProduct(this (IEnumerable<PoolResult>, IEnumerable<PoolResult>) results) =>
+			results.Item1.SelectMany(positive => results.Item2, (positive, negative) => new OutcomeAnalysis(positive, negative)).SelectMany(f => f.ToStatistics())
 				.GroupBy(g => g.GetHashCode()).Select(s => new PoolCombinationStatistic
 				{
 					Symbol = s.First().Symbol,

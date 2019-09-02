@@ -40,9 +40,11 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DbTest()
 		{
-			Assert.True(context.Dice.Count() == 7, $"Too many dice present: {context.Dice.Count()}");
-			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "die name not set");
-			Assert.True(context.PoolCombinationStatistics.Count() == 20, "Too many statistics present");
+			Assert.True(context.Dice.Count() == 7, $"Incorrect dice present: {context.Dice.Count()}");
+			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "Die Name not set");
+			Assert.True(context.PoolCombinationStatistics.Count() == 20, $"Incorrect statistics present: {context.PoolCombinationStatistics.Count()}");
+
+			Assert.True(context.GetPositivePools().Count() == 1, $"Incorrect pool selection: {context.GetPositivePools().Count()}");
 		}
 
 		[Fact]

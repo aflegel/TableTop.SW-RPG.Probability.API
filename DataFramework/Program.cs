@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DataFramework.Context;
-using DataFramework.Models;
 using DataFramework.Context.Seed;
 
 namespace DataFramework
@@ -98,7 +97,7 @@ namespace DataFramework
 		{
 			LogLine("Initialize Pool Comparison");
 
-			_ = context.GetPositivePools().ToList().CrossProduct(context.GetNegativePools().ToList()).ToList();
+			_ = (context.GetPositivePools().ToList(), context.GetNegativePools().ToList()).CrossProduct().ToList();
 
 			LogLine("Completed Pool Comparison");
 
