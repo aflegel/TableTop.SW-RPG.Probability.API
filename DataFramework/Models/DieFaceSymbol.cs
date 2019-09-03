@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace DataFramework.Models
+﻿namespace DataFramework.Models
 {
 	public class DieFaceSymbol
 	{
@@ -16,7 +14,6 @@ namespace DataFramework.Models
 
 		public int Quantity { get; set; }
 
-		[JsonIgnore]
 		public DieFace DieFace { get; set; }
 	}
 }

@@ -17,6 +17,10 @@ namespace Visualizer.Tests
 		private static Pool AbilityTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.AbilityDie, 2) } };
 		private static Pool DifficultyTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.DifficultyDie, 2) } };
 
+		private static SearchViewModel PositiveModel => new SearchViewModel(new PoolCombination() { PositivePool = AbilityTwo.SeedPoolResults(), NegativePool = DifficultyTwo.SeedPoolResults() });
+
+		private static SearchViewModel NegativeModel => new SearchViewModel(new PoolCombination() { PositivePool = AbilityTwo.SeedPoolResults(), NegativePool = new Pool() });
+
 		public APITests()
 		{
 			var builder = new DbContextOptionsBuilder<ProbabilityContext>().UseInMemoryDatabase(databaseName: "Add_writes_to_database");
@@ -28,7 +32,8 @@ namespace Visualizer.Tests
 			{
 				context.SeedDice();
 				context.SaveChanges();
-				var pool = new PoolCombination(context.SeedPool(2).SeedPoolResults(), context.SeedPool(difficulty: 2).SeedPoolResults()).SeedStatistics();
+				var pool = new PoolCombination() { PositivePool = context.SeedPool(2).SeedPoolResults(), NegativePool = context.SeedPool(difficulty: 2).SeedPoolResults() }.SeedStatistics();
+
 				context.PoolCombinations.Add(pool);
 
 				context.SaveChanges();
@@ -55,9 +60,7 @@ namespace Visualizer.Tests
 		{
 			var controller = new SearchController(context);
 
-			var model = new SearchViewModel(new PoolCombination(AbilityTwo, DifficultyTwo));
-
-			var result = controller.Get(model.Dice.ToList());
+			var result = controller.Get(PositiveModel.Dice.ToList());
 			Assert.True(20 == result.Statistics.Count(), $"Die statistics count incorrect.  Count was {result.Statistics.Count()}");
 			Assert.True(2 == result.Dice.Count(), $"Die count Incorrect.  Count was {result.Statistics.Count()}");
 
@@ -69,9 +72,7 @@ namespace Visualizer.Tests
 		{
 			var controller = new SearchController(context);
 
-			var model = new SearchViewModel(new PoolCombination(AbilityTwo, new Pool()));
-
-			var result = controller.Get(model.Dice.ToList());
+			var result = controller.Get(NegativeModel.Dice.ToList());
 			Assert.True(0 == result.Statistics.Count(), $"Statistics count incorrect.  Count was {result.Statistics.Count()}");
 			Assert.True(0 == result.Dice.Count(), $"Die count Incorrect.  Count was {result.Statistics.Count()}");
 
@@ -83,9 +84,7 @@ namespace Visualizer.Tests
 		{
 			var controller = new RollController(context);
 
-			var model = new SearchViewModel(new PoolCombination(AbilityTwo, DifficultyTwo));
-
-			var result = controller.Get(model.Dice.ToList());
+			var result = controller.Get(PositiveModel.Dice.ToList());
 			Assert.True(15 == result.PositiveRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.PositiveRolls.Results.Count()}");
 			Assert.True(15 == result.NegativeRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.PositiveRolls.Results.Count()}");
 
@@ -97,9 +96,7 @@ namespace Visualizer.Tests
 		{
 			var controller = new RollController(context);
 
-			var model = new SearchViewModel(new PoolCombination(AbilityTwo, new Pool()));
-
-			var result = controller.Get(model.Dice.ToList());
+			var result = controller.Get(NegativeModel.Dice.ToList());
 			Assert.True(0 == result.PositiveRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.PositiveRolls.Results.Count()}");
 			Assert.True(0 == result.NegativeRolls.Results.Count(), $"Statistics count incorrect.  Count was {result.NegativeRolls.Results.Count()}");
 
