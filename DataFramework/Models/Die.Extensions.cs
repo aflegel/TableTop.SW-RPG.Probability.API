@@ -35,6 +35,8 @@ namespace DataFramework.Models
 				}
 			);
 
+		public static Die GetDie(this IEnumerable<Die> dice, DieNames name) => dice.FirstOrDefault(w => w.Name == name.ToString());
+
 		public static DieNames GetName(this string input)
 		{
 			Enum.TryParse(input, true, out DieNames dieType);

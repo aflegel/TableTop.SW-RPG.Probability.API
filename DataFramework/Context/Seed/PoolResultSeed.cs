@@ -7,16 +7,44 @@ namespace DataFramework.Context.Seed
 {
 	public static class PoolResultSeed
 	{
-		public static Pool SeedPool(this ProbabilityContext context, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
+		/// <summary>
+		/// Prints start and stop timestamps while building the complete outcome map for a set of dice
+		/// </summary>
+		/// <param name="context"></param>
+		public static (IEnumerable<Pool>, IEnumerable<Pool>) ProcessPools(this IEnumerable<Die> dice, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) positiveRange, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) negativeRange)
+			=> (dice.BuildPositivePool(positiveRange),
+				dice.BuildNegativePool(negativeRange));
+
+		/// <summary>
+		/// Takes the cross product of all three ranges to build the dice pool
+		/// </summary>
+		/// <param name="dice"></param>
+		/// <returns></returns>
+		public static IEnumerable<Pool> BuildPositivePool(this IEnumerable<Die> dice, (IEnumerable<int> ability, IEnumerable<int> proficiency, IEnumerable<int> boost) ranges) =>
+			ranges.ability.SelectMany(ability => ranges.proficiency.Where(upgrade => upgrade <= ability), (ability, upgrade) => (ability, upgrade))
+				.SelectMany(tuple => ranges.boost, (tuple, boost) =>
+				dice.SeedPool(ability: tuple.ability - tuple.upgrade, proficiency: tuple.upgrade, boost: boost).SeedPoolResults());
+
+		/// <summary>
+		/// Takes the cross product of all three ranges to build the dice pool
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		public static IEnumerable<Pool> BuildNegativePool(this IEnumerable<Die> dice, (IEnumerable<int> difficulty, IEnumerable<int> challenge, IEnumerable<int> setback) ranges) =>
+			ranges.difficulty.SelectMany(difficulty => ranges.challenge.Where(challenge => challenge <= difficulty), (difficulty, challenge) => (difficulty, challenge))
+				.SelectMany(tuple => ranges.setback, (tuple, setback) =>
+				dice.SeedPool(difficulty: tuple.difficulty - tuple.challenge, challenge: tuple.challenge, setback: setback).SeedPoolResults());
+
+		public static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
 		{
 			var poolDice = new List<PoolDie>
 			{
-				new PoolDie(context.GetDie(DieNames.Ability), ability),
-				new PoolDie(context.GetDie(DieNames.Boost), boost),
-				new PoolDie(context.GetDie(DieNames.Challenge), challenge),
-				new PoolDie(context.GetDie(DieNames.Difficulty), difficulty),
-				new PoolDie(context.GetDie(DieNames.Proficiency), proficiency),
-				new PoolDie(context.GetDie(DieNames.Setback), setback)
+				new PoolDie(dice.GetDie(DieNames.Ability), ability),
+				new PoolDie(dice.GetDie(DieNames.Boost), boost),
+				new PoolDie(dice.GetDie(DieNames.Challenge), challenge),
+				new PoolDie(dice.GetDie(DieNames.Difficulty), difficulty),
+				new PoolDie(dice.GetDie(DieNames.Proficiency), proficiency),
+				new PoolDie(dice.GetDie(DieNames.Setback), setback)
 			};
 
 			var pool = new Pool()
@@ -27,31 +55,8 @@ namespace DataFramework.Context.Seed
 			pool.Name = pool.ToString();
 			pool.TotalOutcomes = pool.RollEstimation();
 
-			if (pool.PoolDice.Any())
-				context.Pools.Add(pool);
-
 			return pool;
 		}
-
-		/// <summary>
-		/// Takes the cross product of all three ranges to build the dice pool
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public static IEnumerable<Pool> BuildPositivePool(this ProbabilityContext context, IEnumerable<int> abilityRange, IEnumerable<int> proficiencyRange, IEnumerable<int> boostRange) =>
-			abilityRange.SelectMany(ability => proficiencyRange.Where(upgrade => upgrade <= ability), (ability, upgrade) => (ability, upgrade))
-				.SelectMany(tuple => boostRange, (tuple, boost) =>
-				context.SeedPool(ability: tuple.ability - tuple.upgrade, proficiency: tuple.upgrade, boost: boost).SeedPoolResults());
-
-		/// <summary>
-		/// Takes the cross product of all three ranges to build the dice pool
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public static IEnumerable<Pool> BuildNegativePool(this ProbabilityContext context, IEnumerable<int> difficultyRange, IEnumerable<int> challengeRange, IEnumerable<int> setbackRange) =>
-			difficultyRange.SelectMany(difficulty => challengeRange.Where(challenge => challenge <= difficulty), (difficulty, challenge) => (difficulty, challenge))
-				.SelectMany(tuple => setbackRange, (tuple, setback) =>
-				context.SeedPool(difficulty: tuple.difficulty - tuple.challenge, challenge: tuple.challenge, setback: setback).SeedPoolResults());
 
 		/// <summary>
 		/// Builds a set of unique outcomes for each pool of dice
