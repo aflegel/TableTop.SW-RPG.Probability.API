@@ -3,13 +3,15 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DataFramework.Context;
 using DataFramework.Context.Seed;
+using DataFramework.Models;
+using System.Collections.Generic;
 
 namespace DataFramework
 {
 	internal class Program
 	{
 		private static readonly LimitConfiguration abilityLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration upgradeLimit = new LimitConfiguration { Start = 0, Count = 5 };
+		private static readonly LimitConfiguration proficencyLimit = new LimitConfiguration { Start = 0, Count = 5 };
 		private static readonly LimitConfiguration difficultyLimit = new LimitConfiguration { Start = 0, Count = 5 };
 		private static readonly LimitConfiguration challengeLimit = new LimitConfiguration { Start = 0, Count = 5 };
 		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, Count = 5 };
@@ -29,11 +31,11 @@ namespace DataFramework
 				// Deletes and creates the database and seeds the Dice
 				InitializeDatabase(context);
 
-				// Seeds the pool dice and results
-				ProcessPools(context);
+				var step1 = DiceSeed.SeedDice();
+				var step2 = step1.ProcessPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range));
 
 				// Seeds the statistics from pool combinations
-				ProcessComparisons(context);
+				var step3 = step2.CrossProduct();
 			}
 
 			Console.WriteLine($"Start time: {time:hh:mm.ss}");
@@ -54,10 +56,6 @@ namespace DataFramework
 			context.Database.EnsureCreated();
 
 			LogLine("Database Seeding");
-
-			context.SeedDice();
-
-			CommitData(context, "Dice Seeding");
 		}
 
 		/// <summary>
@@ -69,40 +67,6 @@ namespace DataFramework
 			LogLine($"Initialize {message} Database Commit");
 			context.SaveChanges();
 			LogLine($"Completed {message} Database Commit");
-		}
-
-		/// <summary>
-		/// Prints start and stop timestamps while building the complete outcome map for a set of dice
-		/// </summary>
-		/// <param name="context"></param>
-		private static void ProcessPools(ProbabilityContext context)
-		{
-			LogLine("Initialize Pool Generation");
-
-			//.ToList() triggers the ienumerable execution
-			context.BuildPositivePool(abilityLimit.Range, upgradeLimit.Range, boostLimit.Range).ToList();
-			context.BuildNegativePool(difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range).ToList();
-
-			LogLine("Completed Pool Generation");
-
-			//save the pools before generating the full comparison
-			CommitData(context, "PoolDice Seeding");
-		}
-
-		/// <summary>
-		/// Processes the comparison of positive and negative pools
-		/// </summary>
-		/// <param name="context"></param>
-		private static void ProcessComparisons(ProbabilityContext context)
-		{
-			LogLine("Initialize Pool Comparison");
-
-			_ = (context.GetPositivePools().ToList(), context.GetNegativePools().ToList()).CrossProduct().ToList();
-
-			LogLine("Completed Pool Comparison");
-
-			//save the outcome results
-			CommitData(context, "Pool Result Seeding");
 		}
 	}
 }

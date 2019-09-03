@@ -30,10 +30,9 @@ namespace Visualizer.Tests
 			//prevents initialization doubling
 			if (!context.Dice.Any(w => w.Name == "Ability"))
 			{
-				context.SeedDice();
-				context.SaveChanges();
-				var pool = new PoolCombination() { PositivePool = context.SeedPool(2).SeedPoolResults(), NegativePool = context.SeedPool(difficulty: 2).SeedPoolResults() }.SeedStatistics();
+				var dice = DiceSeed.SeedDice();
 
+				var pool = new PoolCombination(dice.SeedPool(2).SeedPoolResults(), dice.SeedPool(difficulty: 2).SeedPoolResults()).SeedStatistics();
 				context.PoolCombinations.Add(pool);
 
 				context.SaveChanges();
@@ -45,7 +44,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DbTest()
 		{
-			Assert.True(context.Dice.Count() == 7, $"Incorrect dice present: {context.Dice.Count()}");
+			Assert.True(context.Dice.Count() == 2, $"Incorrect dice present: {context.Dice.Count()}");
 			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "Die Name not set");
 
 			var statistics = context.PoolCombinationStatistics;

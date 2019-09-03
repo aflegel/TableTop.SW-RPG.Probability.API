@@ -5,17 +5,16 @@ namespace DataFramework.Context.Seed
 {
 	public static class DiceSeed
 	{
-		public static void SeedDice(this ProbabilityContext context)
-			=> context.Dice.AddRange(new List<Die>
-				{
-					AbilityDie,
-					BoostDie,
-					ChallengeDie,
-					DifficultyDie,
-					ForceDie,
-					ProficiencyDie,
-					SetbackDie
-				});
+		public static IEnumerable<Die> SeedDice() => new List<Die>
+		{
+			AbilityDie,
+			BoostDie,
+			ChallengeDie,
+			DifficultyDie,
+			ForceDie,
+			ProficiencyDie,
+			SetbackDie
+		};
 
 		public static Die AbilityDie => new Die
 		{
