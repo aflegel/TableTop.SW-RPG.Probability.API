@@ -21,8 +21,6 @@ namespace Visualizer.Tests
 			var result = controller.Get(APICommon.PositiveModel.Dice.ToList());
 			result.Statistics.Should().HaveCount(20, "Die statistics count incorrect");
 			result.Dice.Should().HaveCount(2, "Die count Incorrect");
-
-			controller.Dispose();
 		}
 
 		[Fact]
@@ -31,8 +29,6 @@ namespace Visualizer.Tests
 			var result = controller.Get(APICommon.NegativeModel.Dice.ToList());
 			result.Statistics.Should().HaveCount(0, "Die statistics count incorrect");
 			result.Dice.Should().HaveCount(0, "Die count Incorrect");
-
-			controller.Dispose();
 		}
 	}
 }

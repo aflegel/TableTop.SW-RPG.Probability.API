@@ -56,7 +56,7 @@ namespace Visualizer.Tests
 		public void DbTest()
 		{
 			fixture.Context.Dice.Should().HaveCount(4, "Incorrect dice present");
-			fixture.Context.Dice.First(w => w.Name == "Ability").Name.Should().Be("Ability", "Die Name not set");
+			fixture.Context.Dice.First(w => w.Name == "Ability").Should().NotBeNull("Die Name not set");
 
 			fixture.Context.Pools.Should().HaveCount(8, "Incorrect pools present");
 			fixture.Context.PoolCombinationStatistics.Should().HaveCount(272, "Incorrect statistics present");

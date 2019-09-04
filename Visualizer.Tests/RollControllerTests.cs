@@ -21,8 +21,6 @@ namespace Visualizer.Tests
 			var result = controller.Get(APICommon.PositiveModel.Dice.ToList());
 			result.PositiveRolls.Results.Should().HaveCount(15, "Positive statistics count incorrect");
 			result.NegativeRolls.Results.Should().HaveCount(15, "Negative statistics count incorrect");
-
-			controller.Dispose();
 		}
 
 		[Fact]
@@ -31,8 +29,6 @@ namespace Visualizer.Tests
 			var result = controller.Get(APICommon.NegativeModel.Dice.ToList());
 			result.PositiveRolls.Results.Should().HaveCount(0, "Positive statistics count incorrect");
 			result.NegativeRolls.Results.Should().HaveCount(0, "Negative statistics count incorrect");
-
-			controller.Dispose();
 		}
 	}
 }
