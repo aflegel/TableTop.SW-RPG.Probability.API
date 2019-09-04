@@ -30,7 +30,7 @@ namespace DataFramework.Models
 
 		public ICollection<PoolCombination> NegativePoolCombinations { get; set; }
 
-		public override string ToString() => string.Join(", ", PoolDice.OrderBy(o => o.DieId).Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
+		public override string ToString() => string.Join(", ", PoolDice.OrderBy(o => o.Die.Name).Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
 
 		public decimal RollEstimation() => PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
 	}

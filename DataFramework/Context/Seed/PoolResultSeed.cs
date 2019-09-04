@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Models;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DataFramework.Context.Seed
 {
@@ -12,68 +11,43 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		/// <param name="context"></param>
 		public static (IEnumerable<Pool>, IEnumerable<Pool>) ProcessPools(this IEnumerable<Die> dice, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) positiveRange, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) negativeRange)
-			=> (dice.BuildPositivePool(positiveRange),
-				dice.BuildNegativePool(negativeRange));
+			=> (positiveRange.ToTuple().Select(s => dice.SeedPool(ability: s.Item1 - s.Item2, proficiency: s.Item2, boost: s.Item3)),
+			//The second list needs to be enumerated here or it will be enumerated multiple times during the cross product
+			negativeRange.ToTuple().Select(s => dice.SeedPool(difficulty: s.Item1 - s.Item2, challenge: s.Item2, setback: s.Item3)).ToList());
 
 		/// <summary>
-		/// Takes the cross product of all three ranges to build the dice pool
+		/// Transforms the set of ranges into a list of the range outcomes
 		/// </summary>
-		/// <param name="dice"></param>
+		/// <param name="ranges"></param>
 		/// <returns></returns>
-		public static IEnumerable<Pool> BuildPositivePool(this IEnumerable<Die> dice, (IEnumerable<int> ability, IEnumerable<int> proficiency, IEnumerable<int> boost) ranges) =>
-			ranges.ability.SelectMany(ability => ranges.proficiency.Where(upgrade => upgrade <= ability), (ability, upgrade) => (ability, upgrade))
-				.SelectMany(tuple => ranges.boost, (tuple, boost) =>
-				dice.SeedPool(ability: tuple.ability - tuple.upgrade, proficiency: tuple.upgrade, boost: boost).SeedPoolResults());
-
-		/// <summary>
-		/// Takes the cross product of all three ranges to build the dice pool
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public static IEnumerable<Pool> BuildNegativePool(this IEnumerable<Die> dice, (IEnumerable<int> difficulty, IEnumerable<int> challenge, IEnumerable<int> setback) ranges) =>
-			ranges.difficulty.SelectMany(difficulty => ranges.challenge.Where(challenge => challenge <= difficulty), (difficulty, challenge) => (difficulty, challenge))
-				.SelectMany(tuple => ranges.setback, (tuple, setback) =>
-				dice.SeedPool(difficulty: tuple.difficulty - tuple.challenge, challenge: tuple.challenge, setback: setback).SeedPoolResults());
+		public static IEnumerable<(int, int, int)> ToTuple(this (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ranges) =>
+			ranges.Item1.SelectMany(ability => ranges.Item2.Where(upgrade => upgrade <= ability), (ability, upgrade) => (ability, upgrade))
+				.SelectMany(tuple => ranges.Item3, (tuple, boost) => (tuple.ability, tuple.upgrade, boost)).Where(w => w.ability + w.upgrade > 0);
 
 		public static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
 		{
-			var poolDice = new List<PoolDie>
-			{
-				new PoolDie(dice.GetDie(DieNames.Ability), ability),
-				new PoolDie(dice.GetDie(DieNames.Boost), boost),
-				new PoolDie(dice.GetDie(DieNames.Challenge), challenge),
-				new PoolDie(dice.GetDie(DieNames.Difficulty), difficulty),
-				new PoolDie(dice.GetDie(DieNames.Proficiency), proficiency),
-				new PoolDie(dice.GetDie(DieNames.Setback), setback)
-			};
-
 			var pool = new Pool()
 			{
-				PoolDice = poolDice.Where(w => w.Quantity > 0).ToList(),
+				PoolDice = new List<PoolDie>
+				{
+					new PoolDie(dice.GetDie(DieNames.Ability), ability),
+					new PoolDie(dice.GetDie(DieNames.Boost), boost),
+					new PoolDie(dice.GetDie(DieNames.Challenge), challenge),
+					new PoolDie(dice.GetDie(DieNames.Difficulty), difficulty),
+					new PoolDie(dice.GetDie(DieNames.Proficiency), proficiency),
+					new PoolDie(dice.GetDie(DieNames.Setback), setback)
+				}.Where(w => w.Quantity > 0).ToList(),
 			};
 
 			pool.Name = pool.ToString();
 			pool.TotalOutcomes = pool.RollEstimation();
 
-			return pool;
-		}
+			ConsoleLogger.PrintStartLog(pool.Name, pool.TotalOutcomes);
 
-		/// <summary>
-		/// Builds a set of unique outcomes for each pool of dice
-		/// </summary>
-		/// <returns></returns>
-		public static Pool SeedPoolResults(this Pool pool)
-		{
-			if (pool.PoolDice.Any())
-			{
-				PoolStatisticSeed.PrintStartLog(pool.Name, pool.TotalOutcomes);
+			pool.PoolResults = pool.PoolDice.ExplodeDice().RecursiveProcessing().ToList();
+			pool.UniqueOutcomes = pool.PoolResults.Count;
 
-				//clone the pool to avoid contamination. Exploding makes the recursion easier
-				pool.PoolResults = pool.CopyPoolDice().ExplodeDice().RecursiveProcessing().ToList();
-				pool.UniqueOutcomes = pool.PoolResults.Count;
-
-				PoolStatisticSeed.PrintFinishLog(pool.UniqueOutcomes);
-			}
+			ConsoleLogger.PrintFinishLog(pool.UniqueOutcomes);
 
 			return pool;
 		}

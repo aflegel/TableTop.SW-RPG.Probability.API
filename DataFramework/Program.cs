@@ -17,12 +17,11 @@ namespace DataFramework
 		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, Count = 5 };
 		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, Count = 5 };
 
-		private static void LogLine(string message) => Console.WriteLine($"{DateTime.Now:hh:mm.ss} {message}");
 
 		private static void Main()
 		{
 			var time = DateTime.Now;
-			LogLine("Startup");
+			ConsoleLogger.LogLine("Startup");
 
 			var options = new DbContextOptionsBuilder<ProbabilityContext>().UseSqlServer(@"Server=ALEXANDER-HP-85;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
 
@@ -31,11 +30,13 @@ namespace DataFramework
 				// Deletes and creates the database and seeds the Dice
 				InitializeDatabase(context);
 
-				var step1 = DiceSeed.SeedDice();
-				var step2 = step1.ProcessPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range));
+				var step1 = DiceSeed.SeedDice()
+					.ProcessPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range))
+					.CrossProduct();
 
-				// Seeds the statistics from pool combinations
-				var step3 = step2.CrossProduct();
+				context.PoolCombinations.AddRange(step1.ToList());
+
+				CommitData(context, "All Records");
 			}
 
 			Console.WriteLine($"Start time: {time:hh:mm.ss}");
@@ -49,13 +50,13 @@ namespace DataFramework
 		private static void InitializeDatabase(ProbabilityContext context)
 		{
 			//todo: wait for confirmation before deleting
-			LogLine("Database Initialization");
+			ConsoleLogger.LogLine("Database Initialization");
 
 			//delete and recreate the database
 			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
-			LogLine("Database Seeding");
+			ConsoleLogger.LogLine("Database Seeding");
 		}
 
 		/// <summary>
@@ -64,9 +65,9 @@ namespace DataFramework
 		/// <param name="context"></param>
 		private static void CommitData(ProbabilityContext context, string message)
 		{
-			LogLine($"Initialize {message} Database Commit");
+			ConsoleLogger.LogLine($"Initialize {message} Database Commit");
 			context.SaveChanges();
-			LogLine($"Completed {message} Database Commit");
+			ConsoleLogger.LogLine($"Completed {message} Database Commit");
 		}
 	}
 }

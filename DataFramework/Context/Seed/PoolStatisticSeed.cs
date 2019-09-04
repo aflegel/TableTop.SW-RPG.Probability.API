@@ -21,7 +21,8 @@ namespace DataFramework.Context.Seed
 		/// </summary>
 		public static PoolCombination SeedStatistics(this PoolCombination poolCombination)
 		{
-			PrintConsoleLog(poolCombination);
+			ConsoleLogger.PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
+			ConsoleLogger.PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
 
 			poolCombination.PoolCombinationStatistics = (poolCombination.PositivePool.PoolResults, poolCombination.NegativePool.PoolResults).ResultCrossProduct().ToList();
 
@@ -42,19 +43,5 @@ namespace DataFramework.Context.Seed
 					AlternateTotal = s.Sum(sum => sum.AlternateTotal * sum.Frequency),
 					Frequency = s.Sum(sum => sum.Frequency)
 				});
-
-		/// <summary>
-		/// Displays the Unique List of rolls
-		/// </summary>
-		/// <param name="poolCombination"></param>
-		private static void PrintConsoleLog(PoolCombination poolCombination)
-		{
-			PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
-			PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
-		}
-
-		public static void PrintStartLog(string poolText, decimal rollEstimation) => Console.Write($"{poolText,-80}|{rollEstimation,29:n0}");
-
-		public static void PrintFinishLog(decimal rollEstimation) => Console.Write($"  |{rollEstimation,12:n0}\n");
 	}
 }

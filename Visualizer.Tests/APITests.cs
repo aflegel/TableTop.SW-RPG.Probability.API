@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Visualizer.Controllers;
 using Visualizer.Models;
 using System.Linq;
+using static DataFramework.Models.DieExtensions;
 
 namespace Visualizer.Tests
 {
@@ -17,9 +18,9 @@ namespace Visualizer.Tests
 		private static Pool AbilityTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.AbilityDie, 2) } };
 		private static Pool DifficultyTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.DifficultyDie, 2) } };
 
-		private static SearchViewModel PositiveModel => new SearchViewModel(new PoolCombination() { PositivePool = AbilityTwo.SeedPoolResults(), NegativePool = DifficultyTwo.SeedPoolResults() });
+		private static SearchViewModel PositiveModel => new SearchViewModel(new PoolCombination() { PositivePool = AbilityTwo, NegativePool = DifficultyTwo });
 
-		private static SearchViewModel NegativeModel => new SearchViewModel(new PoolCombination() { PositivePool = AbilityTwo.SeedPoolResults(), NegativePool = new Pool() });
+		private static SearchViewModel NegativeModel => new SearchViewModel(new PoolCombination() { PositivePool = AbilityTwo, NegativePool = new Pool() });
 
 		public APITests()
 		{
@@ -30,10 +31,9 @@ namespace Visualizer.Tests
 			//prevents initialization doubling
 			if (!context.Dice.Any(w => w.Name == "Ability"))
 			{
-				var dice = DiceSeed.SeedDice();
+				var pools = DiceSeed.SeedDice().ProcessPools((Enumerable.Range(1, 2), Enumerable.Range(0, 2), Enumerable.Range(0, 1)), (Enumerable.Range(1, 2), Enumerable.Range(0, 2), Enumerable.Range(0, 1))).CrossProduct();
 
-				var pool = new PoolCombination(dice.SeedPool(2).SeedPoolResults(), dice.SeedPool(difficulty: 2).SeedPoolResults()).SeedStatistics();
-				context.PoolCombinations.Add(pool);
+				context.PoolCombinations.AddRange(pools);
 
 				context.SaveChanges();
 			}
@@ -44,14 +44,21 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DbTest()
 		{
-			Assert.True(context.Dice.Count() == 2, $"Incorrect dice present: {context.Dice.Count()}");
+			Assert.True(context.Dice.Count() == 4, $"Incorrect dice present: {context.Dice.Count()}");
 			Assert.True(context.Dice.Where(w => w.Name == "Ability").First().Name == "Ability", "Die Name not set");
 
-			var statistics = context.PoolCombinationStatistics;
-			Assert.True(statistics.Count() == 20, $"Incorrect statistics present: {statistics.Count()}");
+			var poolSearch = context.Pools.Where(pool => pool.PoolDice.Any(die => PositiveDice.Contains(die.Die.Name.GetName())))
+				.Include(i => i.PositivePoolCombinations)
+						.ThenInclude(tti => tti.PoolCombinationStatistics)
+				.Include(i => i.PoolResults)
+						.ThenInclude(tti => tti.PoolResultSymbols);
+			Assert.True(poolSearch.Count() == 4, $"Incorrect positive pool count: {poolSearch.Count()}");
 
-			var pools = context.GetPositivePools();
-			Assert.True(pools.Count() == 1, $"Incorrect pool selection: {pools.Count()}");
+			var pools = context.Pools;
+			Assert.True(pools.Count() == 8, $"Incorrect pools present: {pools.Count()}");
+
+			var statistics = context.PoolCombinationStatistics;
+			Assert.True(statistics.Count() == 272, $"Incorrect statistics present: {statistics.Count()}");
 		}
 
 		[Fact]

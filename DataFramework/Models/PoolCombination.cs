@@ -15,9 +15,6 @@ namespace DataFramework.Models
 
 			PositivePool = positivePool;
 			NegativePool = negativePool;
-
-			positivePool.PositivePoolCombinations.Add(this);
-			negativePool.NegativePoolCombinations.Add(this);
 		}
 
 		public int PositivePoolId { get; set; }
