@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using DataFramework.Models;
 using Microsoft.EntityFrameworkCore;
-using static DataFramework.Models.DieExtensions;
 
 namespace DataFramework.Context
 {
@@ -35,8 +35,8 @@ namespace DataFramework.Context
 		public static bool TryGetPoolIds(this ProbabilityContext context, Pool pool, out (int positiveId, int negativeId) poolIds)
 		{
 			poolIds = (
-				context.GetPoolIdByName(pool.GetFilteredPoolName(PositiveDice)) ?? 0,
-				context.GetPoolIdByName(pool.GetFilteredPoolName(NegativeDice)) ?? 0
+				context.GetPoolIdByName(pool.GetFilteredPoolName(DieExtensions.PositiveDice)) ?? 0,
+				context.GetPoolIdByName(pool.GetFilteredPoolName(DieExtensions.NegativeDice)) ?? 0
 				);
 
 			return poolIds.positiveId > 0 && poolIds.negativeId > 0;
@@ -49,7 +49,7 @@ namespace DataFramework.Context
 		/// <param name="dice"></param>
 		/// <param name="filters"></param>
 		/// <returns></returns>
-		public static string GetFilteredPoolName(this Pool pool, List<DieNames> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() }.ToString();
+		public static string GetFilteredPoolName(this Pool pool, ImmutableList<DieNames> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() }.ToString();
 
 		/// <summary>
 		/// Returns a Pool with it's results and dice

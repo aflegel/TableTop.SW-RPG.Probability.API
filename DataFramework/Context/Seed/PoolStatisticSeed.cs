@@ -1,5 +1,4 @@
-﻿using System;
-using DataFramework.Models;
+﻿using DataFramework.Models;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -14,17 +13,17 @@ namespace DataFramework.Context.Seed
 		/// <param name="negativePools"></param>
 		/// <returns></returns>
 		public static IEnumerable<PoolCombination> CrossProduct(this (IEnumerable<Pool>, IEnumerable<Pool>) pools) =>
-			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) => new PoolCombination(positivePool, negativePool).SeedStatistics());
+			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) => (positivePool, negativePool).SeedStatistics());
 
 		/// <summary>
 		/// Compares the outcome of each pool's combined rolls
 		/// </summary>
-		public static PoolCombination SeedStatistics(this PoolCombination poolCombination)
+		public static PoolCombination SeedStatistics(this (Pool positivePool, Pool negativePool) poolPair)
 		{
-			ConsoleLogger.PrintStartLog($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes);
-			ConsoleLogger.PrintFinishLog(poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
-
+			var poolCombination = new PoolCombination(poolPair.positivePool, poolPair.negativePool);
 			poolCombination.PoolCombinationStatistics = (poolCombination.PositivePool.PoolResults, poolCombination.NegativePool.PoolResults).ResultCrossProduct().ToList();
+
+			ConsoleLogger.LogRoll($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes, poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
 
 			return poolCombination;
 		}

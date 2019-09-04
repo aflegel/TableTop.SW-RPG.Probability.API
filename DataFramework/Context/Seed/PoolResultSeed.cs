@@ -26,28 +26,27 @@ namespace DataFramework.Context.Seed
 
 		public static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
 		{
+			var pooldice = new List<PoolDie>
+			{
+				new PoolDie(dice.GetDie(DieNames.Ability), ability),
+				new PoolDie(dice.GetDie(DieNames.Boost), boost),
+				new PoolDie(dice.GetDie(DieNames.Challenge), challenge),
+				new PoolDie(dice.GetDie(DieNames.Difficulty), difficulty),
+				new PoolDie(dice.GetDie(DieNames.Proficiency), proficiency),
+				new PoolDie(dice.GetDie(DieNames.Setback), setback)
+			}.Where(w => w.Quantity > 0);
+
 			var pool = new Pool()
 			{
-				PoolDice = new List<PoolDie>
-				{
-					new PoolDie(dice.GetDie(DieNames.Ability), ability),
-					new PoolDie(dice.GetDie(DieNames.Boost), boost),
-					new PoolDie(dice.GetDie(DieNames.Challenge), challenge),
-					new PoolDie(dice.GetDie(DieNames.Difficulty), difficulty),
-					new PoolDie(dice.GetDie(DieNames.Proficiency), proficiency),
-					new PoolDie(dice.GetDie(DieNames.Setback), setback)
-				}.Where(w => w.Quantity > 0).ToList(),
+				PoolDice = pooldice.ToList(),
+				PoolResults = pooldice.ExplodeDice().RecursiveProcessing().ToList()
 			};
 
 			pool.Name = pool.ToString();
 			pool.TotalOutcomes = pool.RollEstimation();
-
-			ConsoleLogger.PrintStartLog(pool.Name, pool.TotalOutcomes);
-
-			pool.PoolResults = pool.PoolDice.ExplodeDice().RecursiveProcessing().ToList();
 			pool.UniqueOutcomes = pool.PoolResults.Count;
 
-			ConsoleLogger.PrintFinishLog(pool.UniqueOutcomes);
+			ConsoleLogger.LogRoll(pool.Name, pool.TotalOutcomes, pool.UniqueOutcomes);
 
 			return pool;
 		}

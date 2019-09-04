@@ -6,7 +6,6 @@ using DataFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using FluentAssertions;
-using static DataFramework.Models.DieExtensions;
 
 namespace Visualizer.Tests
 {
@@ -61,7 +60,7 @@ namespace Visualizer.Tests
 			fixture.Context.Pools.Should().HaveCount(8, "Incorrect pools present");
 			fixture.Context.PoolCombinationStatistics.Should().HaveCount(272, "Incorrect statistics present");
 
-			var poolSearch = fixture.Context.Pools.Where(pool => pool.PoolDice.Any(die => PositiveDice.Contains(die.Die.Name.GetName())))
+			var poolSearch = fixture.Context.Pools.Where(pool => pool.PoolDice.Any(die => DieExtensions.PositiveDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)

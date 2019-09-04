@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace DataFramework.Models
@@ -17,9 +18,9 @@ namespace DataFramework.Models
 
 	public static class DieExtensions
 	{
-		public static List<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback };
+		public static ImmutableList<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback }.ToImmutableList();
 
-		public static List<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost };
+		public static ImmutableList<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost }.ToImmutableList();
 
 		/// <summary>
 		/// Returns a result for each face of a die
