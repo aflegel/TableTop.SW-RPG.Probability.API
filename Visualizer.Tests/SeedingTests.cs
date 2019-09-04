@@ -3,80 +3,66 @@ using DataFramework.Models;
 using Xunit;
 using DataFramework.Context.Seed;
 using System.Collections.Generic;
+using FluentAssertions;
 
 namespace Visualizer.Tests
 {
 	public class SeedingTests
 	{
-		private static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) AbilityTwo => (Enumerable.Range(2, 1), new List<int> { 0 }, new List<int> { 0 });
-		private static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) DifficultyTwo => (Enumerable.Range(2, 1), new List<int> { 0 }, new List<int> { 0 });
-		private static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ProficiencyThreeBoostTwo => (Enumerable.Range(3, 1), Enumerable.Range(3, 1), Enumerable.Range(2, 1));
-		private static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ChallengeThreeSetbackTwo => (Enumerable.Range(3, 1), Enumerable.Range(3, 1), Enumerable.Range(2, 1));
-
-		private static List<PoolResultSymbol> SuccessThreeAdvantageFour => new List<PoolResultSymbol> { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
-
 		[Fact]
 		public void DieComparisonGenerator()
 		{
-			var pools = DiceSeed.SeedDice().ProcessPools(AbilityTwo, (Enumerable.Range(0, 1), new List<int> { 0 }, new List<int> { 0 }));
-			var pool = pools.Item1.First();
-
-			Assert.True(1 == pools.Item1.Count(), $"Incorrect number of results {pools.Item1.Count()}");
-			Assert.True(15 == pool.PoolResults.Count, $"The number of results did not equal 15. Result was {pool.PoolResults.Count}");
-			Assert.True(64 == pool.RollEstimation(), $"The total outcomes did not equal 64. Result was {pool.PoolResults.Count}");
-		}
-
-		[Fact]
-		public void DieComparisonGeneratorAdvanced()
-		{
 			var pools = DiceSeed.SeedDice().ProcessPools((Enumerable.Range(1, 2), Enumerable.Range(1, 1), Enumerable.Range(0, 1)), (Enumerable.Range(1, 2), Enumerable.Range(1, 1), Enumerable.Range(0, 1))).CrossProduct();
-			//var pool = pools.First();
 
-			Assert.True(4 == pools.Count(), $"Incorrect number of results {pools.Count()}");
+			pools.Should().HaveCount(4, "Incorrect number of pool combinations");
+
+			var pool = pools.First().PositivePool;
+			pool.PoolResults.Should().HaveCount(7, "Incorrect number of results");
+			pool.RollEstimation().Should().Be(12, "Incorrect number of outcomes");
+			pool.PoolResults.Sum(s => s.Frequency).Should().Be(12, "Incorrect number of outcomes");
+
+			pool = pools.Skip(1).First().NegativePool;
+			pool.PoolResults.Should().HaveCount(21, "Incorrect number of results");
+			pool.RollEstimation().Should().Be(96, "Incorrect number of outcomes");
+			pool.PoolResults.Sum(s => s.Frequency).Should().Be(96, "Incorrect number of outcomes");
 		}
 
 		[Fact]
-		public void DiePoolHashCode()
+		public void DiePoolToString()
 		{
-			var pool = DiceSeed.SeedDice().ProcessPools(AbilityTwo, (Enumerable.Range(0, 1), new List<int> { 0 }, new List<int> { 0 })).Item1.First();
+			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.ProficiencyThreeBoostTwoSeed, (Enumerable.Range(0, 1), new List<int> { 0 }, new List<int> { 0 })).Item1.First();
 
-			Assert.True(pool.ToString() == "Ability 2", $"The text did not equal `Ability 2`. Result was {pool.ToString()}");
+			pool.ToString().Should().Be("Boost 2, Proficiency 3", "Incorrect pool text");
 		}
 
 
 		[Fact]
 		public void DieComparisonBasic()
 		{
+			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.AbilityTwoSeed, APICommon.DifficultyTwoSeed).CrossProduct().First();
 
-			var pools = DiceSeed.SeedDice().ProcessPools(AbilityTwo, DifficultyTwo).CrossProduct();
-
-			var pool = pools.First();
-
-			Assert.True(1 == pools.Count(), $"Incorrect number of results {pools.Count()}");
-			Assert.True(20 == pool.PoolCombinationStatistics.Count, $"The number of results did not equal 15. Result was {pool.PoolCombinationStatistics.Count}");
-			Assert.True(9 == pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Count());
+			pool.PoolCombinationStatistics.Should().HaveCount(20, "Incorrect number of statistics");
+			pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Should().HaveCount(9, "Incorrect number of statistics");
 
 			var successAtOne = pool.PoolCombinationStatistics.First(w => w.Symbol == Symbol.Success && w.Quantity == 1);
 
-			Assert.True(1028 == successAtOne.Frequency);
-			Assert.True(-688 == successAtOne.AlternateTotal);
+			successAtOne.Frequency.Should().Be(1028, "Incorrect number of statistics");
+			successAtOne.AlternateTotal.Should().Be(-688, "Incorrect number of statistics");
 		}
 
 		[Fact]
 		public void DieComparisonAdvanced()
 		{
-			var pools = DiceSeed.SeedDice().ProcessPools(ProficiencyThreeBoostTwo, ChallengeThreeSetbackTwo).CrossProduct();
+			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.ProficiencyThreeBoostTwoSeed, APICommon.ChallengeThreeSetbackTwoSeed).CrossProduct().First();
 
-			var pool = pools.First();
-
-			Assert.True(3194 == pool.PositivePool.PoolResults.First(w => w.GetHashCode() == new PoolResult() { PoolResultSymbols = SuccessThreeAdvantageFour }.GetHashCode()).Frequency, "Frequency of Success(3) Advantage(4) did not equal 3194");
-			Assert.True(44 == pool.PoolCombinationStatistics.Count);
-			Assert.True(17 == pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Count());
+			pool.PositivePool.PoolResults.First(w => w.GetHashCode() == new PoolResult() { PoolResultSymbols = APICommon.SuccessThreeAdvantageFour }.GetHashCode()).Frequency.Should().Be(3194, "Frequency of Success(3) Advantage(4) incorrect");
+			pool.PoolCombinationStatistics.Should().HaveCount(44, "Incorrect number of statistics");
+			pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Should().HaveCount(17, "Incorrect number of statistics");
 
 			var successAtOne = pool.PoolCombinationStatistics.First(w => w.Symbol == Symbol.Success && w.Quantity == 1);
 
-			Assert.True(726936064 == successAtOne.Frequency);
-			Assert.True(163682112 == successAtOne.AlternateTotal);
+			successAtOne.Frequency.Should().Be(726936064, "Frequency Incorrect");
+			successAtOne.AlternateTotal.Should().Be(163682112, "Alternate Total Incorrect");
 		}
 	}
 }

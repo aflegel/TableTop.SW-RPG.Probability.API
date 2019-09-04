@@ -18,7 +18,7 @@ namespace DataFramework.Context
 			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefault();
 
 		/// <summary>
-		/// Trys to find the pool id from a given name
+		/// Tries to find the pool id from a given name
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="poolName"></param>
@@ -26,7 +26,7 @@ namespace DataFramework.Context
 		public static int? GetPoolIdByName(this ProbabilityContext context, string poolName) => context.Pools.Where(w => w.Name == poolName).Select(s => s.PoolId).FirstOrDefault();
 
 		/// <summary>
-		/// Trys to get the pool ids split by positive and negative dice
+		/// Tries to get the pool ids split by positive and negative dice
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="pool"></param>
