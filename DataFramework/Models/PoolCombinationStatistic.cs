@@ -1,14 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static DataFramework.Models.Die;
-
-namespace DataFramework.Models
+﻿namespace DataFramework.Models
 {
-	public class PoolCombinationStatistic : IEquatable<PoolCombinationStatistic>
+	public class PoolCombinationStatistic
 	{
 		public int PositivePoolId { get; set; }
 
@@ -22,33 +14,8 @@ namespace DataFramework.Models
 
 		public decimal AlternateTotal { get; set; }
 
-		[JsonIgnore]
 		public PoolCombination PoolCombination { get; set; }
 
-		public bool Equals(PoolCombinationStatistic other)
-		{
-			if (Symbol != other.Symbol)
-				return false;
-			if (Quantity != other.Quantity)
-				return false;
-
-			return true;
-		}
-	}
-
-	public class PoolCombinationStatisticEqualityComparer : IEqualityComparer<PoolCombinationStatistic>
-	{
-		public bool Equals(PoolCombinationStatistic x, PoolCombinationStatistic y) => x.Equals(y);
-
-		public int GetHashCode(PoolCombinationStatistic obj)
-		{
-			unchecked
-			{
-				if (obj == null)
-					return 0;
-
-				return obj.Symbol.ToString().GetHashCode() + obj.Quantity;
-			}
-		}
+		public override int GetHashCode() => (Symbol, Quantity).GetHashCode();
 	}
 }

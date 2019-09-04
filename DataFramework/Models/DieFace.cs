@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace DataFramework.Models
 {
@@ -14,12 +9,9 @@ namespace DataFramework.Models
 			DieFaceSymbols = new HashSet<DieFaceSymbol>();
 		}
 
-		public DieFace(List<DieFaceSymbol> Faces)
+		public DieFace(List<DieFaceSymbol> faces)
 		{
-			DieFaceSymbols = new HashSet<DieFaceSymbol>();
-
-			foreach (var face in Faces)
-				DieFaceSymbols.Add(face);
+			DieFaceSymbols = new HashSet<DieFaceSymbol>(faces);
 		}
 
 		public int DieFaceId { get; set; }
@@ -28,7 +20,6 @@ namespace DataFramework.Models
 
 		public ICollection<DieFaceSymbol> DieFaceSymbols { get; set; }
 
-		[JsonIgnore]
 		public Die Die { get; set; }
 	}
 }

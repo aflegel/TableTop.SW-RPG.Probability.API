@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using DataFramework.Context;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +22,13 @@ namespace Visualizer
 		{
 			services.AddCors();
 			services.AddMvc();
+
+			services.AddDbContext<ProbabilityContext>(options =>
+			{
+				options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"));
+				//options.UseNpgsql(Configuration.GetConnectionString("AuthenticationPostgresContext"));
+			});
+			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,5 @@
 ﻿using DataFramework.Models;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Visualizer.Models
@@ -13,28 +12,22 @@ namespace Visualizer.Models
 
 		public RollViewModel()
 		{
-			Results = new Collection<RollResultViewModel>();
-			Dice = new Collection<DieViewModel>();
+			Results = new List<RollResultViewModel>();
+			Dice = new List<DieViewModel>();
 		}
 
 		public RollViewModel(Pool pool)
 		{
-			Results = SetPool(pool);
+			Results = pool.PoolResults.Select(stat => new RollResultViewModel
+			{
+				Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
+				Frequency = stat.Frequency,
+			});
 
 			Dice = pool.PoolDice.Select(die => new DieViewModel
 			{
 				DieType = die.Die.Name,
 				Quantity = die.Quantity
-			});
-		}
-
-		private IEnumerable<RollResultViewModel> SetPool(Pool results)
-		{
-			return results.PoolResults.Select(stat =>
-			new RollResultViewModel
-			{
-				Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
-				Frequency = stat.Frequency,
 			});
 		}
 	}

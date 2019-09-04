@@ -1,20 +1,12 @@
+﻿using System.Linq;
+using DataFramework.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace DataFramework.Context
 {
-	using System;
-	using System.Linq;
-	using DataFramework.Models;
-	using Microsoft.EntityFrameworkCore;
-
 	public class ProbabilityContext : DbContext
 	{
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
-			optionsBuilder.UseNpgsql(@"Server=localhost;Port=5432;Database=TableTop.Utility.StarWarsRPGProbability;User Id=swrpg-probability;Password=force cream ear known");
-		}
-
-		// Add a DbSet for each entity type that you want to include in your model. For more information
-		// on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.
+		public ProbabilityContext(DbContextOptions<ProbabilityContext> options) : base(options) { }
 
 		public virtual DbSet<Die> Dice { get; set; }
 		public virtual DbSet<Pool> Pools { get; set; }
@@ -26,8 +18,6 @@ namespace DataFramework.Context
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-
-
 			modelBuilder.Entity<Die>().ToTable(nameof(Die));
 			modelBuilder.Entity<Pool>().ToTable(nameof(Pool));
 			modelBuilder.Entity<PoolCombination>().ToTable(nameof(PoolCombination));
@@ -83,13 +73,10 @@ namespace DataFramework.Context
 				.HasOne(e => e.Die)
 				.WithMany(c => c.DieFaces);
 
-			foreach (var property in modelBuilder.Model.GetEntityTypes()
+			modelBuilder.Model.GetEntityTypes()
 				.SelectMany(t => t.GetProperties())
-				.Where(p => p.ClrType == typeof(decimal)))
-			{
-				property.Relational().ColumnType = "decimal(24, 0)";// 100,000,000,000,000,000,000
-			}
-
+				.Where(p => p.ClrType == typeof(decimal))
+				.ToList().ForEach(property => property.Relational().ColumnType = "decimal(24, 0)");// 100,000,000,000,000,000,000
 		}
 	}
 }

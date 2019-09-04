@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataFramework.Models
 {
@@ -32,10 +30,8 @@ namespace DataFramework.Models
 
 		public ICollection<PoolCombination> NegativePoolCombinations { get; set; }
 
-		protected int PoolDiceCount => PoolDice.Sum(die => die.Quantity);
+		public override string ToString() => string.Join(", ", PoolDice.OrderBy(o => o.Die.Name).Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
 
-		public string PoolText => string.Join(", ", PoolDice.Select(group => $"{group.Die.Name} {group.Quantity}").ToList());
-
-		public decimal RollEstimation => PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
+		public decimal RollEstimation() => PoolDice.Aggregate((decimal)1, (x, y) => x * Convert.ToDecimal(Math.Pow(y.Die.DieFaces.Count, y.Quantity)));
 	}
 }

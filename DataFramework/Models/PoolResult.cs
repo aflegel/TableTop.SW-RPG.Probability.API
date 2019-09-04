@@ -1,10 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static DataFramework.Models.Die;
 
 namespace DataFramework.Models
 {
@@ -12,19 +7,7 @@ namespace DataFramework.Models
 	{
 		public PoolResult()
 		{
-			//something like 8 million records
 			PoolResultSymbols = new HashSet<PoolResultSymbol>();
-		}
-
-		public PoolResult(List<PoolResultSymbol> PoolResultSymbols)
-		{
-			//something like 8 million records
-			this.PoolResultSymbols = new HashSet<PoolResultSymbol>();
-
-			foreach (var resultSymbol in PoolResultSymbols)
-			{
-				this.PoolResultSymbols.Add(resultSymbol);
-			}
 		}
 
 		public int PoolResultId { get; set; }
@@ -33,7 +16,6 @@ namespace DataFramework.Models
 
 		public decimal Frequency { get; set; }
 
-		[JsonIgnore]
 		public Pool Pool { get; set; }
 
 		public ICollection<PoolResultSymbol> PoolResultSymbols { get; set; }
@@ -44,5 +26,7 @@ namespace DataFramework.Models
 		/// <param name="key"></param>
 		/// <returns></returns>
 		public int CountMatchingKeys(Symbol key) => PoolResultSymbols.Where(a => a.Symbol == key).Sum(s => s.Quantity);
+
+		public override int GetHashCode() => PoolResultSymbols.Select(s => s.GetHashCode()).Aggregate(1, (a, b) => unchecked(a * b));
 	}
 }
