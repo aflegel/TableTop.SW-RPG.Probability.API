@@ -52,20 +52,15 @@ namespace DataFramework.Context
 		public static string GetFilteredPoolName(this Pool pool, ImmutableList<DieNames> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() }.ToString();
 
 		/// <summary>
-		/// Returns a Pool with it's results and dice
+		/// Returns a set of PoolResults for a given pool id
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="poolId"></param>
 		/// <returns></returns>
-		public static Pool GetPool(this ProbabilityContext context, long poolId) => context.Pools.Where(w => w.PoolId == poolId)
-			.Include(i => i.PoolResults)
-				.ThenInclude(i => i.PoolResultSymbols)
-			.Include(i => i.PoolDice)
-				.ThenInclude(i => i.Die)
-			.FirstOrDefault();
+		public static IEnumerable<PoolResult> GetPoolResults(this ProbabilityContext context, int poolId) => context.PoolResults.Where(w => w.PoolId == poolId).Include(i => i.PoolResultSymbols);
 
 		/// <summary>
-		/// Gets a Pool Combination including the statistics and dice
+		/// Gets a list of PoolCombinationStatistics for a set of pool ids
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="poolIds"></param>
@@ -74,7 +69,7 @@ namespace DataFramework.Context
 			context.PoolCombinationStatistics.Where(w => w.PositivePoolId == poolIds.positiveId && w.NegativePoolId == poolIds.negativeId);
 
 		/// <summary>
-		/// Gets a Pool Combination including the statistics and dice
+		/// Gets the dice and quantity for a given set of pool ids
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="poolIds"></param>
@@ -82,5 +77,13 @@ namespace DataFramework.Context
 		public static IEnumerable<PoolDie> GetPoolDice(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) =>
 			context.PoolDice.Where(w => w.PoolId == poolIds.positiveId || w.PoolId == poolIds.negativeId)
 			.Include(i => i.Die);
+
+		/// <summary>
+		/// Gets the dice and quantity for a given pool id
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="poolId"></param>
+		/// <returns></returns>
+		public static IEnumerable<PoolDie> GetPoolDice(this ProbabilityContext context, int poolId) => context.GetPoolDice((poolId, -1));
 	}
 }

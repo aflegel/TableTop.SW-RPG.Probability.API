@@ -16,15 +16,15 @@ namespace Visualizer.Models
 			Dice = new List<DieViewModel>();
 		}
 
-		public RollViewModel(Pool pool)
+		public RollViewModel(IEnumerable<PoolResult> poolResults, IEnumerable<PoolDie> poolDice)
 		{
-			Results = pool.PoolResults.Select(stat => new RollResultViewModel
+			Results = poolResults.Select(stat => new RollResultViewModel
 			{
 				Symbols = stat.PoolResultSymbols.Select(s => new RollSymbolViewModel { Symbol = s.Symbol.ToString(), Quantity = s.Quantity }),
 				Frequency = stat.Frequency,
 			});
 
-			Dice = pool.PoolDice.Select(die => new DieViewModel
+			Dice = poolDice.Select(die => new DieViewModel
 			{
 				DieType = die.Die.Name,
 				Quantity = die.Quantity

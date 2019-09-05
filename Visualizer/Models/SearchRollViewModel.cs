@@ -12,11 +12,5 @@ namespace Visualizer.Models
 			PositiveRolls = new RollViewModel();
 			NegativeRolls = new RollViewModel();
 		}
-
-		public SearchRollViewModel(Pool positivePool, Pool negativePool)
-		{
-			PositiveRolls = new RollViewModel(positivePool);
-			NegativeRolls = new RollViewModel(negativePool);
-		}
 	}
 }
