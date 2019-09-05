@@ -70,12 +70,17 @@ namespace DataFramework.Context
 		/// <param name="context"></param>
 		/// <param name="poolIds"></param>
 		/// <returns></returns>
-		public static PoolCombination GetPoolCombination(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) => context.PoolCombinations.Where(w => w.PositivePoolId == poolIds.positiveId && w.NegativePoolId == poolIds.negativeId)
-			.Include(i => i.PoolCombinationStatistics)
-			.Include(i => i.PositivePool.PoolDice)
-				.ThenInclude(i => i.Die)
-			.Include(i => i.NegativePool.PoolDice)
-				.ThenInclude(i => i.Die)
-			.FirstOrDefault();
+		public static IEnumerable<PoolCombinationStatistic> GetPoolStatistics(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) =>
+			context.PoolCombinationStatistics.Where(w => w.PositivePoolId == poolIds.positiveId && w.NegativePoolId == poolIds.negativeId);
+
+		/// <summary>
+		/// Gets a Pool Combination including the statistics and dice
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="poolIds"></param>
+		/// <returns></returns>
+		public static IEnumerable<PoolDie> GetPoolDice(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) =>
+			context.PoolDice.Where(w => w.PoolId == poolIds.positiveId || w.PoolId == poolIds.negativeId)
+			.Include(i => i.Die);
 	}
 }

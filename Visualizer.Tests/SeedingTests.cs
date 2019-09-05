@@ -12,7 +12,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonGenerator()
 		{
-			var pools = DiceSeed.SeedDice().ProcessPools((Enumerable.Range(1, 2), Enumerable.Range(1, 1), Enumerable.Range(0, 1)), (Enumerable.Range(1, 2), Enumerable.Range(1, 1), Enumerable.Range(0, 1))).CrossProduct();
+			var pools = DiceSeed.SeedDice().ProcessPools(APICommon.TwoOneZero, APICommon.TwoOneZero).CrossProduct();
 
 			pools.Should().HaveCount(4, "Incorrect number of pool combinations");
 
@@ -30,7 +30,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DiePoolToString()
 		{
-			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.ProficiencyThreeBoostTwoSeed, (Enumerable.Range(0, 1), new List<int> { 0 }, new List<int> { 0 })).Item1.First();
+			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.ZeroThreeTwo, APICommon.ZeroZeroZero).Item1.First();
 
 			pool.ToString().Should().Be("Boost 2, Proficiency 3", "Incorrect pool text");
 		}
@@ -39,7 +39,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonBasic()
 		{
-			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.AbilityTwoSeed, APICommon.DifficultyTwoSeed).CrossProduct().First();
+			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.TwoZeroZero, APICommon.TwoZeroZero).CrossProduct().First();
 
 			pool.PoolCombinationStatistics.Should().HaveCount(20, "Incorrect number of statistics");
 			pool.PoolCombinationStatistics.Where(w => w.Symbol == Symbol.Success).Should().HaveCount(9, "Incorrect number of statistics");
@@ -53,7 +53,7 @@ namespace Visualizer.Tests
 		[Fact]
 		public void DieComparisonAdvanced()
 		{
-			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.ProficiencyThreeBoostTwoSeed, APICommon.ChallengeThreeSetbackTwoSeed).CrossProduct().First();
+			var pool = DiceSeed.SeedDice().ProcessPools(APICommon.ZeroThreeTwo, APICommon.ZeroThreeTwo).CrossProduct().First();
 
 			pool.PositivePool.PoolResults.First(w => w.GetHashCode() == new PoolResult() { PoolResultSymbols = APICommon.SuccessThreeAdvantageFour }.GetHashCode()).Frequency.Should().Be(3194, "Frequency of Success(3) Advantage(4) incorrect");
 			pool.PoolCombinationStatistics.Should().HaveCount(44, "Incorrect number of statistics");

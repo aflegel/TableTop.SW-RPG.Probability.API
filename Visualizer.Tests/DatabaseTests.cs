@@ -20,7 +20,7 @@ namespace Visualizer.Tests
 			//prevents initialization doubling
 			if (!context.Dice.Any(w => w.Name == "Ability"))
 			{
-				var pools = DiceSeed.SeedDice().ProcessPools((Enumerable.Range(1, 2), Enumerable.Range(0, 2), Enumerable.Range(0, 1)), (Enumerable.Range(1, 2), Enumerable.Range(0, 2), Enumerable.Range(0, 1))).CrossProduct();
+				var pools = DiceSeed.SeedDice().ProcessPools(APICommon.TwoTwoZero, APICommon.TwoTwoZero).CrossProduct();
 
 				context.PoolCombinations.AddRange(pools);
 

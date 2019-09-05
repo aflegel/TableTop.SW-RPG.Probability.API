@@ -17,9 +17,9 @@ namespace Visualizer.Models
 			Dice = new Collection<DieViewModel>();
 		}
 
-		public SearchViewModel(PoolCombination searchPool)
+		public SearchViewModel(IEnumerable<PoolCombinationStatistic> statistics, IEnumerable<PoolDie> dice)
 		{
-			Statistics = searchPool.PoolCombinationStatistics.Select(stat => new PoolStatisticViewModel
+			Statistics = statistics.Select(stat => new PoolStatisticViewModel
 			{
 				Symbol = stat.Symbol.ToString(),
 				Quantity = stat.Quantity,
@@ -28,7 +28,7 @@ namespace Visualizer.Models
 			});
 
 
-			Dice = searchPool.PositivePool.PoolDice.Union(searchPool.NegativePool.PoolDice).Select(die => new DieViewModel
+			Dice = dice.Select(die => new DieViewModel
 			{
 				DieType = die.Die.Name,
 				Quantity = die.Quantity
