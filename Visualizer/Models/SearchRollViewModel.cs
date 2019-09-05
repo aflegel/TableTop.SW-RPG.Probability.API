@@ -1,6 +1,4 @@
-﻿using DataFramework.Models;
-
-namespace Visualizer.Models
+﻿namespace Visualizer.Models
 {
 	public class SearchRollViewModel
 	{

@@ -24,8 +24,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DataFramework\DataFramework.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Properties\PublishProfiles\" />
-	</ItemGroup>
 </Project>

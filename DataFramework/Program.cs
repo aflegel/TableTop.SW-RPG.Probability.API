@@ -30,11 +30,9 @@ namespace DataFramework
 				// Deletes and creates the database and seeds the Dice
 				InitializeDatabase(context);
 
-				var step1 = DiceSeed.SeedDice()
-					.ProcessPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range))
-					.CrossProduct();
-
-				context.PoolCombinations.AddRange(step1.ToList());
+				context.PoolCombinations.AddRange(DiceSeed.SeedDice()
+					.SeedPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range))
+					.SeedCombinationStatistics().ToList());
 
 				CommitData(context, "All Records");
 			}

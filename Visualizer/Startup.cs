@@ -22,14 +22,13 @@ namespace Visualizer
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddCors();
-			services.AddMvc();//.AddNewtonsoftJson();
+			services.AddMvc();
 
 			services.AddDbContext<ProbabilityContext>(options =>
 			{
 				options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"));
-				//options.UseNpgsql(Configuration.GetConnectionString("AuthenticationPostgresContext"));
+				//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"));
 			});
-			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,18 +47,13 @@ namespace Visualizer
 				});
 			}
 
-			app.UseCors(builder =>
-			{
-				builder.WithOrigins("http://localhost:5000", "http://localhost:3000");
-				builder.AllowAnyHeader();
-				builder.AllowAnyMethod();
-			});
+			app.UseCors(cors => cors.WithOrigins("http://localhost:5000", "http://localhost:3000")
+				.AllowAnyHeader()
+				.AllowAnyMethod());
 
 			app.UseRouting();
 
-			app.UseEndpoints(endpoints => {
-				endpoints.MapControllers();
-			});
+			app.UseEndpoints(endpoints => endpoints.MapControllers());
 		}
 	}
 }

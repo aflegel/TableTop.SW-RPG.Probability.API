@@ -9,14 +9,6 @@ namespace DataFramework.Models
 			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
 		}
 
-		public PoolCombination(Pool positivePool, Pool negativePool)
-		{
-			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
-
-			PositivePool = positivePool;
-			NegativePool = negativePool;
-		}
-
 		public int PositivePoolId { get; set; }
 
 		public int NegativePoolId { get; set; }
