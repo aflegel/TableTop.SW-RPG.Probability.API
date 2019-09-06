@@ -18,9 +18,11 @@ namespace Visualizer.Tests
 
 		public static List<PoolResultSymbol> SuccessThreeAdvantageFour => new List<PoolResultSymbol> { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
 
-		private static Pool AbilityTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.AbilityDie, 2) } };
-		private static Pool DifficultyTwo => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(DiceSeed.DifficultyDie, 2) } };
-		public static SearchViewModel PositiveModel => new SearchViewModel(new List<PoolCombinationStatistic> { }, AbilityTwo.PoolDice.Union(DifficultyTwo.PoolDice));
-		public static SearchViewModel NegativeModel => new SearchViewModel(new List<PoolCombinationStatistic> { }, AbilityTwo.PoolDice);
+		private static Pool MakePool(DieNames name, int quantity) => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(new Die { Name = name.ToString() }, quantity) } };
+		private static Pool AbilityTwo => MakePool(DieNames.Ability, 2);
+		private static Pool DifficultyTwo => MakePool(DieNames.Difficulty, 2);
+		private static SearchViewModel MakeModel(IEnumerable<PoolDie> dice) => new SearchViewModel(new List<PoolCombinationStatistic> { }, dice);
+		public static SearchViewModel PositiveModel => MakeModel(AbilityTwo.PoolDice.Union(DifficultyTwo.PoolDice));
+		public static SearchViewModel NegativeModel => MakeModel(AbilityTwo.PoolDice);
 	}
 }
