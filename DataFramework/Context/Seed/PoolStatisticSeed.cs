@@ -13,26 +13,18 @@ namespace DataFramework.Context.Seed
 		/// <param name="negativePools"></param>
 		/// <returns></returns>
 		public static IEnumerable<PoolCombination> SeedCombinationStatistics(this (IEnumerable<Pool>, IEnumerable<Pool>) pools) =>
-			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) => (positivePool, negativePool).ToPoolCombination());
+			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) => {
+				
+				ConsoleLogger.LogLine($"{positivePool.Name}, {negativePool.Name}");
 
-		/// <summary>
-		/// Compares the outcome of each pool's combined rolls
-		/// </summary>
-		private static PoolCombination ToPoolCombination(this (Pool positivePool, Pool negativePool) poolPair)
-		{
-			var poolCombination = new PoolCombination()
-			{
-				PositivePool = poolPair.positivePool,
-				NegativePool = poolPair.negativePool,
-				PoolCombinationStatistics = (poolPair.positivePool.PoolResults, poolPair.negativePool.PoolResults).ResultCrossProduct().ToList()
-			};
+				return new PoolCombination()
+				{
+					PositivePool = positivePool,
+					NegativePool = negativePool,
+					PoolCombinationStatistics = (positivePool.PoolResults, negativePool.PoolResults).ResultCrossProduct().ToList()
+				};
+			});
 
-			ConsoleLogger.LogRoll($"{poolCombination.PositivePool.Name}, {poolCombination.NegativePool.Name}", 
-				poolCombination.PositivePool.TotalOutcomes * poolCombination.NegativePool.TotalOutcomes, 
-				poolCombination.PositivePool.UniqueOutcomes * poolCombination.NegativePool.UniqueOutcomes);
-
-			return poolCombination;
-		}
 
 		/// <summary>
 		/// Takes the cross product of the result lists and sums their frequency and totals
