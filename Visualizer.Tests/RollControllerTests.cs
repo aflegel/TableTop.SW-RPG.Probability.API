@@ -20,7 +20,7 @@ namespace Visualizer.Tests
 		{
 			var result = controller.Get(APICommon.PositiveModel.Dice.ToList());
 			result.PositiveResults.Should().HaveCount(15, "Positive statistics count incorrect");
-			result.PositiveResults.Should().HaveCount(15, "Negative statistics count incorrect");
+			result.NegativeResults.Should().HaveCount(15, "Negative statistics count incorrect");
 		}
 
 		[Fact]
@@ -28,7 +28,7 @@ namespace Visualizer.Tests
 		{
 			var result = controller.Get(APICommon.NegativeModel.Dice.ToList());
 			result.PositiveResults.Should().HaveCount(0, "Positive statistics count incorrect");
-			result.PositiveResults.Should().HaveCount(0, "Negative statistics count incorrect");
+			result.NegativeResults.Should().HaveCount(0, "Negative statistics count incorrect");
 		}
 	}
 }
