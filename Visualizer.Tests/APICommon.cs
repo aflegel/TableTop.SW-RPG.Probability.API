@@ -1,11 +1,16 @@
 ﻿using DataFramework.Models;
-using DataFramework.Context.Seed;
 using System.Collections.Generic;
 using Visualizer.Models;
 using System.Linq;
+using Visualizer.Controllers;
+using Xunit;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Visualizer.Tests
 {
+	[Collection(DatabaseCollection)]
 	public class APICommon
 	{
 		public const string DatabaseCollection = "InMemoryContext collection";
@@ -24,5 +29,20 @@ namespace Visualizer.Tests
 		private static SearchViewModel MakeModel(IEnumerable<PoolDie> dice) => new SearchViewModel(new List<PoolCombinationStatistic> { }, dice);
 		public static SearchViewModel PositiveModel => MakeModel(AbilityTwo.PoolDice.Union(DifficultyTwo.PoolDice));
 		public static SearchViewModel NegativeModel => MakeModel(AbilityTwo.PoolDice);
+
+		private readonly HealthCheckController controller;
+
+		public APICommon(DatabaseFixture fixture)
+		{
+			controller = new HealthCheckController(fixture.Context);
+		}
+
+		[Fact]
+		public async Task HealthCheck()
+		{
+			var result = await controller.Get() as OkResult;
+			result.Should().NotBeNull();
+			result.StatusCode.Should().Be(200, "Positive statistics count incorrect");
+		}
 	}
 }

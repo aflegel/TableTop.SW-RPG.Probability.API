@@ -7,7 +7,8 @@ namespace Visualizer.Controllers
 {
 	[Produces("application/json")]
 	[Route("[controller]")]
-	public class SearchController : Controller
+	[ApiController]
+	public class SearchController : ControllerBase
 	{
 		private readonly ProbabilityContext context;
 

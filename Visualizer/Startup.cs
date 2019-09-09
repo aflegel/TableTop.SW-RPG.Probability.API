@@ -24,11 +24,9 @@ namespace Visualizer
 			services.AddCors();
 			services.AddMvc();
 
-			services.AddDbContext<ProbabilityContext>(options =>
-			{
-				options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"));
-				//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"));
-			});
+			services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"))
+				//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"))
+			);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

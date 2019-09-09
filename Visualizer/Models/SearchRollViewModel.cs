@@ -1,14 +1,24 @@
-﻿namespace Visualizer.Models
+﻿using System.Collections.Generic;
+using System.Linq;
+using DataFramework.Models;
+
+namespace Visualizer.Models
 {
 	public class SearchRollViewModel
 	{
-		public RollViewModel PositiveRolls { get; set; }
-		public RollViewModel NegativeRolls { get; set; }
+		public IEnumerable<RollResultViewModel> PositiveResults { get; set; }
+		public IEnumerable<RollResultViewModel> NegativeResults { get; set; }
 
 		public SearchRollViewModel()
 		{
-			PositiveRolls = new RollViewModel();
-			NegativeRolls = new RollViewModel();
+			PositiveResults = new List<RollResultViewModel>();
+			NegativeResults = new List<RollResultViewModel>();
+		}
+
+		public SearchRollViewModel(IEnumerable<PoolResult> positiveResults, IEnumerable<PoolResult> negativeResults)
+		{
+			PositiveResults = positiveResults.ToResults();
+			NegativeResults = negativeResults.ToResults();
 		}
 	}
 }

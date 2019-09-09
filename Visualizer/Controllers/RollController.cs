@@ -8,7 +8,8 @@ namespace Visualizer.Controllers
 {
 	[Produces("application/json")]
 	[Route("[controller]")]
-	public class RollController : Controller
+	[ApiController]
+	public class RollController : ControllerBase
 	{
 		private readonly ProbabilityContext context;
 
@@ -25,11 +26,7 @@ namespace Visualizer.Controllers
 		[HttpPost]
 		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
 			context.TryGetPoolIds(dice.ToPool(), out var poolIds)
-				? new SearchRollViewModel()
-				{
-					PositiveRolls = new RollViewModel(context.GetPoolResults(poolIds.positiveId), context.GetPoolDice(poolIds.positiveId)),
-					NegativeRolls = new RollViewModel(context.GetPoolResults(poolIds.negativeId), context.GetPoolDice(poolIds.negativeId))
-				}
+				? new SearchRollViewModel(context.GetPoolResults(poolIds.positiveId), context.GetPoolResults(poolIds.negativeId))
 				: new SearchRollViewModel();
 	}
 }
