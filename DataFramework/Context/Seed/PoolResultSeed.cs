@@ -10,21 +10,23 @@ namespace DataFramework.Context.Seed
 		/// Prints start and stop timestamps while building the complete outcome map for a set of dice
 		/// </summary>
 		/// <param name="context"></param>
-		public static (IEnumerable<Pool>, IEnumerable<Pool>) ProcessPools(this IEnumerable<Die> dice, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) positiveRange, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) negativeRange)
-			=> (positiveRange.ToTuple().Select(s => dice.SeedPool(ability: s.Item1 - s.Item2, proficiency: s.Item2, boost: s.Item3)),
+		public static (IEnumerable<Pool>, IEnumerable<Pool>) SeedPools(this IEnumerable<Die> dice, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) positiveRange, (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) negativeRange)
+			=> (positiveRange.ToTuple().Select(s => dice.SeedPool(ability: s.Item1, proficiency: s.Item2, boost: s.Item3)),
 			//The second list needs to be enumerated here or it will be enumerated multiple times during the cross product
-			negativeRange.ToTuple().Select(s => dice.SeedPool(difficulty: s.Item1 - s.Item2, challenge: s.Item2, setback: s.Item3)).ToList());
+			negativeRange.ToTuple().Select(s => dice.SeedPool(difficulty: s.Item1, challenge: s.Item2, setback: s.Item3)).ToList());
 
 		/// <summary>
 		/// Transforms the set of ranges into a list of the range outcomes
 		/// </summary>
 		/// <param name="ranges"></param>
 		/// <returns></returns>
-		public static IEnumerable<(int, int, int)> ToTuple(this (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ranges) =>
-			ranges.Item1.SelectMany(ability => ranges.Item2.Where(upgrade => upgrade <= ability), (ability, upgrade) => (ability, upgrade))
-				.SelectMany(tuple => ranges.Item3, (tuple, boost) => (tuple.ability, tuple.upgrade, boost)).Where(w => w.ability + w.upgrade > 0);
+		private static IEnumerable<(int, int, int)> ToTuple(this (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ranges) =>
+			//Filter out any records where the "upgraded" dice outnumber the basic dice
+			ranges.Item1.SelectMany(basic => ranges.Item2.Where(upgrade => upgrade <= basic), (basic, upgrade) => (basic, upgrade))
+			//Filter out any records where there are no basic or upgraded dice
+				.SelectMany(tuple => ranges.Item3, (tuple, bonus) => (tuple.basic - tuple.upgrade, tuple.upgrade, bonus)).Where(w => w.Item1 + w.upgrade > 0);
 
-		public static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
+		private static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
 		{
 			var pooldice = new List<PoolDie>
 			{
@@ -43,10 +45,8 @@ namespace DataFramework.Context.Seed
 			};
 
 			pool.Name = pool.ToString();
-			pool.TotalOutcomes = pool.RollEstimation();
-			pool.UniqueOutcomes = pool.PoolResults.Count;
 
-			ConsoleLogger.LogRoll(pool.Name, pool.TotalOutcomes, pool.UniqueOutcomes);
+			ConsoleLogger.LogLine(pool.Name);
 
 			return pool;
 		}

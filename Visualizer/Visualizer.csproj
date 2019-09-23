@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>netcoreapp2.2</TargetFramework>
+		<TargetFramework>netcoreapp3.0</TargetFramework>
 		<RuntimeIdentifiers>linux-arm</RuntimeIdentifiers>
 		<IsPackable>false</IsPackable>
 	    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -9,14 +9,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.All" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.0.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.0.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.7.11" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.2.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.2.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.2.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.2.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -25,9 +23,5 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DataFramework\DataFramework.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Properties\PublishProfiles\" />
 	</ItemGroup>
 </Project>

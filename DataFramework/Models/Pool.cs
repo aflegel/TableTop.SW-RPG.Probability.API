@@ -18,10 +18,6 @@ namespace DataFramework.Models
 
 		public string Name { get; set; }
 
-		public decimal TotalOutcomes { get; set; }
-
-		public decimal UniqueOutcomes { get; set; }
-
 		public ICollection<PoolDie> PoolDice { get; set; }
 
 		public ICollection<PoolResult> PoolResults { get; set; }

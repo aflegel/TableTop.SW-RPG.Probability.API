@@ -5,6 +5,10 @@ namespace DataFramework.Context.Seed
 {
 	public static class DiceSeed
 	{
+		/// <summary>
+		/// Returns a definition for each die type
+		/// </summary>
+		/// <returns></returns>
 		public static IEnumerable<Die> SeedDice() => new List<Die>
 		{
 			AbilityDie,
@@ -16,7 +20,7 @@ namespace DataFramework.Context.Seed
 			SetbackDie
 		};
 
-		public static Die AbilityDie => new Die
+		private static Die AbilityDie => new Die
 		{
 			Name = DieNames.Ability.ToString(),
 			DieFaces = new List<DieFace>
@@ -32,7 +36,7 @@ namespace DataFramework.Context.Seed
 			}
 		};
 
-		public static Die BoostDie => new Die
+		private static Die BoostDie => new Die
 		{
 			Name = DieNames.Boost.ToString(),
 			DieFaces = new List<DieFace>
@@ -46,7 +50,7 @@ namespace DataFramework.Context.Seed
 				}
 		};
 
-		public static Die ChallengeDie => new Die
+		private static Die ChallengeDie => new Die
 		{
 			Name = DieNames.Challenge.ToString(),
 			DieFaces = new List<DieFace>
@@ -66,7 +70,7 @@ namespace DataFramework.Context.Seed
 			}
 		};
 
-		public static Die DifficultyDie => new Die
+		private static Die DifficultyDie => new Die
 		{
 			Name = DieNames.Difficulty.ToString(),
 			DieFaces = new List<DieFace>
@@ -82,7 +86,7 @@ namespace DataFramework.Context.Seed
 				}
 		};
 
-		public static Die ForceDie => new Die
+		private static Die ForceDie => new Die
 		{
 			Name = DieNames.Force.ToString(),
 			DieFaces = new List<DieFace>
@@ -102,7 +106,7 @@ namespace DataFramework.Context.Seed
 			}
 		};
 
-		public static Die ProficiencyDie => new Die
+		private static Die ProficiencyDie => new Die
 		{
 			Name = DieNames.Proficiency.ToString(),
 			DieFaces = new List<DieFace>
@@ -122,7 +126,7 @@ namespace DataFramework.Context.Seed
 			}
 		};
 
-		public static Die SetbackDie => new Die
+		private static Die SetbackDie => new Die
 		{
 			Name = DieNames.Setback.ToString(),
 			DieFaces = new List<DieFace>

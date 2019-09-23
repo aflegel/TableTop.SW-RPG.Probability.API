@@ -7,7 +7,8 @@ namespace Visualizer.Controllers
 {
 	[Produces("application/json")]
 	[Route("[controller]")]
-	public class SearchController : Controller
+	[ApiController]
+	public class SearchController : ControllerBase
 	{
 		private readonly ProbabilityContext context;
 
@@ -24,7 +25,7 @@ namespace Visualizer.Controllers
 		[HttpPost]
 		public SearchViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
 			context.TryGetPoolIds(dice.ToPool(), out var poolIds)
-				? new SearchViewModel(context.GetPoolCombination(poolIds))
+				? new SearchViewModel(context.GetPoolStatistics(poolIds), context.GetPoolDice(poolIds))
 				: new SearchViewModel();
 	}
 }

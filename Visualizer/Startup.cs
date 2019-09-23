@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Visualizer
 {
@@ -23,16 +24,13 @@ namespace Visualizer
 			services.AddCors();
 			services.AddMvc();
 
-			services.AddDbContext<ProbabilityContext>(options =>
-			{
-				options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"));
-				//options.UseNpgsql(Configuration.GetConnectionString("AuthenticationPostgresContext"));
-			});
-			//optionsBuilder.UseSqlServer(@"Server=Alex-Desktop;Database=TableTop.Utility.StarWarsRPGProbability;integrated security=True;MultipleActiveResultSets=true");
+			services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"))
+				//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"))
+			);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostEnvironment env)
 		{
 			if (env.IsDevelopment())
 			{
@@ -47,14 +45,13 @@ namespace Visualizer
 				});
 			}
 
-			app.UseCors(builder =>
-			{
-				builder.WithOrigins("http://localhost:5000", "http://localhost:3000");
-				builder.AllowAnyHeader();
-				builder.AllowAnyMethod();
-			});
+			app.UseCors(cors => cors.WithOrigins("http://localhost:5000", "http://localhost:3000")
+				.AllowAnyHeader()
+				.AllowAnyMethod());
 
-			app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
+			app.UseRouting();
+
+			app.UseEndpoints(endpoints => endpoints.MapControllers());
 		}
 	}
 }
