@@ -2,6 +2,8 @@
 using Visualizer.Controllers;
 using System.Linq;
 using FluentAssertions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Visualizer.Tests
 {
@@ -19,16 +21,15 @@ namespace Visualizer.Tests
 		public void ResultsPositive()
 		{
 			var result = controller.Get(APICommon.PositiveModel.Dice.ToList());
-			result.PositiveResults.Should().HaveCount(15, "Positive statistics count incorrect");
-			result.NegativeResults.Should().HaveCount(15, "Negative statistics count incorrect");
+			result.Value.PositiveResults.Should().HaveCount(15, "Positive statistics count incorrect");
+			result.Value.NegativeResults.Should().HaveCount(15, "Negative statistics count incorrect");
 		}
 
 		[Fact]
 		public void ResultsNegative()
 		{
 			var result = controller.Get(APICommon.NegativeModel.Dice.ToList());
-			result.PositiveResults.Should().HaveCount(0, "Positive statistics count incorrect");
-			result.NegativeResults.Should().HaveCount(0, "Negative statistics count incorrect");
+			result.Result.Should().BeOfType<NotFoundResult>();
 		}
 	}
 }
