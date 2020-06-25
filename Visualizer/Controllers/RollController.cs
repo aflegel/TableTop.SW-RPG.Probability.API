@@ -2,6 +2,7 @@
 using DataFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Visualizer.Models;
 
 namespace Visualizer.Controllers
@@ -21,11 +22,16 @@ namespace Visualizer.Controllers
 		/// <param name="dice"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public ActionResult<SearchRollViewModel> Get([FromBody] List<DieViewModel> dice) => 
-			dice == null
-				? BadRequest()
-				: context.TryGetPoolIds(dice.ToPool(), out var poolIds)
-				? new SearchRollViewModel(context.GetPoolResults(poolIds.positiveId), context.GetPoolResults(poolIds.negativeId))
+		public async Task<ActionResult<SearchRollViewModel>> Get([FromBody] List<DieViewModel> dice)
+		{
+			if (dice == null)
+				return BadRequest();
+			
+			var poolIds = await context.TryGetPoolIds(dice.ToPool());
+
+			return poolIds.HasValue 
+				? new SearchRollViewModel(await context.GetPoolResults(poolIds.Value.positiveId), await context.GetPoolResults(poolIds.Value.negativeId))
 				: (ActionResult<SearchRollViewModel>)NotFound();
+		}
 	}
 }
