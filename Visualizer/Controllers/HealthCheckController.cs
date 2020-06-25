@@ -10,16 +10,8 @@ namespace Visualizer.Controllers
 	{
 		private readonly ProbabilityContext context;
 
-		public HealthCheckController(ProbabilityContext context)
-		{
-			this.context = context;
-		}
+		public HealthCheckController(ProbabilityContext context) => this.context = context;
 
-		/// <summary>
-		/// Returns the corresponding cached statistics for a given pool of dice
-		/// </summary>
-		/// <param name="dice"></param>
-		/// <returns></returns>
 		[HttpGet]
 		public async Task<ActionResult> Get() => await context.Database.CanConnectAsync() ? Ok() : (ActionResult)BadRequest();
 	}

@@ -13,10 +13,7 @@ namespace Visualizer.Controllers
 	{
 		private readonly ProbabilityContext context;
 
-		public RollController(ProbabilityContext context)
-		{
-			this.context = context;
-		}
+		public RollController(ProbabilityContext context) => this.context = context;
 
 		/// <summary>
 		/// Returns the corresponding cached statistics for a given pool of dice
@@ -24,9 +21,11 @@ namespace Visualizer.Controllers
 		/// <param name="dice"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public SearchRollViewModel Get([FromBody]List<DieViewModel> dice) => dice != null &&
-			context.TryGetPoolIds(dice.ToPool(), out var poolIds)
+		public ActionResult<SearchRollViewModel> Get([FromBody] List<DieViewModel> dice) => 
+			dice == null
+				? BadRequest()
+				: context.TryGetPoolIds(dice.ToPool(), out var poolIds)
 				? new SearchRollViewModel(context.GetPoolResults(poolIds.positiveId), context.GetPoolResults(poolIds.negativeId))
-				: new SearchRollViewModel();
+				: (ActionResult<SearchRollViewModel>)NotFound();
 	}
 }
