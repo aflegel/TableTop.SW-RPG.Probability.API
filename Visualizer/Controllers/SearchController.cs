@@ -26,10 +26,9 @@ namespace Visualizer.Controllers
 			if (dice == null)
 				return BadRequest();
 
-			var poolIds = await context.TryGetPoolIds(dice.ToPool());
+			var poolIds = await context.GetPoolIds(dice.ToPool());
 
-			return poolIds.HasValue 
-				? new SearchViewModel(await context.GetPoolStatistics(poolIds.Value), await context.GetPoolDice(poolIds.Value))
+			return poolIds.HasValue ? await poolIds.Value.ToSearchView(context)
 				: (ActionResult<SearchViewModel>)NotFound();
 		}
 	}

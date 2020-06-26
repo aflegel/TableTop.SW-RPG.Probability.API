@@ -1,7 +1,8 @@
-﻿using DataFramework.Models;
+﻿using DataFramework.Context;
+using DataFramework.Models;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Visualizer.Models
 {
@@ -10,12 +11,6 @@ namespace Visualizer.Models
 		public IEnumerable<PoolStatisticViewModel> Statistics { get; set; }
 
 		public IEnumerable<DieViewModel> Dice { get; set; }
-
-		public SearchViewModel()
-		{
-			Statistics = new Collection<PoolStatisticViewModel>();
-			Dice = new Collection<DieViewModel>();
-		}
 
 		public SearchViewModel(IEnumerable<PoolCombinationStatistic> statistics, IEnumerable<PoolDie> dice)
 		{
@@ -34,5 +29,11 @@ namespace Visualizer.Models
 				Quantity = die.Quantity
 			});
 		}
+	}
+
+	public static class SearchViewExtensions
+	{
+		public static async Task<SearchViewModel> ToSearchView(this (int positiveId, int negativeId) poolIds, ProbabilityContext context) =>
+			new SearchViewModel(await context.GetPoolStatistics(poolIds), await context.GetPoolDice(poolIds));
 	}
 }

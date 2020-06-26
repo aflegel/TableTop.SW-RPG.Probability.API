@@ -34,7 +34,7 @@ namespace DataFramework.Context
 		/// <param name="pool"></param>
 		/// <param name="poolIds"></param>
 		/// <returns></returns>
-		public static async Task<(int positiveId, int negativeId)?> TryGetPoolIds(this ProbabilityContext context, Pool pool)
+		public static async Task<(int positiveId, int negativeId)?> GetPoolIds(this ProbabilityContext context, Pool pool)
 		{
 			var poolIds = (
 				positiveId: await context.GetPoolIdByName(pool.GetFilteredPoolName(DieExtensions.PositiveDice)) ?? 0,

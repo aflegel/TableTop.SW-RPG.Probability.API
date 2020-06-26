@@ -26,11 +26,10 @@ namespace Visualizer.Controllers
 		{
 			if (dice == null)
 				return BadRequest();
-			
-			var poolIds = await context.TryGetPoolIds(dice.ToPool());
 
-			return poolIds.HasValue 
-				? new SearchRollViewModel(await context.GetPoolResults(poolIds.Value.positiveId), await context.GetPoolResults(poolIds.Value.negativeId))
+			var poolIds = await context.GetPoolIds(dice.ToPool());
+
+			return poolIds.HasValue ? await poolIds.Value.ToSearchRoll(context)
 				: (ActionResult<SearchRollViewModel>)NotFound();
 		}
 	}
