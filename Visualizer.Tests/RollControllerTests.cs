@@ -18,17 +18,17 @@ namespace Visualizer.Tests
 		}
 
 		[Fact]
-		public void ResultsPositive()
+		public async Task ResultsPositive()
 		{
-			var result = controller.Get(APICommon.PositiveModel.Dice.ToList());
+			var result = await controller.Get(APICommon.PositiveModel.Dice.ToList());
 			result.Value.PositiveResults.Should().HaveCount(15, "Positive statistics count incorrect");
 			result.Value.NegativeResults.Should().HaveCount(15, "Negative statistics count incorrect");
 		}
 
 		[Fact]
-		public void ResultsNegative()
+		public async Task ResultsNegativeAsync()
 		{
-			var result = controller.Get(APICommon.NegativeModel.Dice.ToList());
+			var result = await controller.Get(APICommon.NegativeModel.Dice.ToList());
 			result.Result.Should().BeOfType<NotFoundResult>();
 		}
 	}

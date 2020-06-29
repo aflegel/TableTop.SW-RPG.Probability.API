@@ -14,6 +14,9 @@ namespace Visualizer.Controllers
 		public HealthCheckController(ProbabilityContext context) => this.context = context;
 
 		[HttpGet]
-		public async Task<ActionResult> Get() => await context.Database.CanConnectAsync() ? Ok() : (ActionResult)new ServiceUnavailableResult();
+		public async Task<ActionResult> Get() => 
+			await context.Database.CanConnectAsync() 
+				? Ok() 
+				: (ActionResult)new ServiceUnavailableResult();
 	}
 }
