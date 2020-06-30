@@ -23,31 +23,33 @@ namespace DataFramework.Context.Seed
 		private static IEnumerable<(int, int, int)> ToTuple(this (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ranges) =>
 			//Filter out any records where the "upgraded" dice outnumber the basic dice
 			ranges.Item1.SelectMany(basic => ranges.Item2.Where(upgrade => upgrade <= basic), (basic, upgrade) => (basic, upgrade))
-			//Filter out any records where there are no basic or upgraded dice
+				//Filter out any records where there are no basic or upgraded dice
 				.SelectMany(tuple => ranges.Item3, (tuple, bonus) => (tuple.basic - tuple.upgrade, tuple.upgrade, bonus)).Where(w => w.Item1 + w.upgrade > 0);
 
-		private static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0)
-		{
-			var pooldice = new List<PoolDie>
+		private static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0) =>
+			new List<PoolDie>
 			{
-				new PoolDie(dice.GetDie(DieNames.Ability), ability),
-				new PoolDie(dice.GetDie(DieNames.Boost), boost),
-				new PoolDie(dice.GetDie(DieNames.Challenge), challenge),
-				new PoolDie(dice.GetDie(DieNames.Difficulty), difficulty),
-				new PoolDie(dice.GetDie(DieNames.Proficiency), proficiency),
-				new PoolDie(dice.GetDie(DieNames.Setback), setback)
-			}.Where(w => w.Quantity > 0);
+				new PoolDie(dice.GetDie<Ability>(), ability),
+				new PoolDie(dice.GetDie<Boost>(), boost),
+				new PoolDie(dice.GetDie<Challenge>(), challenge),
+				new PoolDie(dice.GetDie<Difficulty>(), difficulty),
+				new PoolDie(dice.GetDie<Proficiency>(), proficiency),
+				new PoolDie(dice.GetDie<Setback>(), setback)
+			}
+			.Where(w => w.Quantity > 0)
+			.ToPool();
 
+		private static Pool ToPool(this IEnumerable<PoolDie> poolDice)
+		{
 			var pool = new Pool()
 			{
-				PoolDice = pooldice.ToList(),
-				PoolResults = pooldice.ExplodeDice().RecursiveProcessing().ToList()
+				PoolDice = poolDice.ToList(),
+				PoolResults = poolDice.ExplodeDice().RecursiveProcessing().ToList()
 			};
 
 			pool.Name = pool.ToString();
 
 			ConsoleLogger.LogLine(pool.Name);
-
 			return pool;
 		}
 

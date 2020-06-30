@@ -18,7 +18,7 @@ namespace Visualizer.Tests
 			//prevents initialization doubling
 			if (!context.Dice.Any(w => w.Name == "Ability"))
 			{
-				var pools = DiceSeed.SeedDice().SeedPools(APICommon.TwoTwoZero, APICommon.TwoTwoZero).SeedCombinationStatistics();
+				var pools = DiceSeed.SeedDice.SeedPools(APICommon.TwoTwoZero, APICommon.TwoTwoZero).SeedCombinationStatistics();
 
 				context.PoolCombinations.AddRange(pools);
 

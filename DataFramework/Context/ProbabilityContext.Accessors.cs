@@ -50,7 +50,7 @@ namespace DataFramework.Context
 		/// <param name="dice"></param>
 		/// <param name="filters"></param>
 		/// <returns></returns>
-		public static string GetFilteredPoolName(this Pool pool, ImmutableList<DieNames> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() }.ToString();
+		public static string GetFilteredPoolName(this Pool pool, ImmutableList<string> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name)).ToList() }.ToString();
 
 		/// <summary>
 		/// Returns a set of PoolResults for a given pool id
