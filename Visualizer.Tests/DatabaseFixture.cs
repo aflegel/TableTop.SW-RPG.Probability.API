@@ -1,9 +1,9 @@
 ﻿using System;
-using Xunit;
-using DataFramework.Context.Seed;
-using DataFramework.Context;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using DataFramework.Context;
+using DataFramework.Context.Seed;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace Visualizer.Tests
 {

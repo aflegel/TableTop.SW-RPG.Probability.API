@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using DataFramework.Models;
-using Xunit;
 using DataFramework.Context.Seed;
+using DataFramework.Models;
 using FluentAssertions;
+using Xunit;
 
 namespace Visualizer.Tests
 {

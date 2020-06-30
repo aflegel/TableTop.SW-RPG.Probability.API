@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using DataFramework.Context;
 using DataFramework.Context.Seed;
-using DataFramework.Models;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataFramework
 {

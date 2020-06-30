@@ -1,9 +1,9 @@
-﻿using DataFramework.Models;
-using Xunit;
+﻿using System.Linq;
 using DataFramework.Context;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using DataFramework.Models;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace Visualizer.Tests
 {
@@ -26,7 +26,7 @@ namespace Visualizer.Tests
 			context.Pools.Should().HaveCount(8, "Incorrect pools present");
 			context.PoolCombinationStatistics.Should().HaveCount(272, "Incorrect statistics present");
 
-			var poolSearch = context.Pools.Where(pool => pool.PoolDice.Any(die => DieExtensions.PositiveDice.Contains(die.Die.Name.GetName())))
+			var poolSearch = context.Pools.AsQueryable().Where(pool => pool.PoolDice.Any(die => DieExtensions.PositiveDice.Contains(die.Die.Name.GetName())))
 				.Include(i => i.PositivePoolCombinations)
 						.ThenInclude(tti => tti.PoolCombinationStatistics)
 				.Include(i => i.PoolResults)

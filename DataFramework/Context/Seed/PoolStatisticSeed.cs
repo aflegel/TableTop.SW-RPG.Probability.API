@@ -1,6 +1,6 @@
-﻿using DataFramework.Models;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
+using DataFramework.Models;
 
 namespace DataFramework.Context.Seed
 {
@@ -14,7 +14,7 @@ namespace DataFramework.Context.Seed
 		/// <returns></returns>
 		public static IEnumerable<PoolCombination> SeedCombinationStatistics(this (IEnumerable<Pool>, IEnumerable<Pool>) pools) =>
 			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) => {
-				
+
 				ConsoleLogger.LogLine($"{positivePool.Name}, {negativePool.Name}");
 
 				return new PoolCombination()

@@ -1,12 +1,12 @@
-﻿using DataFramework.Models;
-using System.Collections.Generic;
-using Visualizer.Models;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Visualizer.Controllers;
-using Xunit;
 using System.Threading.Tasks;
+using DataFramework.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Visualizer.Controllers;
+using Visualizer.Models;
+using Xunit;
 
 namespace Visualizer.Tests
 {

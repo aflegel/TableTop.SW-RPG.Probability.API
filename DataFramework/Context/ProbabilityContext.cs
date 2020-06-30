@@ -76,7 +76,7 @@ namespace DataFramework.Context
 			modelBuilder.Model.GetEntityTypes()
 				.SelectMany(t => t.GetProperties())
 				.Where(p => p.ClrType == typeof(decimal))
-				.ToList().ForEach(property => property.Relational().ColumnType = "decimal(24, 0)");// 100,000,000,000,000,000,000
+				.ToList().ForEach(property => property.SetColumnType("decimal(24, 0)"));// 100,000,000,000,000,000,000
 		}
 	}
 }
