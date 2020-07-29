@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DataFramework.Extensions;
 using DataFramework.Models;
 
 namespace DataFramework.Context.Seed
@@ -26,18 +27,17 @@ namespace DataFramework.Context.Seed
 				//Filter out any records where there are no basic or upgraded dice
 				.SelectMany(tuple => ranges.Item3, (tuple, bonus) => (tuple.basic - tuple.upgrade, tuple.upgrade, bonus)).Where(w => w.Item1 + w.upgrade > 0);
 
-		private static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0) =>
-			new List<PoolDie>
-			{
-				new PoolDie(dice.GetDie<Ability>(), ability),
-				new PoolDie(dice.GetDie<Boost>(), boost),
-				new PoolDie(dice.GetDie<Challenge>(), challenge),
-				new PoolDie(dice.GetDie<Difficulty>(), difficulty),
-				new PoolDie(dice.GetDie<Proficiency>(), proficiency),
-				new PoolDie(dice.GetDie<Setback>(), setback)
-			}
-			.Where(w => w.Quantity > 0)
-			.ToPool();
+		private static Pool SeedPool(this IEnumerable<Die> dice, int ability = 0, int proficiency = 0, int difficulty = 0, int challenge = 0, int boost = 0, int setback = 0) => new List<PoolDie>
+		{
+			new PoolDie(dice.GetDie<Ability>(), ability),
+			new PoolDie(dice.GetDie<Boost>(), boost),
+			new PoolDie(dice.GetDie<Challenge>(), challenge),
+			new PoolDie(dice.GetDie<Difficulty>(), difficulty),
+			new PoolDie(dice.GetDie<Proficiency>(), proficiency),
+			new PoolDie(dice.GetDie<Setback>(), setback)
+		}
+		.Where(w => w.Quantity > 0)
+		.ToPool();
 
 		private static Pool ToPool(this IEnumerable<PoolDie> poolDice)
 		{
@@ -109,13 +109,6 @@ namespace DataFramework.Context.Seed
 		private static IEnumerable<PoolResultSymbol> MergePoolSymbols(this (IEnumerable<PoolResultSymbol> firstHalf, IEnumerable<PoolResultSymbol> secondHalf) symbols)
 			=> symbols.firstHalf.Concat(symbols.secondHalf).GroupBy(g => g.Symbol).Select(s => new PoolResultSymbol(s.Key, s.Sum(sum => sum.Quantity)));
 
-		/// <summary>
-		/// Splits a pool of dice into two halves.  Remainder is in the bottom half.
-		/// </summary>
-		/// <param name="dice"></param>
-		/// <returns></returns>
-		private static (IEnumerable<PoolDie>, IEnumerable<PoolDie>) Split(this IEnumerable<PoolDie> dice)
-			=> (dice.Take(dice.Count() / 2), dice.Skip(dice.Count() / 2));
 
 		/// <summary>
 		/// Explodes the items into individual 1 quantity pools
