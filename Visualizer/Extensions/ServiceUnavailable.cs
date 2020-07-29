@@ -12,8 +12,6 @@ namespace Visualizer.Extensions
 		/// <summary>
 		/// Creates a new <see cref="ServiceUnavailableResult"/> instance.
 		/// </summary>
-		public ServiceUnavailableResult() : base(DefaultStatusCode)
-		{
-		}
+		public ServiceUnavailableResult() : base(DefaultStatusCode) { }
 	}
 }

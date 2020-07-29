@@ -90,11 +90,11 @@ namespace DataFramework.Context.Seed
 			poolStatistics
 				.GroupBy(g => g.GetHashCode())
 				.Select(s => new PoolCombinationStatistic
-					{
-						Symbol = s.First().Symbol,
-						Quantity = s.First().Quantity,
-						AlternateTotal = s.Sum(sum => sum.AlternateTotal * sum.Frequency),
-						Frequency = s.Sum(sum => sum.Frequency)
-					});
+				{
+					Symbol = s.First().Symbol,
+					Quantity = s.First().Quantity,
+					AlternateTotal = s.Sum(sum => sum.AlternateTotal * sum.Frequency),
+					Frequency = s.Sum(sum => sum.Frequency)
+				});
 	}
 }

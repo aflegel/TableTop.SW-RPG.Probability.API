@@ -11,10 +11,7 @@ namespace Visualizer
 {
 	public class Startup
 	{
-		public Startup(IConfiguration configuration)
-		{
-			Configuration = configuration;
-		}
+		public Startup(IConfiguration configuration) => Configuration = configuration;
 
 		public IConfiguration Configuration { get; }
 
@@ -25,7 +22,7 @@ namespace Visualizer
 			services.AddMvc();
 
 			services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"))
-				//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"))
+			//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"))
 			);
 		}
 

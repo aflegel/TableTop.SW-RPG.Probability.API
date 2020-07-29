@@ -12,10 +12,7 @@ namespace Visualizer.Tests
 	{
 		private readonly RollController controller;
 
-		public RollControllerTests(DatabaseFixture fixture)
-		{
-			controller = new RollController(fixture.Context);
-		}
+		public RollControllerTests(DatabaseFixture fixture) => controller = new RollController(fixture.Context);
 
 		[Fact]
 		public async Task ResultsPositive()

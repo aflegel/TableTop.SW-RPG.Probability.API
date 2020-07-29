@@ -4,10 +4,7 @@ namespace DataFramework.Models
 {
 	public class PoolCombination
 	{
-		public PoolCombination()
-		{
-			PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
-		}
+		public PoolCombination() => PoolCombinationStatistics = new HashSet<PoolCombinationStatistic>();
 
 		public int PositivePoolId { get; set; }
 

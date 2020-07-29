@@ -5,10 +5,7 @@ namespace DataFramework.Models
 {
 	public class PoolResult
 	{
-		public PoolResult()
-		{
-			PoolResultSymbols = new HashSet<PoolResultSymbol>();
-		}
+		public PoolResult() => PoolResultSymbols = new HashSet<PoolResultSymbol>();
 
 		public int PoolResultId { get; set; }
 
