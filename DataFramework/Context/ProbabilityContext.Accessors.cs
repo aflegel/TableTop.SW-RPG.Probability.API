@@ -14,7 +14,7 @@ namespace DataFramework.Context
 		/// </summary>
 		/// <param name="searchForPool"></param>
 		/// <returns></returns>
-		public static async Task<int?> GetPoolId(ProbabilityContext context, List<PoolDie> searchForPool) =>
+		public static async Task<int?> GetPoolId(this ProbabilityContext context, List<PoolDie> searchForPool) =>
 			await searchForPool.Select(die => context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count())
 			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefaultAsync();
 

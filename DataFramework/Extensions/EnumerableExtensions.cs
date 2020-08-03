@@ -10,6 +10,8 @@ namespace DataFramework.Extensions
 		/// </summary>
 		/// <param name="dice"></param>
 		/// <returns></returns>
-		public static (IEnumerable<T>, IEnumerable<T>) Split<T>(this IEnumerable<T> list) => (list.Take(list.Count() / 2), list.Skip(list.Count() / 2));
+		public static (IEnumerable<T>, IEnumerable<T>) Split<T>(this IEnumerable<T> list) => list.Split(list.Count() / 2);
+
+		public static (IEnumerable<T>, IEnumerable<T>) Split<T>(this IEnumerable<T> list, int count) => (list.Take(count), list.Skip(count));
 	}
 }
