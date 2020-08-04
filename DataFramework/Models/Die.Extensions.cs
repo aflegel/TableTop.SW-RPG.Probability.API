@@ -1,26 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 namespace DataFramework.Models
 {
-	public enum DieNames
-	{
-		Ability,
-		Boost,
-		Challenge,
-		Difficulty,
-		Force,
-		Proficiency,
-		Setback
-	}
 
 	public static class DieExtensions
 	{
-		public static ImmutableList<DieNames> NegativeDice => new List<DieNames> { DieNames.Challenge, DieNames.Difficulty, DieNames.Setback }.ToImmutableList();
+		public static ImmutableList<string> NegativeDice => new List<string> { nameof(Challenge), nameof(Difficulty), nameof(Setback) }.ToImmutableList();
 
-		public static ImmutableList<DieNames> PositiveDice => new List<DieNames> { DieNames.Ability, DieNames.Proficiency, DieNames.Boost }.ToImmutableList();
+		public static ImmutableList<string> PositiveDice => new List<string> { nameof(Ability), nameof(Proficiency), nameof(Boost) }.ToImmutableList();
 
 		/// <summary>
 		/// Returns a result for each face of a die
@@ -36,13 +25,6 @@ namespace DataFramework.Models
 				}
 			);
 
-		public static Die GetDie(this IEnumerable<Die> dice, DieNames name) => dice.FirstOrDefault(w => w.Name == name.ToString());
-
-		public static DieNames GetName(this string input)
-		{
-			Enum.TryParse(input, true, out DieNames dieType);
-
-			return dieType;
-		}
+		public static Die GetDie<T>(this IEnumerable<Die> dice) where T : Die => dice.FirstOrDefault(w => w.Name == typeof(T).Name);
 	}
 }

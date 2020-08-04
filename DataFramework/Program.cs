@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using DataFramework.Context;
 using DataFramework.Context.Seed;
-using DataFramework.Models;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataFramework
 {
@@ -30,7 +28,7 @@ namespace DataFramework
 				// Deletes and creates the database and seeds the Dice
 				InitializeDatabase(context);
 
-				context.PoolCombinations.AddRange(DiceSeed.SeedDice()
+				context.PoolCombinations.AddRange(DiceSeed.SeedDice
 					.SeedPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range))
 					.SeedCombinationStatistics().ToList());
 

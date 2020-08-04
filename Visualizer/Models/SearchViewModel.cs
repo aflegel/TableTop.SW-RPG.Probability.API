@@ -1,8 +1,8 @@
-﻿using DataFramework.Context;
-using DataFramework.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataFramework.Context;
+using DataFramework.Models;
 
 namespace Visualizer.Models
 {

@@ -1,9 +1,9 @@
-﻿using Xunit;
-using Visualizer.Controllers;
-using System.Linq;
-using FluentAssertions;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Visualizer.Controllers;
+using Xunit;
 
 namespace Visualizer.Tests
 {
@@ -12,10 +12,7 @@ namespace Visualizer.Tests
 	{
 		private readonly RollController controller;
 
-		public RollControllerTests(DatabaseFixture fixture)
-		{
-			controller = new RollController(fixture.Context);
-		}
+		public RollControllerTests(DatabaseFixture fixture) => controller = new RollController(fixture.Context);
 
 		[Fact]
 		public async Task ResultsPositive()

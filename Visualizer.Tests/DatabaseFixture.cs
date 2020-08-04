@@ -1,9 +1,9 @@
 ﻿using System;
-using Xunit;
-using DataFramework.Context.Seed;
-using DataFramework.Context;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using DataFramework.Context;
+using DataFramework.Context.Seed;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace Visualizer.Tests
 {
@@ -18,7 +18,7 @@ namespace Visualizer.Tests
 			//prevents initialization doubling
 			if (!context.Dice.Any(w => w.Name == "Ability"))
 			{
-				var pools = DiceSeed.SeedDice().SeedPools(APICommon.TwoTwoZero, APICommon.TwoTwoZero).SeedCombinationStatistics();
+				var pools = DiceSeed.SeedDice.SeedPools(APICommon.TwoTwoZero, APICommon.TwoTwoZero).SeedCombinationStatistics();
 
 				context.PoolCombinations.AddRange(pools);
 

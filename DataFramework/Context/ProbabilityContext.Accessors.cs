@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace DataFramework.Context
 		/// </summary>
 		/// <param name="searchForPool"></param>
 		/// <returns></returns>
-		public static async Task<int?> GetPoolId(ProbabilityContext context, List<PoolDie> searchForPool) =>
+		public static async Task<int?> GetPoolId(this ProbabilityContext context, List<PoolDie> searchForPool) =>
 			await searchForPool.Select(die => context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count())
 			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefaultAsync();
 
@@ -51,7 +50,7 @@ namespace DataFramework.Context
 		/// <param name="dice"></param>
 		/// <param name="filters"></param>
 		/// <returns></returns>
-		public static string GetFilteredPoolName(this Pool pool, ImmutableList<DieNames> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name.GetName())).ToList() }.ToString();
+		public static string GetFilteredPoolName(this Pool pool, ImmutableList<string> filters) => new Pool { PoolDice = pool.PoolDice.Where(w => filters.Contains(w.Die.Name)).ToList() }.ToString();
 
 		/// <summary>
 		/// Returns a set of PoolResults for a given pool id

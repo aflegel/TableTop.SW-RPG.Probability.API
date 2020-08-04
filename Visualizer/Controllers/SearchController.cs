@@ -1,7 +1,7 @@
-﻿using DataFramework.Context;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using DataFramework.Context;
+using Microsoft.AspNetCore.Mvc;
 using Visualizer.Models;
 
 namespace Visualizer.Controllers
