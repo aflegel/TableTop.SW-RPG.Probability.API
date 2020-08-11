@@ -1,4 +1,5 @@
 ﻿using DataFramework.Context;
+using DataFramework.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -21,9 +22,9 @@ namespace Visualizer
 			services.AddCors();
 			services.AddMvc();
 
-			services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext"))
-			//options.UseNpgsql(Configuration.GetConnectionString("ProbabilityContext"))
-			);
+			services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext")));
+
+			services.AddScoped<IDataService, DataService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -10,16 +10,10 @@ namespace Visualizer.Models
 		public IEnumerable<RollResultViewModel> PositiveResults { get; set; }
 		public IEnumerable<RollResultViewModel> NegativeResults { get; set; }
 
-		public SearchRollViewModel(IEnumerable<PoolResult> positiveResults, IEnumerable<PoolResult> negativeResults)
+		public SearchRollViewModel((IEnumerable<PoolResult> positiveResults, IEnumerable<PoolResult> negativeResults) data)
 		{
-			PositiveResults = positiveResults.ToResults();
-			NegativeResults = negativeResults.ToResults();
+			PositiveResults = data.positiveResults.ToResults();
+			NegativeResults = data.negativeResults.ToResults();
 		}
-	}
-
-	public static class SearchRollExtensions
-	{
-		public static async Task<SearchRollViewModel> ToSearchRoll(this (int positiveId, int negativeId) poolIds, ProbabilityContext context) =>
-			new SearchRollViewModel(await context.GetPoolResults(poolIds.positiveId), await context.GetPoolResults(poolIds.negativeId));
 	}
 }

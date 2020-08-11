@@ -12,9 +12,9 @@ namespace Visualizer.Models
 
 		public IEnumerable<DieViewModel> Dice { get; set; }
 
-		public SearchViewModel(IEnumerable<PoolCombinationStatistic> statistics, IEnumerable<PoolDie> dice)
+		public SearchViewModel((IEnumerable<PoolCombinationStatistic> statistics, IEnumerable<PoolDie> dice) data)
 		{
-			Statistics = statistics.Select(stat => new PoolStatisticViewModel
+			Statistics = data.statistics.Select(stat => new PoolStatisticViewModel
 			{
 				Symbol = stat.Symbol.ToString(),
 				Quantity = stat.Quantity,
@@ -22,18 +22,11 @@ namespace Visualizer.Models
 				AlternateTotal = stat.AlternateTotal
 			});
 
-
-			Dice = dice.Select(die => new DieViewModel
+			Dice = data.dice.Select(die => new DieViewModel
 			{
 				DieType = die.Die.Name,
 				Quantity = die.Quantity
 			});
 		}
-	}
-
-	public static class SearchViewExtensions
-	{
-		public static async Task<SearchViewModel> ToSearchView(this (int positiveId, int negativeId) poolIds, ProbabilityContext context) =>
-			new SearchViewModel(await context.GetPoolStatistics(poolIds), await context.GetPoolDice(poolIds));
 	}
 }

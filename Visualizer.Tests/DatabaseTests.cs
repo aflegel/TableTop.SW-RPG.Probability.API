@@ -12,10 +12,7 @@ namespace Visualizer.Tests
 	{
 		private readonly ProbabilityContext context;
 
-		public DatabaseTests(DatabaseFixture fixture)
-		{
-			context = fixture.Context;
-		}
+		public DatabaseTests(DatabaseFixture fixture) => context = fixture.Context;
 
 		[Fact]
 		public void DbTest()

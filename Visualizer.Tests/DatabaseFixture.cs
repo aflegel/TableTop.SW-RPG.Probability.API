@@ -30,7 +30,7 @@ namespace Visualizer.Tests
 
 		public void Dispose() { }
 
-		public ProbabilityContext Context { get; private set; }
+		public ProbabilityContext Context { get; }
 	}
 
 	/// <summary>
