@@ -26,7 +26,7 @@ namespace Visualizer.Tests
 		private static Pool MakePool(string name, int quantity) => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(new Die { Name = name }, quantity) } };
 		private static Pool AbilityTwo => MakePool(nameof(Ability), 2);
 		private static Pool DifficultyTwo => MakePool(nameof(Difficulty), 2);
-		private static SearchViewModel MakeModel(IEnumerable<PoolDie> dice) => new SearchViewModel(new List<PoolCombinationStatistic> { }, dice);
+		private static SearchViewModel MakeModel(IEnumerable<PoolDie> dice) => new SearchViewModel((new List<PoolCombinationStatistic> { }, dice));
 		public static SearchViewModel PositiveModel => MakeModel(AbilityTwo.PoolDice.Union(DifficultyTwo.PoolDice));
 		public static SearchViewModel NegativeModel => MakeModel(AbilityTwo.PoolDice);
 

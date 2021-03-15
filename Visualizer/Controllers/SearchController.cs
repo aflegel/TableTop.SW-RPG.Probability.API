@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using DataFramework.Context;
+using DataFramework.Services;
 using Microsoft.AspNetCore.Mvc;
 using Visualizer.Models;
 
@@ -11,9 +11,9 @@ namespace Visualizer.Controllers
 	[ApiController]
 	public class SearchController : ControllerBase
 	{
-		private readonly ProbabilityContext context;
+		private readonly DataService context;
 
-		public SearchController(ProbabilityContext context) => this.context = context;
+		public SearchController(DataService context) => this.context = context;
 
 		/// <summary>
 		/// Returns the corresponding cached statistics for a given pool of dice
@@ -28,8 +28,8 @@ namespace Visualizer.Controllers
 
 			var poolIds = await context.GetPoolIds(dice.ToPool());
 
-			return poolIds.HasValue ? await poolIds.Value.ToSearchView(context)
-				: (ActionResult<SearchViewModel>)NotFound();
+			return poolIds.HasValue ? new SearchViewModel(await context.ToSearchView(poolIds.Value))
+				: NotFound();
 		}
 	}
 }
