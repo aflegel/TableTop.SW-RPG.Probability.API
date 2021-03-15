@@ -12,9 +12,9 @@ namespace Visualizer.Controllers
 	[ApiController]
 	public class RollController : ControllerBase
 	{
-		private readonly IDataService context;
+		private readonly DataService context;
 
-		public RollController(IDataService context) => this.context = context;
+		public RollController(DataService context) => this.context = context;
 
 		/// <summary>
 		/// Returns the corresponding cached statistics for a given pool of dice

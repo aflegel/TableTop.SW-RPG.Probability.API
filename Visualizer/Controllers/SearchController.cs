@@ -11,9 +11,9 @@ namespace Visualizer.Controllers
 	[ApiController]
 	public class SearchController : ControllerBase
 	{
-		private readonly IDataService context;
+		private readonly DataService context;
 
-		public SearchController(IDataService context) => this.context = context;
+		public SearchController(DataService context) => this.context = context;
 
 		/// <summary>
 		/// Returns the corresponding cached statistics for a given pool of dice

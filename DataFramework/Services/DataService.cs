@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataFramework.Services
 {
-	public class DataService : IDataService
+	public class DataService
 	{
 		public ProbabilityContext Context { get; }
 
