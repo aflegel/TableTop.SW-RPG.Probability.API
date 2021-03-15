@@ -17,6 +17,6 @@ namespace Visualizer.Controllers
 		public async Task<ActionResult> Get() =>
 			await context.Database.CanConnectAsync()
 				? Ok()
-				: (ActionResult)new ServiceUnavailableResult();
+				: new ServiceUnavailableResult();
 	}
 }
