@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using DataFramework.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Visualizer.Controllers;
@@ -12,10 +13,7 @@ namespace Visualizer.Tests
 	{
 		private readonly SearchController controller;
 
-		public SearchControllerTests(DatabaseFixture fixture)
-		{
-			controller = new SearchController(fixture.Context);
-		}
+		public SearchControllerTests(DatabaseFixture fixture) => controller = new SearchController(new DataService(fixture.Context));
 
 		[Fact]
 		public async Task SearchPositiveAsync()

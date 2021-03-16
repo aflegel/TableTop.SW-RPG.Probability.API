@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using DataFramework.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Visualizer.Controllers;
@@ -12,7 +13,7 @@ namespace Visualizer.Tests
 	{
 		private readonly RollController controller;
 
-		public RollControllerTests(DatabaseFixture fixture) => controller = new RollController(fixture.Context);
+		public RollControllerTests(DatabaseFixture fixture) => controller = new RollController(new DataService(fixture.Context));
 
 		[Fact]
 		public async Task ResultsPositive()
