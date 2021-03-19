@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DataFramework.Models;
+using Probability.Service.Models;
 
 namespace Visualizer.Models
 {
-    public static class DieViewModelExtensions
+	public static class DieViewModelExtensions
     {
 		/// <summary>
 		/// Converts a list of Dice from the UI into a Pool object

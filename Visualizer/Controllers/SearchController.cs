@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using DataFramework.Services;
 using Microsoft.AspNetCore.Mvc;
+using Probability.Service;
 using Visualizer.Models;
 
 namespace Visualizer.Controllers
