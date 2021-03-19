@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DataFramework.Models;
+using Probability.Service.Models;
 
 namespace DataFramework.Context.Seed
 {

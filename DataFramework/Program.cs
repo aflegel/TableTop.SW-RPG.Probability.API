@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using DataFramework.Context;
 using DataFramework.Context.Seed;
 using Microsoft.EntityFrameworkCore;
+using Probability.Service;
 
 namespace DataFramework
 {

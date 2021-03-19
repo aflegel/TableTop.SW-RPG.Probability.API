@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Extensions;
-using DataFramework.Models;
+using Probability.Service.Models;
 
 namespace DataFramework.Context.Seed
 {
