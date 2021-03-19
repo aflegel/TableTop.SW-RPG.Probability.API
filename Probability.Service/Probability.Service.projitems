@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>007ecc6e-1429-4935-83ce-9f6df9d546eb</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Probability.Service</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DataService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/Die.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/Die.Definitions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/Die.Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/DieFace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/DieFaceSymbol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/Pool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/PoolCombination.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/PoolCombinationStatistic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/PoolDie.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/PoolResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/PoolResultSymbol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models/Symbol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProbabilityContext.Accessors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProbabilityContext.cs" />
+  </ItemGroup>
+</Project>
