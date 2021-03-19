@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using DataFramework.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Probability.Service;
 using Visualizer.Controllers;
 using Xunit;
 

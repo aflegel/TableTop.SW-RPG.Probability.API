@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using DataFramework.Context;
-using DataFramework.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Probability.Service;
+using Probability.Service.Models;
 using Xunit;
 
 namespace Visualizer.Tests

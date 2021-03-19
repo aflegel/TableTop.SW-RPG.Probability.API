@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Probability.Service;
 using Xunit;
 
-namespace Visualizer.Tests
+namespace DataFramework.Tests
 {
 	public class DatabaseFixture : IDisposable
 	{
