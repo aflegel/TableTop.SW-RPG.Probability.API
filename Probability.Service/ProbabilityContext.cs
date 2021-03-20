@@ -18,6 +18,14 @@ namespace Probability.Service
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<Die>().ToTable(nameof(Die));
+			modelBuilder.Entity<Pool>().ToTable(nameof(Pool));
+			modelBuilder.Entity<PoolCombination>().ToTable(nameof(PoolCombination));
+			modelBuilder.Entity<PoolCombinationStatistic>().ToTable(nameof(PoolCombinationStatistic));
+			modelBuilder.Entity<PoolDie>().ToTable(nameof(PoolDie));
+			modelBuilder.Entity<PoolResult>().ToTable(nameof(PoolResult));
+			modelBuilder.Entity<PoolResultSymbol>().ToTable(nameof(PoolResultSymbol));
+
 			modelBuilder.Entity<PoolCombination>().HasKey(composite => new { composite.PositivePoolId, composite.NegativePoolId });
 			modelBuilder.Entity<PoolCombinationStatistic>().HasKey(composite => new { composite.PositivePoolId, composite.NegativePoolId, composite.Symbol, composite.Quantity });
 
@@ -65,10 +73,10 @@ namespace Probability.Service
 				.HasOne(e => e.Die)
 				.WithMany(c => c.DieFaces);
 
-			/*modelBuilder.Model.GetEntityTypes()
+			modelBuilder.Model.GetEntityTypes()
 				.SelectMany(t => t.GetProperties())
 				.Where(p => p.ClrType == typeof(decimal))
-				.ToList().ForEach(property => property.SetColumnType("decimal(24, 0)"));// 100,000,000,000,000,000,000*/
+				.ToList().ForEach(property => property.SetColumnType("decimal(24, 0)"));// 100,000,000,000,000,000,000
 		}
 	}
 }
