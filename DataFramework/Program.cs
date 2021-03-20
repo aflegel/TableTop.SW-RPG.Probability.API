@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using DataFramework.Context.Seed;
+using DataFramework.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Probability.Generator;
 using Probability.Service;
@@ -9,12 +8,12 @@ namespace DataFramework
 {
 	internal class Program
 	{
-		private static readonly LimitConfiguration abilityLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration proficencyLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration difficultyLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration challengeLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit abilityLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit proficencyLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit difficultyLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit challengeLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit boostLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit setbackLimit = new DieGenerationLimit { Start = 0, Count = 5 };
 
 		private static readonly GeneratorService generatorService;
 

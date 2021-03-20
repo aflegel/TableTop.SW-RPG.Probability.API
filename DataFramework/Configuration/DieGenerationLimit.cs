@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DataFramework.Context.Seed
+namespace DataFramework.Configuration
 {
-	public class LimitConfiguration
+	public class DieGenerationLimit
 	{
 		public int Start { private get; set; }
 		public int Count { private get; set; }
