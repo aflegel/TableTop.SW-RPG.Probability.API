@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Probability.Service.Models;
 
-namespace DataFramework.Context.Seed
+namespace Probability.Generator
 {
 	public static class DiceSeed
 	{

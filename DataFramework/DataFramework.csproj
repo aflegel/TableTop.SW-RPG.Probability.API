@@ -24,4 +24,6 @@
 
   <Import Project="..\Probability.Service\Probability.Service.projitems" Label="Shared" />
 
+  <Import Project="..\Probability.Generator\Probability.Generator.projitems" Label="Shared" />
+
 </Project>

@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Probability.Service;
+using Probability.Service.Extensions;
 using Probability.Service.Models;
 using Xunit;
 

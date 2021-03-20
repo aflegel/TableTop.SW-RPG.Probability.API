@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Probability.Service.Extensions;
 using Probability.Service.Models;
 
 namespace Probability.Service

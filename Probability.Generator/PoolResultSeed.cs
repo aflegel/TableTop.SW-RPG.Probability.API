@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataFramework.Extensions;
+using Probability.Service.Extensions;
 using Probability.Service.Models;
 
-namespace DataFramework.Context.Seed
+namespace Probability.Generator
 {
 	public static class PoolResultSeed
 	{
@@ -49,7 +50,7 @@ namespace DataFramework.Context.Seed
 
 			pool.Name = pool.ToString();
 
-			ConsoleLogger.LogLine(pool.Name);
+			//ConsoleLogger.LogLine(pool.Name);
 			return pool;
 		}
 
