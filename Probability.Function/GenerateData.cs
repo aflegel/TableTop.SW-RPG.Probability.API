@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,19 +14,20 @@ namespace Probability.Function
 	{
 		private GeneratorService GeneratorService { get; }
 		private GeneratorConfiguration GeneratorConfiguration { get; }
+		private ILogger<GenerateData> Logger { get; }
 
-		public GenerateData(GeneratorService context, IOptions<GeneratorConfiguration> configuration)
+		public GenerateData(GeneratorService context, IOptions<GeneratorConfiguration> configuration, ILogger<GenerateData> logger)
 		{
 			GeneratorService = context;
 			GeneratorConfiguration = configuration.Value;
+			Logger = logger;
 		}
 
 		[FunctionName("GenerateData")]
 		public async Task<IActionResult> Run(
-			[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-			ILogger log)
+			[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req)
 		{
-			log.LogInformation("Startup");
+			Logger.LogInformation("Startup");
 
 			// Deletes and creates the database and seeds the Dice
 			await GeneratorService.InitializeDatabase();
@@ -38,7 +38,7 @@ namespace Probability.Function
 
 			await GeneratorService.CommitData("All Records");
 
-			log.LogInformation($"Completion time: {DateTime.Now:hh:mm.ss}");
+			Logger.LogInformation("Shutdown");
 
 			return new OkResult();
 		}

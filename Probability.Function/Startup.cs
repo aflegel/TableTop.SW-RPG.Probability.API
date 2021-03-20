@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+﻿using System.IO;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,13 +15,16 @@ namespace Probability.Function
 	{
 		private IConfiguration Configuration { get; }
 
-		public Startup(IConfiguration configuration) => Configuration = configuration;
+		public Startup() => Configuration = new ConfigurationBuilder()
+			.SetBasePath(Directory.GetCurrentDirectory())
+			.AddEnvironmentVariables()
+			.Build();
 
 		public override void Configure(IFunctionsHostBuilder builder)
 		{
-			builder.Services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ProbabilityContext")));
+			builder.Services.AddDbContext<ProbabilityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PRobabilityContext")));
 			builder.Services.AddSingleton<GeneratorService>();
-			builder.Services.Configure<GeneratorConfiguration>(Configuration.GetSection(""));
+			builder.Services.Configure<GeneratorConfiguration>(Configuration.GetSection("GeneratorConfiguration"));
 		}
 	}
 }
