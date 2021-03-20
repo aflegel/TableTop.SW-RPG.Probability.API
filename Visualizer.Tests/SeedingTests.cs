@@ -1,7 +1,8 @@
 ﻿using System.Linq;
-using DataFramework.Context.Seed;
 using FluentAssertions;
+using Probability.Generator;
 using Probability.Service.Models;
+using Visualizer.Tests;
 using Xunit;
 
 namespace DataFramework.Tests

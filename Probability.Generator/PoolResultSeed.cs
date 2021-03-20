@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DataFramework.Extensions;
+using Probability.Generator.Extensions;
 using Probability.Service.Extensions;
 using Probability.Service.Models;
 

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DiceSeed.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumerableExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GeneratorService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PoolResultSeed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PoolStatisticSeed.cs" />

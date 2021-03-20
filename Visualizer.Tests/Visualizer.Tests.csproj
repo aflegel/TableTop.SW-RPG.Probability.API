@@ -23,4 +23,6 @@
     <ProjectReference Include="..\Visualizer\Visualizer.csproj" />
   </ItemGroup>
 
+  <Import Project="..\Probability.Generator\Probability.Generator.projitems" Label="Shared" />
+
 </Project>
