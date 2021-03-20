@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Probability.Service;
 using Visualizer.Extensions;
 
@@ -9,14 +10,22 @@ namespace Visualizer.Controllers
 	[ApiController]
 	public class HealthCheckController : ControllerBase
 	{
-		private readonly ProbabilityContext context;
+		private ProbabilityContext Context { get; }
+		private ILogger<HealthCheckController> Logger { get; }
 
-		public HealthCheckController(ProbabilityContext context) => this.context = context;
+		public HealthCheckController(ProbabilityContext context, ILogger<HealthCheckController> logger)
+		{
+			Logger = logger;
+			Context = context;
+		}
 
 		[HttpGet]
-		public async Task<ActionResult> Get() =>
-			await context.Database.CanConnectAsync()
+		public async Task<ActionResult> Get()
+		{
+			Logger.LogInformation("Serivce testing");
+			return await Context.Database.CanConnectAsync()
 				? Ok()
 				: new ServiceUnavailableResult();
+		}
 	}
 }
