@@ -1,4 +1,4 @@
-﻿namespace DataFramework.Models
+﻿namespace Probability.Service.Models
 {
 	public class PoolResultSymbol
 	{

@@ -15,7 +15,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Visualizer.Tests", "Visualizer.Tests\Visualizer.Tests.csproj", "{9A697E79-1FBC-4DB7-B335-530C40D8B7DE}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Probability.Service", "Probability.Service\Probability.Service.shproj", "{007ECC6E-1429-4935-83CE-9F6DF9D546EB}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Probability.Generator", "Probability.Generator\Probability.Generator.shproj", "{D22036AE-3EBE-4B53-BA58-EDF845348B94}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Probability.Service\Probability.Service.projitems*{007ecc6e-1429-4935-83ce-9f6df9d546eb}*SharedItemsImports = 13
+		Probability.Generator\Probability.Generator.projitems*{48db5912-b3d2-49c5-857b-e6e6a9638a43}*SharedItemsImports = 5
+		Probability.Service\Probability.Service.projitems*{48db5912-b3d2-49c5-857b-e6e6a9638a43}*SharedItemsImports = 5
+		Probability.Service\Probability.Service.projitems*{9692258a-bdd4-41ec-b7cb-ea7ddc31dd1e}*SharedItemsImports = 5
+		Probability.Generator\Probability.Generator.projitems*{9a697e79-1fbc-4db7-b335-530c40d8b7de}*SharedItemsImports = 5
+		Probability.Generator\Probability.Generator.projitems*{d22036ae-3ebe-4b53-ba58-edf845348b94}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

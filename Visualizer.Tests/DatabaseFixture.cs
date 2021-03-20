@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using DataFramework.Context;
-using DataFramework.Context.Seed;
 using Microsoft.EntityFrameworkCore;
+using Probability.Generator;
+using Probability.Service;
 using Xunit;
 
 namespace Visualizer.Tests

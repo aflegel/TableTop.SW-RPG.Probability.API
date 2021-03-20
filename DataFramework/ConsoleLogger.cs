@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace DataFramework.Context.Seed
+namespace DataFramework
 {
-	public static class ConsoleLogger
+	internal static class ConsoleLogger
 	{
 		public static void LogRoll(string poolText, decimal rollEstimation, decimal uniqueRolls) => Console.WriteLine($"{poolText,-80}|{rollEstimation,29:n0}  |{uniqueRolls,12:n0}");
 

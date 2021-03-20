@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Linq;
-using DataFramework.Context;
-using DataFramework.Context.Seed;
+using DataFramework.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Probability.Generator;
+using Probability.Service;
 
 namespace DataFramework
 {
 	internal class Program
 	{
-		private static readonly LimitConfiguration abilityLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration proficencyLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration difficultyLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration challengeLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration boostLimit = new LimitConfiguration { Start = 0, Count = 5 };
-		private static readonly LimitConfiguration setbackLimit = new LimitConfiguration { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit abilityLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit proficencyLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit difficultyLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit challengeLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit boostLimit = new DieGenerationLimit { Start = 0, Count = 5 };
+		private static readonly DieGenerationLimit setbackLimit = new DieGenerationLimit { Start = 0, Count = 5 };
 
+		private static readonly GeneratorService generatorService;
 
 		private static void Main()
 		{
@@ -26,44 +27,17 @@ namespace DataFramework
 			using (var context = new ProbabilityContext(options.Options))
 			{
 				// Deletes and creates the database and seeds the Dice
-				InitializeDatabase(context);
+				generatorService.InitializeDatabase().GetAwaiter().GetResult();
 
-				context.PoolCombinations.AddRange(DiceSeed.SeedDice
-					.SeedPools((abilityLimit.Range, proficencyLimit.Range, boostLimit.Range), (difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range))
-					.SeedCombinationStatistics().ToList());
+				generatorService.CalculateOutcomes(
+					(abilityLimit.Range, proficencyLimit.Range, boostLimit.Range),
+					(difficultyLimit.Range, challengeLimit.Range, setbackLimit.Range));
 
-				CommitData(context, "All Records");
+				generatorService.CommitData("All Records").GetAwaiter().GetResult();
 			}
 
 			Console.WriteLine($"Start time: {time:hh:mm.ss}");
 			Console.WriteLine($"Completion time: {DateTime.Now:hh:mm.ss}");
-		}
-
-		/// <summary>
-		/// Destroys and recreates the database and seeds the database with the dice information
-		/// </summary>
-		/// <param name="context"></param>
-		private static void InitializeDatabase(ProbabilityContext context)
-		{
-			//todo: wait for confirmation before deleting
-			ConsoleLogger.LogLine("Database Initialization");
-
-			//delete and recreate the database
-			context.Database.EnsureDeleted();
-			context.Database.EnsureCreated();
-
-			ConsoleLogger.LogLine("Database Seeding");
-		}
-
-		/// <summary>
-		/// Prints start and stop timestamps while saving the current context state
-		/// </summary>
-		/// <param name="context"></param>
-		private static void CommitData(ProbabilityContext context, string message)
-		{
-			ConsoleLogger.LogLine($"Initialize {message} Database Commit");
-			context.SaveChanges();
-			ConsoleLogger.LogLine($"Completed {message} Database Commit");
 		}
 	}
 }

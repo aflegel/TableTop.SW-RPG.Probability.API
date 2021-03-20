@@ -2,10 +2,11 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using DataFramework.Models;
 using Microsoft.EntityFrameworkCore;
+using Probability.Service.Extensions;
+using Probability.Service.Models;
 
-namespace DataFramework.Context
+namespace Probability.Service
 {
 	public static class ProbabilityContextAccessors
 	{
@@ -15,7 +16,7 @@ namespace DataFramework.Context
 		/// <param name="searchForPool"></param>
 		/// <returns></returns>
 		public static async Task<int?> GetPoolId(this ProbabilityContext context, List<PoolDie> searchForPool) =>
-			await searchForPool.Select(die => context.PoolDice.Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count())
+			await searchForPool.Select(die => context.PoolDice.AsQueryable().Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count())
 			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefaultAsync();
 
 		/// <summary>
@@ -24,7 +25,7 @@ namespace DataFramework.Context
 		/// <param name="context"></param>
 		/// <param name="poolName"></param>
 		/// <returns></returns>
-		public static async Task<int?> GetPoolIdByName(this ProbabilityContext context, string poolName) => await context.Pools.Where(w => w.Name == poolName).Select(s => s.PoolId).FirstOrDefaultAsync();
+		public static async Task<int?> GetPoolIdByName(this ProbabilityContext context, string poolName) => await context.Pools.AsQueryable().Where(w => w.Name == poolName).Select(s => s.PoolId).FirstOrDefaultAsync();
 
 		/// <summary>
 		/// Tries to get the pool ids split by positive and negative dice
@@ -58,7 +59,7 @@ namespace DataFramework.Context
 		/// <param name="context"></param>
 		/// <param name="poolId"></param>
 		/// <returns></returns>
-		public static Task<List<PoolResult>> GetPoolResults(this ProbabilityContext context, int poolId) => context.PoolResults.Where(w => w.PoolId == poolId).Include(i => i.PoolResultSymbols).ToListAsync();
+		public static Task<List<PoolResult>> GetPoolResults(this ProbabilityContext context, int poolId) => context.PoolResults.AsQueryable().Where(w => w.PoolId == poolId).Include(i => i.PoolResultSymbols).ToListAsync();
 
 		/// <summary>
 		/// Gets a list of PoolCombinationStatistics for a set of pool ids
@@ -67,7 +68,7 @@ namespace DataFramework.Context
 		/// <param name="poolIds"></param>
 		/// <returns></returns>
 		public static Task<List<PoolCombinationStatistic>> GetPoolStatistics(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) =>
-			context.PoolCombinationStatistics.Where(w => w.PositivePoolId == poolIds.positiveId && w.NegativePoolId == poolIds.negativeId).ToListAsync();
+			context.PoolCombinationStatistics.AsQueryable().Where(w => w.PositivePoolId == poolIds.positiveId && w.NegativePoolId == poolIds.negativeId).ToListAsync();
 
 		/// <summary>
 		/// Gets the dice and quantity for a given set of pool ids
@@ -76,7 +77,7 @@ namespace DataFramework.Context
 		/// <param name="poolIds"></param>
 		/// <returns></returns>
 		public static Task<List<PoolDie>> GetPoolDice(this ProbabilityContext context, (int positiveId, int negativeId) poolIds) =>
-			context.PoolDice.Where(w => w.PoolId == poolIds.positiveId || w.PoolId == poolIds.negativeId)
+			context.PoolDice.AsQueryable().Where(w => w.PoolId == poolIds.positiveId || w.PoolId == poolIds.negativeId)
 			.Include(i => i.Die).ToListAsync();
 
 		/// <summary>

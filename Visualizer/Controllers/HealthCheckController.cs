@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using DataFramework.Context;
 using Microsoft.AspNetCore.Mvc;
+using Probability.Service;
 using Visualizer.Extensions;
 
 namespace Visualizer.Controllers

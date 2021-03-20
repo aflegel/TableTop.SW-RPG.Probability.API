@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Probability.Service.Models;
 
-namespace DataFramework.Models
+namespace Probability.Service.Extensions
 {
 
 	public static class DieExtensions

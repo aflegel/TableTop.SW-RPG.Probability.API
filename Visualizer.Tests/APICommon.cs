@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataFramework.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Probability.Service.Models;
 using Visualizer.Controllers;
 using Visualizer.Models;
 using Xunit;
@@ -15,9 +15,9 @@ namespace Visualizer.Tests
 	{
 		public const string DatabaseCollection = "InMemoryContext collection";
 
+		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) TwoTwoZero => (new List<int> { 1, 2 }, new List<int> { 0, 1 }, new List<int> { 0 });
 		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) TwoZeroZero => (new List<int> { 2 }, new List<int> { 0 }, new List<int> { 0 });
 		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ZeroThreeTwo => (new List<int> { 3 }, new List<int> { 3 }, new List<int> { 2 });
-		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) TwoTwoZero => (new List<int> { 1, 2 }, new List<int> { 0, 1 }, new List<int> { 0 });
 		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) TwoOneZero => (new List<int> { 1, 2 }, new List<int> { 1 }, new List<int> { 0 });
 		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ZeroZeroZero => (new List<int> { 0 }, new List<int> { 0 }, new List<int> { 0 });
 

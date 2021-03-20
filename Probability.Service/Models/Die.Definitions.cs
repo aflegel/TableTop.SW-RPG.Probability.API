@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DataFramework.Models
+namespace Probability.Service.Models
 {
 	public class Ability : Die
 	{

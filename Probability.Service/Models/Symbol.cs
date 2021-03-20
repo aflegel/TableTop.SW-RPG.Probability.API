@@ -1,4 +1,4 @@
-﻿namespace DataFramework.Models
+﻿namespace Probability.Service.Models
 {
 	/// <summary>
 	/// An Enum to capture the different kind of faces

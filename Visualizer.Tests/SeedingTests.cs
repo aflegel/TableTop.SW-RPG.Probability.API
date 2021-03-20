@@ -1,10 +1,11 @@
 ﻿using System.Linq;
-using DataFramework.Context.Seed;
-using DataFramework.Models;
 using FluentAssertions;
+using Probability.Generator;
+using Probability.Service.Models;
+using Visualizer.Tests;
 using Xunit;
 
-namespace Visualizer.Tests
+namespace DataFramework.Tests
 {
 	public class SeedingTests
 	{

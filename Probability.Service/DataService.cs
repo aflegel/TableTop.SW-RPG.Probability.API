@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataFramework.Context;
-using DataFramework.Models;
 using Microsoft.EntityFrameworkCore;
+using Probability.Service.Extensions;
+using Probability.Service.Models;
 
-namespace DataFramework.Services
+namespace Probability.Service
 {
 	public class DataService
 	{

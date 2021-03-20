@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using DataFramework.Models;
 using Microsoft.EntityFrameworkCore;
+using Probability.Service.Models;
 
-namespace DataFramework.Context
+namespace Probability.Service
 {
 	public class ProbabilityContext : DbContext
 	{

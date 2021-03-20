@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DataFramework.Models;
+using Probability.Service.Models;
 
-namespace DataFramework.Context.Seed
+namespace Probability.Generator
 {
 	public static class PoolStatisticSeed
 	{
@@ -15,7 +15,7 @@ namespace DataFramework.Context.Seed
 		public static IEnumerable<PoolCombination> SeedCombinationStatistics(this (IEnumerable<Pool>, IEnumerable<Pool>) pools) =>
 			pools.Item1.SelectMany(positivePool => pools.Item2, (positivePool, negativePool) =>
 			{
-				ConsoleLogger.LogLine($"{positivePool.Name}, {negativePool.Name}");
+				//ConsoleLogger.LogLine($"{positivePool.Name}, {negativePool.Name}");
 
 				return new PoolCombination()
 				{

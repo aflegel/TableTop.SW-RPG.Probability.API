@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DataFramework.Models
+namespace Probability.Service.Models
 {
 	public class PoolResult
 	{
