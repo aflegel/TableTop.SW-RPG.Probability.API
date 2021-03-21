@@ -16,7 +16,7 @@ namespace Probability.Service
 		/// <param name="searchForPool"></param>
 		/// <returns></returns>
 		public static async Task<int?> GetPoolId(this ProbabilityContext context, List<PoolDie> searchForPool) =>
-			await searchForPool.Select(die => context.PoolDice.AsQueryable().Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count())
+			await searchForPool.Select(die => context.PoolDice.AsQueryable().Where(w => w.DieId == die.DieId && w.Quantity == die.Quantity && w.Pool.PoolDice.Count == searchForPool.Count)
 			.Select(s => s.PoolId)).Aggregate((result, next) => result.Intersect(next)).FirstOrDefaultAsync();
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace Probability.Service
 				negativeId: await context.GetPoolIdByName(pool.GetFilteredPoolName(DieExtensions.NegativeDice)) ?? 0
 				);
 
-			return poolIds.positiveId > 0 && poolIds.negativeId > 0 ? ((int, int)?)poolIds : null;
+			return poolIds.positiveId > 0 && poolIds.negativeId > 0 ? poolIds : null;
 		}
 
 		/// <summary>

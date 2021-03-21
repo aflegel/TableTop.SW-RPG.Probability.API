@@ -9,7 +9,7 @@ namespace Visualizer.Benchmarks
 {
 	internal class Program
 	{
-		private static void Main(string[] args) => BenchmarkRunner.Run<SeedingBenchmark>();
+		private static void Main(string[] _) => BenchmarkRunner.Run<SeedingBenchmark>();
 	}
 
 	internal class SeedingBenchmark
