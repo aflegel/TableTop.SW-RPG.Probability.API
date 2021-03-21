@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Probability.Service.Models;
 using Visualizer.Controllers;
 using Visualizer.Models;
@@ -34,7 +35,7 @@ namespace Visualizer.Tests
 
 		public APICommon(DatabaseFixture fixture)
 		{
-			controller = new HealthCheckController(fixture.Context);
+			controller = new HealthCheckController(fixture.Context, new NullLogger<HealthCheckController>());
 		}
 
 		[Fact]
