@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DataFramework.Configuration
+namespace Probability.Function.Configuration
 {
 	public class DieGenerationLimit
 	{

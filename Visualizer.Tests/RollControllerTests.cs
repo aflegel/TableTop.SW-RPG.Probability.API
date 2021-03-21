@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Probability.Service;
 using Visualizer.Controllers;
 using Xunit;
@@ -13,7 +14,7 @@ namespace Visualizer.Tests
 	{
 		private readonly RollController controller;
 
-		public RollControllerTests(DatabaseFixture fixture) => controller = new RollController(new DataService(fixture.Context));
+		public RollControllerTests(DatabaseFixture fixture) => controller = new RollController(new DataService(fixture.Context), new NullLogger<RollController>());
 
 		[Fact]
 		public async Task ResultsPositive()

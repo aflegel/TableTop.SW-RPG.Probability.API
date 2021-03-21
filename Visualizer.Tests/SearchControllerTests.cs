@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Probability.Service;
 using Visualizer.Controllers;
 using Xunit;
@@ -13,7 +14,7 @@ namespace Visualizer.Tests
 	{
 		private readonly SearchController controller;
 
-		public SearchControllerTests(DatabaseFixture fixture) => controller = new SearchController(new DataService(fixture.Context));
+		public SearchControllerTests(DatabaseFixture fixture) => controller = new SearchController(new DataService(fixture.Context), new NullLogger<SearchController>());
 
 		[Fact]
 		public async Task SearchPositiveAsync()
