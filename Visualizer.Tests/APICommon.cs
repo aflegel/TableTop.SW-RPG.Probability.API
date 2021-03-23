@@ -22,21 +22,18 @@ namespace Visualizer.Tests
 		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) TwoOneZero => (new List<int> { 1, 2 }, new List<int> { 1 }, new List<int> { 0 });
 		public static (IEnumerable<int>, IEnumerable<int>, IEnumerable<int>) ZeroZeroZero => (new List<int> { 0 }, new List<int> { 0 }, new List<int> { 0 });
 
-		public static List<PoolResultSymbol> SuccessThreeAdvantageFour => new List<PoolResultSymbol> { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
+		public static List<PoolResultSymbol> SuccessThreeAdvantageFour => new() { new PoolResultSymbol(Symbol.Success, 3), new PoolResultSymbol(Symbol.Advantage, 4) };
 
-		private static Pool MakePool(string name, int quantity) => new Pool() { PoolDice = new List<PoolDie> { new PoolDie(new Die { Name = name }, quantity) } };
+		private static Pool MakePool(string name, int quantity) => new() { PoolDice = new List<PoolDie> { new PoolDie(new Die { Name = name }, quantity) } };
 		private static Pool AbilityTwo => MakePool(nameof(Ability), 2);
 		private static Pool DifficultyTwo => MakePool(nameof(Difficulty), 2);
-		private static SearchViewModel MakeModel(IEnumerable<PoolDie> dice) => new SearchViewModel((new List<PoolCombinationStatistic> { }, dice));
+		private static SearchViewModel MakeModel(IEnumerable<PoolDie> dice) => new((new List<PoolCombinationStatistic> { }, dice));
 		public static SearchViewModel PositiveModel => MakeModel(AbilityTwo.PoolDice.Union(DifficultyTwo.PoolDice));
 		public static SearchViewModel NegativeModel => MakeModel(AbilityTwo.PoolDice);
 
 		private readonly HealthCheckController controller;
 
-		public APICommon(DatabaseFixture fixture)
-		{
-			controller = new HealthCheckController(fixture.Context, new NullLogger<HealthCheckController>());
-		}
+		public APICommon(DatabaseFixture fixture) => controller = new HealthCheckController(fixture.Context, new NullLogger<HealthCheckController>());
 
 		[Fact]
 		public async Task HealthCheck()

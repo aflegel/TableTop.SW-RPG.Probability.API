@@ -17,11 +17,15 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Probability.Service", "Prob
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Probability.Generator", "Probability.Generator\Probability.Generator.shproj", "{D22036AE-3EBE-4B53-BA58-EDF845348B94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probability.Function", "Probability.Function\Probability.Function.csproj", "{DBB7EDD1-CADE-49B6-8D14-709301D1CDE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Probability.Function", "Probability.Function\Probability.Function.csproj", "{DBB7EDD1-CADE-49B6-8D14-709301D1CDE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Visualizer.Benchmarks", "Visualizer.Benchmarks\Visualizer.Benchmarks.csproj", "{8512BDC9-73B5-4A5F-A8D6-7F54CA9BD6F6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Probability.Service\Probability.Service.projitems*{007ecc6e-1429-4935-83ce-9f6df9d546eb}*SharedItemsImports = 13
+		Probability.Generator\Probability.Generator.projitems*{8512bdc9-73b5-4a5f-a8d6-7f54ca9bd6f6}*SharedItemsImports = 5
+		Probability.Service\Probability.Service.projitems*{8512bdc9-73b5-4a5f-a8d6-7f54ca9bd6f6}*SharedItemsImports = 5
 		Probability.Service\Probability.Service.projitems*{9692258a-bdd4-41ec-b7cb-ea7ddc31dd1e}*SharedItemsImports = 5
 		Probability.Generator\Probability.Generator.projitems*{9a697e79-1fbc-4db7-b335-530c40d8b7de}*SharedItemsImports = 5
 		Probability.Generator\Probability.Generator.projitems*{d22036ae-3ebe-4b53-ba58-edf845348b94}*SharedItemsImports = 13
@@ -45,6 +49,10 @@ Global
 		{DBB7EDD1-CADE-49B6-8D14-709301D1CDE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBB7EDD1-CADE-49B6-8D14-709301D1CDE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBB7EDD1-CADE-49B6-8D14-709301D1CDE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8512BDC9-73B5-4A5F-A8D6-7F54CA9BD6F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8512BDC9-73B5-4A5F-A8D6-7F54CA9BD6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8512BDC9-73B5-4A5F-A8D6-7F54CA9BD6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8512BDC9-73B5-4A5F-A8D6-7F54CA9BD6F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
